@@ -82,6 +82,46 @@ export interface ChatbotApiMessage {
   content: string;
 }
 
+export type ZendiContactStep = "none" | "email" | "whatsapp";
+
+export type ZendiIntentLevel = "low" | "medium" | "high";
+
+export type ZendiSuggestedSolution =
+  | "PuntosPlus"
+  | "OH Fulfillment"
+  | "Zegendia personalizado"
+  | "API/integración"
+  | "Otro";
+
+export interface ZendiLeadProfile {
+  name?: string;
+  country?: string;
+  company?: string;
+  needType?: string;
+  loyaltyTarget?: "clientes" | "empleados" | "vendedores" | "distribuidores" | "comunidad" | "otro";
+  hasExistingProgram?: "yes" | "no" | "unknown";
+  countriesNeeded?: string;
+  estimatedUsers?: string;
+  suggestedSolution?: ZendiSuggestedSolution;
+  intentLevel?: ZendiIntentLevel;
+  summary?: string;
+  email?: string;
+  whatsapp?: string;
+  contactStep?: ZendiContactStep;
+  leadSubmitted?: boolean;
+}
+
+export interface ChatbotPageContext {
+  pageUrl?: string;
+  referrer?: string;
+  sessionId?: string;
+  timezone?: string;
+  userAgent?: string;
+  utmCampaign?: string;
+  utmMedium?: string;
+  utmSource?: string;
+}
+
 export interface ChatbotApiResponse {
   message: string;
   language: ChatLanguage;
@@ -89,4 +129,7 @@ export interface ChatbotApiResponse {
   shouldOpenLeadForm: boolean;
   defaultProgramType: string;
   quickReplies: string[];
+  contactStep?: ZendiContactStep;
+  profile?: Partial<ZendiLeadProfile>;
+  readyToSubmitLead?: boolean;
 }

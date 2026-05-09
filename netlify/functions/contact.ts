@@ -1,5 +1,8 @@
+import { createLead } from "../../src/lib/storage";
+
 type NetlifyEvent = {
   body: string | null;
+  headers: Record<string, string | undefined>;
   httpMethod: string;
 };
 
@@ -7,13 +10,32 @@ type ContactPayload = {
   company?: string;
   companyType?: string;
   country?: string;
+  countriesNeeded?: string;
   email?: string;
+  estimatedUsers?: string;
+  hasExistingProgram?: string;
+  intentLevel?: string;
+  loyaltyTarget?: string;
   message?: string;
   name?: string;
+  needType?: string;
   objective?: string;
+  pageContext?: {
+    pageUrl?: string;
+    referrer?: string;
+    sessionId?: string;
+    timezone?: string;
+    userAgent?: string;
+    utmCampaign?: string;
+    utmMedium?: string;
+    utmSource?: string;
+  };
   phone?: string;
   preferredLanguage?: "es" | "en";
+  sessionId?: string;
   size?: string;
+  suggestedSolution?: string;
+  summary?: string;
   transcript?: string;
   triggerIntent?: string;
   wantsDemo?: "yes" | "no" | "not_sure";
@@ -85,6 +107,19 @@ function demoPreferenceLabel(value: ContactPayload["wantsDemo"], language: "es" 
   return "Todavía no está seguro";
 }
 
+function getIp(event: NetlifyEvent) {
+  return (
+    event.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
+    event.headers["x-nf-client-connection-ip"] ||
+    event.headers["cf-connecting-ip"] ||
+    "unknown"
+  );
+}
+
+function createId() {
+  return `lead-${Date.now()}-${Math.round(Math.random() * 100000)}`;
+}
+
 function renderTranscript(transcript: string) {
   if (!transcript.trim()) {
     return "<p>No chatbot transcript was included.</p>";
@@ -150,17 +185,61 @@ export async function handler(event: NetlifyEvent) {
   const country = String(payload.country || "").trim();
   const message = String(payload.message || "").trim();
   const preferredLanguage = payload.preferredLanguage === "en" ? "en" : "es";
+  const pageContext = payload.pageContext || {};
+  const sessionId = String(payload.sessionId || pageContext.sessionId || "").trim();
   const transcript = String(payload.transcript || "").trim();
   const triggerIntent = String(payload.triggerIntent || "contacto").trim();
   const demoPreference = demoPreferenceLabel(payload.wantsDemo, preferredLanguage);
+  const summary = String(payload.summary || message).trim();
+  const needType = String(payload.needType || payload.objective || "").trim();
+  const suggestedSolution = String(payload.suggestedSolution || "").trim();
+  const intentLevel = String(payload.intentLevel || "medium").trim();
+  const loyaltyTarget = String(payload.loyaltyTarget || "").trim();
+  const createdAt = new Date().toISOString();
 
   if (name.length < 2 || company.length < 2 || country.length < 2 || !isEmail(email) || message.length < 10) {
     return json(400, { message: "Please complete all required fields." });
   }
 
+  await createLead({
+    company,
+    companyType: String(payload.companyType || "chatbot").trim(),
+    country,
+    countriesNeeded: String(payload.countriesNeeded || "").trim(),
+    createdAt,
+    email,
+    estimatedUsers: String(payload.estimatedUsers || payload.size || "").trim(),
+    hasExistingProgram: String(payload.hasExistingProgram || "").trim(),
+    id: createId(),
+    intentLevel,
+    ip: getIp(event),
+    loyaltyTarget,
+    message,
+    name,
+    needType,
+    objective: String(payload.objective || needType || suggestedSolution || "Solicitud desde Zendi").trim(),
+    pageUrl: String(pageContext.pageUrl || "").trim(),
+    phone: String(payload.phone || "").trim(),
+    preferredLanguage,
+    referrer: String(pageContext.referrer || event.headers.referer || "").trim(),
+    sessionId,
+    size: String(payload.size || payload.estimatedUsers || "not-specified").trim(),
+    suggestedSolution,
+    summary,
+    transcript,
+    triggerIntent,
+    userAgent: String(pageContext.userAgent || event.headers["user-agent"] || "").trim(),
+    utmCampaign: String(pageContext.utmCampaign || "").trim(),
+    utmMedium: String(pageContext.utmMedium || "").trim(),
+    utmSource: String(pageContext.utmSource || "").trim(),
+    wantsDemo: String(payload.wantsDemo || "").trim()
+  }).catch((error) => {
+    console.error("Could not persist Zendi lead", error);
+  });
+
   const leadHtml = emailShell({
     preview: `${name} from ${company} submitted a Zendi lead.`,
-    title: "New Zendi lead",
+    title: "Nuevo lead desde Zendi",
     children: `
       <p style="margin:0 0 18px;font-size:15px;line-height:1.7;">A new lead came from Zendi. The full conversation context is included below so you can respond with the right angle.</p>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;line-height:1.6;">
@@ -169,15 +248,33 @@ export async function handler(event: NetlifyEvent) {
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Email</td><td style="padding:7px 0;">${escapeHtml(email)}</td></tr>
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Country</td><td style="padding:7px 0;">${escapeHtml(country)}</td></tr>
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Phone / WhatsApp</td><td style="padding:7px 0;">${escapeHtml(String(payload.phone || ""))}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Program type</td><td style="padding:7px 0;">${escapeHtml(String(payload.objective || ""))}</td></tr>
+        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Need</td><td style="padding:7px 0;">${escapeHtml(needType)}</td></tr>
+        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Loyalty target</td><td style="padding:7px 0;">${escapeHtml(loyaltyTarget)}</td></tr>
+        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Suggested solution</td><td style="padding:7px 0;">${escapeHtml(suggestedSolution)}</td></tr>
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Intent</td><td style="padding:7px 0;">${escapeHtml(triggerIntent)}</td></tr>
+        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Intent level</td><td style="padding:7px 0;">${escapeHtml(intentLevel)}</td></tr>
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Demo</td><td style="padding:7px 0;">${escapeHtml(demoPreference)}</td></tr>
+        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Existing program</td><td style="padding:7px 0;">${escapeHtml(String(payload.hasExistingProgram || ""))}</td></tr>
+        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Countries needed</td><td style="padding:7px 0;">${escapeHtml(String(payload.countriesNeeded || ""))}</td></tr>
+        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Estimated users</td><td style="padding:7px 0;">${escapeHtml(String(payload.estimatedUsers || payload.size || ""))}</td></tr>
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Language</td><td style="padding:7px 0;">${preferredLanguage}</td></tr>
       </table>
-      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Message from the form</h2>
-      <p style="margin:0 0 18px;font-size:14px;line-height:1.7;">${escapeHtml(message)}</p>
+      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Executive summary</h2>
+      <p style="margin:0 0 18px;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
       <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Zendi conversation thread</h2>
       ${renderTranscript(transcript)}
+      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Technical context</h2>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:13px;line-height:1.6;">
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">IP</td><td style="padding:5px 0;">${escapeHtml(getIp(event))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Session ID</td><td style="padding:5px 0;">${escapeHtml(sessionId)}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">User agent</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.userAgent || event.headers["user-agent"] || ""))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Referrer</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.referrer || event.headers.referer || ""))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Page URL</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.pageUrl || ""))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM source</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.utmSource || ""))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM medium</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.utmMedium || ""))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM campaign</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.utmCampaign || ""))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Date/time</td><td style="padding:5px 0;">${createdAt}</td></tr>
+      </table>
     `
   });
   const confirmation =
@@ -188,7 +285,11 @@ export async function handler(event: NetlifyEvent) {
             title: "We received your request",
             children: `
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Hi ${escapeHtml(name)},</p>
-              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Thanks for contacting Zegendia through Zendi. We received your information and the context of your request.</p>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Thanks for talking with Zendi, our loyalty agent. We received your information and the context of your request.</p>
+              <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">Conversation summary</div>
+                <p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
+              </div>
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Our team will review it and get back to you within 24 hours with the right follow-up, meeting, or demo if applicable.</p>
               <p style="margin:24px 0 0;font-size:15px;line-height:1.8;">Best,<br /><strong>Zegendia</strong></p>
             `
@@ -201,7 +302,11 @@ export async function handler(event: NetlifyEvent) {
             title: "Recibimos tu solicitud",
             children: `
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Hola ${escapeHtml(name)},</p>
-              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Gracias por contactar a Zegendia a través de Zendi. Recibimos tus datos y el contexto de tu solicitud.</p>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Gracias por conversar con Zendi, nuestro agente de lealtad. Recibimos tu información y el contexto de tu solicitud.</p>
+              <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">Resumen de lo conversado</div>
+                <p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
+              </div>
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Nuestro equipo la revisará y te responderá en menos de 24 horas con el seguimiento correcto, una reunión o un demo si aplica.</p>
               <p style="margin:24px 0 0;font-size:15px;line-height:1.8;">Saludos,<br /><strong>Zegendia</strong></p>
             `
@@ -212,7 +317,7 @@ export async function handler(event: NetlifyEvent) {
   await Promise.all([
     sendResendEmail({
       html: leadHtml,
-      subject: `New Zegendia lead: ${company || name}`,
+      subject: `Nuevo lead desde Zendi - ${country} - ${needType || "Solicitud comercial"}`,
       to: process.env.ZEGENDIA_SALES_EMAIL || "info@zegendia.com"
     }),
     sendResendEmail({

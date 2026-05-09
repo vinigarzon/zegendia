@@ -88,6 +88,25 @@ export interface LeadRecord {
   size: string;
   message: string;
   preferredLanguage: Locale;
+  countriesNeeded?: string;
+  estimatedUsers?: string;
+  hasExistingProgram?: string;
+  intentLevel?: string;
+  ip?: string;
+  loyaltyTarget?: string;
+  needType?: string;
+  pageUrl?: string;
+  referrer?: string;
+  sessionId?: string;
+  suggestedSolution?: string;
+  summary?: string;
+  transcript?: string;
+  triggerIntent?: string;
+  userAgent?: string;
+  utmCampaign?: string;
+  utmMedium?: string;
+  utmSource?: string;
+  wantsDemo?: string;
 }
 
 export interface SiteContent {

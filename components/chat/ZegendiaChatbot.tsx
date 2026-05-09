@@ -5,79 +5,24 @@ import { MessageCircleMore, RefreshCcw, SendHorizontal, X } from "lucide-react";
 
 import type { Locale } from "@/lib/types";
 import { ChatMessage } from "components/chat/ChatMessage";
-import { LeadForm } from "components/chat/LeadForm";
-import { saveLead } from "lib/chatbot/leadCapture";
 import type {
   ChatbotApiMessage,
   ChatbotApiResponse,
-  ChatIntent,
   ChatLanguage,
   ChatMessage as ChatMessageType,
-  Lead,
-  LeadFormValues
+  ZendiLeadProfile
 } from "types/chat";
 
-const QUICK_REPLIES = {
-  en: [
-    "Loyalty for customers",
-    "Sales incentives",
-    "Rewards catalog",
-    "Book a meeting",
-    "Leave my details",
-    "Request a demo"
-  ],
-  es: [
-    "Clientes finales",
-    "Vendedores",
-    "Distribuidores",
-    "Agendar reunión",
-    "Dejar mis datos",
-    "Quiero una demo"
-  ]
-} as const;
+const STORAGE_KEY = "zegendia:zendi:conversation:v2";
+const SESSION_KEY = "zegendia:zendi:session-id";
+const MAX_LOCAL_MESSAGES = 24;
 
-const MAX_USER_MESSAGES_PER_SESSION = 8;
-
-const PROGRAM_TYPE_BY_INTENT: Record<ChatLanguage, Partial<Record<ChatIntent, string>>> = {
-  en: {
-    api: "API integration",
-    clientes_b2b: "B2B loyalty",
-    clientes_b2c: "B2C loyalty",
-    contacto: "Contact request",
-    demo: "Commercial demo",
-    distribuidores: "Distributor program",
-    empleados: "Employee incentives",
-    general: "General loyalty program",
-    gift_cards: "Gift cards",
-    precio: "Commercial quote",
-    premios: "Rewards catalog",
-    puntos: "Points program",
-    recompensas: "Rewards catalog",
-    vendedores: "Sales incentives"
-  },
-  es: {
-    api: "Integración API",
-    clientes_b2b: "Lealtad B2B",
-    clientes_b2c: "Lealtad B2C",
-    contacto: "Solicitud de contacto",
-    demo: "Demo comercial",
-    distribuidores: "Programa para distribuidores",
-    empleados: "Incentivos para empleados",
-    general: "Programa de lealtad",
-    gift_cards: "Gift cards",
-    precio: "Cotización comercial",
-    premios: "Catálogo de premios",
-    puntos: "Programa de puntos",
-    recompensas: "Catálogo de recompensas",
-    vendedores: "Incentivos para vendedores"
-  }
+type StoredConversation = {
+  language: ChatLanguage;
+  messages: ChatMessageType[];
+  profile: ZendiLeadProfile;
+  sessionId: string;
 };
-
-const LEAD_CAPTURE_PATTERNS: Array<{ intent: ChatIntent; pattern: RegExp }> = [
-  { intent: "demo", pattern: /\b(quiero|solicitar|agenda|agendar|request|book)\b.*\b(demo|demostracion|demostración|reunion|reunión|meeting)\b/i },
-  { intent: "precio", pattern: /\b(cotizar|cotizacion|cotización|precio|precios|pricing|quote|cost|costos)\b/i },
-  { intent: "contacto", pattern: /\b(hablar con alguien|hablar con zegendia|dejar mis datos|contacten|contactarme|contact me|talk to someone|leave my details|more information|mas informacion|más información|me interesa|humano|asesor|ejecutivo|representante|human|agent|representative)\b/i }
-];
 
 function createId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -91,66 +36,26 @@ function getInitialLanguage(locale: Locale): ChatLanguage {
 
 function getGreeting(language: ChatLanguage) {
   if (language === "en") {
-    return "Perfect. What do you want to activate first: customers, sales teams, distributors, employees, or business partners?";
+    return "Hi, I’m Zendi, your loyalty agent at Zegendia. I can help you create, improve, or operate a loyalty program. Who do I have the pleasure of speaking with?";
   }
 
-  return "Perfecto. Para orientarte mejor, dime primero qué quieres fidelizar: clientes, vendedores, distribuidores, empleados o aliados comerciales.";
-}
-
-function getFallbackReply(language: ChatLanguage) {
-  if (language === "en") {
-    return "Good question. To give you a precise answer, the Zegendia team would need to review your case. If you want, I can take your details so they can contact you.";
-  }
-
-  return "Buena pregunta. Para darte una respuesta precisa, el equipo de Zegendia tendría que revisar tu caso. Si quieres, puedo tomar tus datos para que te contacten.";
-}
-
-function getSuccessReply(language: ChatLanguage) {
-  if (language === "en") {
-    return "Thanks. We received your details and the Zegendia team will follow up.";
-  }
-
-  return "Gracias. Ya recibimos tus datos y el equipo de Zegendia te dará seguimiento.";
-}
-
-function getLeadFallbackReply(language: ChatLanguage) {
-  if (language === "en") {
-    return "Thanks. I kept your details in this browser, but I could not send them to the team right now. Please try again in a moment.";
-  }
-
-  return "Gracias. Dejé tus datos guardados en este navegador, pero no pude enviarlos al equipo en este momento. Prueba de nuevo en unos minutos.";
-}
-
-function getLeadPromptReply(language: ChatLanguage) {
-  if (language === "en") {
-    return "Perfect. Share your details and Zendi will route your request to the right Zegendia team. You will receive a response, follow-up, meeting, or demo within 24 hours.";
-  }
-
-  return "Perfecto. Déjame tus datos y Zendi pasará tu solicitud al equipo indicado de Zegendia. Recibirás respuesta, seguimiento, reunión o demo en menos de 24 horas.";
-}
-
-function getLimitReply(language: ChatLanguage) {
-  if (language === "en") {
-    return "To keep this focused, Zendi can answer a few questions about loyalty, rewards, incentives, APIs, countries, and demos. If you want to continue, leave your details and the Zegendia team can review your case.";
-  }
-
-  return "Para mantener la conversación enfocada, Zendi puede responder algunas preguntas sobre lealtad, recompensas, incentivos, APIs, países y demos. Si quieres avanzar, deja tus datos y el equipo de Zegendia revisa tu caso.";
+  return "Hola, soy Zendi, tu agente de lealtad en Zegendia. Te puedo ayudar a crear, mejorar o administrar un programa de fidelización. ¿Con quién tengo el gusto?";
 }
 
 function getInputPlaceholder(language: ChatLanguage) {
   if (language === "en") {
-    return "Ask about points, rewards, gift cards, API, pricing, or request a demo...";
+    return "Reply to Zendi...";
   }
 
-  return "Pregunta por puntos, recompensas, gift cards, API, precios o una demo...";
+  return "Respóndele a Zendi...";
 }
 
-function getHelpQuickReplies(language: ChatLanguage) {
+function getSubmitFallback(language: ChatLanguage) {
   if (language === "en") {
-    return ["Request a demo", "Book a meeting", "Leave my details", "Talk to Zegendia"];
+    return "I saved the conversation in this browser, but I could not send it to Zegendia right now. Please try again in a moment.";
   }
 
-  return ["Quiero una demo", "Agendar reunión", "Dejar mis datos", "Hablar con Zegendia"];
+  return "Guardé la conversación en este navegador, pero no pude enviarla a Zegendia en este momento. Prueba otra vez en unos minutos.";
 }
 
 function createAssistantMessage(language: ChatLanguage): ChatMessageType {
@@ -158,7 +63,6 @@ function createAssistantMessage(language: ChatLanguage): ChatMessageType {
     content: getGreeting(language),
     id: createId(),
     language,
-    quickReplies: [...QUICK_REPLIES[language]],
     role: "assistant",
     timestamp: new Date().toISOString()
   };
@@ -180,13 +84,80 @@ function createMessage(
   };
 }
 
-function getDefaultProgramType(intent: ChatIntent, language: ChatLanguage) {
-  return PROGRAM_TYPE_BY_INTENT[language][intent] ?? PROGRAM_TYPE_BY_INTENT[language].general ?? "";
+function createSessionId() {
+  return `zendi-${createId()}`;
 }
 
-function detectLeadCaptureIntent(message: string): ChatIntent | null {
-  const match = LEAD_CAPTURE_PATTERNS.find((entry) => entry.pattern.test(message));
-  return match?.intent ?? null;
+function getStoredSessionId() {
+  if (typeof window === "undefined") {
+    return createSessionId();
+  }
+
+  const existing = window.localStorage.getItem(SESSION_KEY);
+  if (existing) {
+    document.cookie = `${SESSION_KEY}=${existing}; path=/; max-age=31536000; SameSite=Lax`;
+    return existing;
+  }
+
+  const sessionId = createSessionId();
+  window.localStorage.setItem(SESSION_KEY, sessionId);
+  document.cookie = `${SESSION_KEY}=${sessionId}; path=/; max-age=31536000; SameSite=Lax`;
+  return sessionId;
+}
+
+function getInitialState(locale: Locale): StoredConversation {
+  const language = getInitialLanguage(locale);
+  const sessionId = getStoredSessionId();
+
+  if (typeof window === "undefined") {
+    return {
+      language,
+      messages: [createAssistantMessage(language)],
+      profile: {},
+      sessionId
+    };
+  }
+
+  try {
+    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "null") as StoredConversation | null;
+
+    if (stored?.messages?.length && stored.sessionId) {
+      return {
+        language: stored.language ?? language,
+        messages: stored.messages.slice(-MAX_LOCAL_MESSAGES),
+        profile: stored.profile ?? {},
+        sessionId: stored.sessionId
+      };
+    }
+  } catch {
+    // Ignore invalid local state and start a clean conversation.
+  }
+
+  return {
+    language,
+    messages: [createAssistantMessage(language)],
+    profile: {},
+    sessionId
+  };
+}
+
+function getPageContext(sessionId: string) {
+  if (typeof window === "undefined") {
+    return { sessionId };
+  }
+
+  const params = new URLSearchParams(window.location.search);
+
+  return {
+    pageUrl: window.location.href,
+    referrer: document.referrer,
+    sessionId,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    userAgent: window.navigator.userAgent,
+    utmCampaign: params.get("utm_campaign") ?? undefined,
+    utmMedium: params.get("utm_medium") ?? undefined,
+    utmSource: params.get("utm_source") ?? undefined
+  };
 }
 
 function formatConversationTranscript(messages: ChatMessageType[]) {
@@ -198,77 +169,135 @@ function formatConversationTranscript(messages: ChatMessageType[]) {
     .join("\n\n");
 }
 
-async function getBotReply(
-  message: string,
-  fallbackLanguage: ChatLanguage,
-  conversation: ChatbotApiMessage[]
-): Promise<ChatbotApiResponse> {
-  try {
-    const response = await fetch("/api/chatbot", {
-      body: JSON.stringify({
-        language: fallbackLanguage,
-        message,
-        messages: conversation.slice(-10)
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      },
-      method: "POST"
-    });
-
-    if (!response.ok) {
-      throw new Error("Chatbot API request failed.");
-    }
-
-    return (await response.json()) as ChatbotApiResponse;
-  } catch {
-    return {
-      defaultProgramType: getDefaultProgramType("contacto", fallbackLanguage),
-      intent: "contacto",
+async function getBotReply({
+  conversation,
+  fallbackLanguage,
+  message,
+  profile,
+  sessionId
+}: {
+  conversation: ChatbotApiMessage[];
+  fallbackLanguage: ChatLanguage;
+  message: string;
+  profile: ZendiLeadProfile;
+  sessionId: string;
+}): Promise<ChatbotApiResponse> {
+  const response = await fetch("/api/chatbot", {
+    body: JSON.stringify({
       language: fallbackLanguage,
-      message: getFallbackReply(fallbackLanguage),
-      quickReplies: getHelpQuickReplies(fallbackLanguage),
-      shouldOpenLeadForm: false
-    };
+      message,
+      messages: conversation.slice(-12),
+      pageContext: getPageContext(sessionId),
+      profile,
+      sessionId
+    }),
+    headers: {
+      "Content-Type": "application/json"
+    },
+    method: "POST"
+  });
+
+  if (!response.ok) {
+    throw new Error("Chatbot API request failed.");
   }
+
+  return (await response.json()) as ChatbotApiResponse;
 }
 
 export function ZegendiaChatbot({ locale }: { locale: Locale }) {
-  const initialLanguage = getInitialLanguage(locale);
+  const [initialState] = useState<StoredConversation>(() => getInitialState(locale));
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [conversationLanguage, setConversationLanguage] = useState<ChatLanguage>(initialLanguage);
-  const [messages, setMessages] = useState<ChatMessageType[]>(() => [createAssistantMessage(initialLanguage)]);
-  const [leadFormOpen, setLeadFormOpen] = useState(false);
-  const [leadIntent, setLeadIntent] = useState<ChatIntent>("contacto");
-  const [defaultProgramType, setDefaultProgramType] = useState("");
-  const leadFormRef = useRef<HTMLDivElement | null>(null);
+  const [conversationLanguage, setConversationLanguage] = useState<ChatLanguage>(initialState.language);
+  const [messages, setMessages] = useState<ChatMessageType[]>(initialState.messages);
+  const [profile, setProfile] = useState<ZendiLeadProfile>(initialState.profile);
+  const [sessionId, setSessionId] = useState(initialState.sessionId);
   const endRef = useRef<HTMLDivElement | null>(null);
-  const userMessageCount = messages.filter((message) => message.role === "user").length;
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        language: conversationLanguage,
+        messages: messages.slice(-MAX_LOCAL_MESSAGES),
+        profile,
+        sessionId
+      } satisfies StoredConversation)
+    );
+  }, [conversationLanguage, messages, profile, sessionId]);
 
   useEffect(() => {
     if (!isOpen) {
       return;
     }
 
-    if (leadFormOpen) {
-      leadFormRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
-  }, [isOpen, isTyping, leadFormOpen, messages]);
+  }, [isOpen, isTyping, messages]);
 
   function resetConversation() {
     const language = getInitialLanguage(locale);
+    const nextSessionId = createSessionId();
+
+    window.localStorage.setItem(SESSION_KEY, nextSessionId);
+    window.localStorage.removeItem(STORAGE_KEY);
+    document.cookie = `${SESSION_KEY}=${nextSessionId}; path=/; max-age=31536000; SameSite=Lax`;
+
     setConversationLanguage(language);
-    setDefaultProgramType("");
     setInput("");
     setIsTyping(false);
-    setLeadFormOpen(false);
-    setLeadIntent("contacto");
     setMessages([createAssistantMessage(language)]);
+    setProfile({});
+    setSessionId(nextSessionId);
+  }
+
+  async function submitLead(nextProfile: ZendiLeadProfile, nextMessages: ChatMessageType[], language: ChatLanguage) {
+    if (nextProfile.leadSubmitted || !nextProfile.email || !nextProfile.whatsapp || !nextProfile.name) {
+      return;
+    }
+
+    const response = await fetch("/api/contact", {
+      body: JSON.stringify({
+        company: nextProfile.company || "No especificada",
+        companyType: "chatbot",
+        country: nextProfile.country || "No especificado",
+        countriesNeeded: nextProfile.countriesNeeded,
+        email: nextProfile.email,
+        estimatedUsers: nextProfile.estimatedUsers,
+        hasExistingProgram: nextProfile.hasExistingProgram,
+        intentLevel: nextProfile.intentLevel,
+        loyaltyTarget: nextProfile.loyaltyTarget,
+        message: nextProfile.summary || "Lead capturado desde Zendi.",
+        name: nextProfile.name,
+        needType: nextProfile.needType,
+        objective: nextProfile.needType || nextProfile.suggestedSolution || "Solicitud desde Zendi",
+        pageContext: getPageContext(sessionId),
+        phone: nextProfile.whatsapp,
+        preferredLanguage: language,
+        sessionId,
+        size: nextProfile.estimatedUsers || "not-specified",
+        suggestedSolution: nextProfile.suggestedSolution,
+        summary: nextProfile.summary,
+        transcript: formatConversationTranscript(nextMessages),
+        triggerIntent: nextProfile.needType || "contacto",
+        wantsDemo: nextProfile.suggestedSolution ? "yes" : "not_sure",
+        website: ""
+      }),
+      headers: {
+        "Content-Type": "application/json"
+      },
+      method: "POST"
+    }).catch(() => null);
+
+    if (response?.ok) {
+      setProfile((current) => ({ ...current, leadSubmitted: true }));
+      return;
+    }
+
+    setMessages((current) => [
+      ...current,
+      createMessage("assistant", getSubmitFallback(language), language)
+    ]);
   }
 
   function handleSendMessage(rawMessage: string) {
@@ -280,116 +309,48 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
 
     const userMessage = createMessage("user", trimmedMessage, conversationLanguage);
     const nextMessages = [...messages, userMessage];
-    const localLeadIntent = detectLeadCaptureIntent(trimmedMessage);
 
-    setLeadFormOpen(false);
     setMessages(nextMessages);
     setInput("");
     setIsTyping(true);
 
-    if (userMessageCount >= MAX_USER_MESSAGES_PER_SESSION) {
-      window.setTimeout(() => {
-        setDefaultProgramType(getDefaultProgramType("contacto", conversationLanguage));
-        setLeadIntent("contacto");
-        setLeadFormOpen(true);
-        setMessages((current) => [
-          ...current,
-          createMessage("assistant", getLimitReply(conversationLanguage), conversationLanguage)
-        ]);
-        setIsTyping(false);
-      }, 350);
-      return;
-    }
-
-    if (localLeadIntent) {
-      window.setTimeout(() => {
-        setDefaultProgramType(getDefaultProgramType(localLeadIntent, conversationLanguage));
-        setLeadIntent(localLeadIntent);
-        setLeadFormOpen(true);
-        setMessages((current) => [
-          ...current,
-          createMessage("assistant", getLeadPromptReply(conversationLanguage), conversationLanguage)
-        ]);
-        setIsTyping(false);
-      }, 450);
-      return;
-    }
-
-    void getBotReply(
-      trimmedMessage,
-      conversationLanguage,
-      nextMessages.map((message) => ({
+    void getBotReply({
+      conversation: nextMessages.map((message) => ({
         content: message.content,
         role: message.role
-      }))
-    ).then((reply) => {
-      setConversationLanguage(reply.language);
-      setDefaultProgramType(reply.defaultProgramType);
-      setLeadIntent(reply.intent);
-      setLeadFormOpen(reply.shouldOpenLeadForm);
-      setMessages((current) => [
-        ...current,
-        createMessage("assistant", reply.message, reply.language, reply.quickReplies)
-      ]);
-      setIsTyping(false);
-    });
-  }
+      })),
+      fallbackLanguage: conversationLanguage,
+      message: trimmedMessage,
+      profile,
+      sessionId
+    })
+      .then((reply) => {
+        const nextLanguage = reply.language ?? conversationLanguage;
+        const nextProfile = { ...profile, ...(reply.profile ?? {}) };
+        const assistantMessage = createMessage("assistant", reply.message, nextLanguage, reply.quickReplies);
+        const completeMessages = [...nextMessages, assistantMessage];
 
-  async function handleLeadSubmit(values: LeadFormValues) {
-    const demoPreference =
-      values.wantsDemo === "yes"
-        ? "Sí quiere demo"
-        : values.wantsDemo === "no"
-          ? "No pidió demo"
-          : "No está seguro sobre demo";
-    const lead: Lead = {
-      ...values,
-      createdAt: new Date().toISOString(),
-      id: createId(),
-      language: conversationLanguage,
-      source: "chatbot",
-      triggerIntent: leadIntent
-    };
+        setConversationLanguage(nextLanguage);
+        setProfile(nextProfile);
+        setMessages(completeMessages);
 
-    saveLead(lead);
-
-    const response = await fetch("/api/contact", {
-      body: JSON.stringify({
-        company: values.company,
-        companyType: "chatbot",
-        country: values.country,
-        email: values.email,
-        message: [
-          values.additionalMessage || "Lead capturado desde chatbot.",
-          `Interés: ${leadIntent}.`,
-          `Tipo de programa: ${values.programType}.`,
-          `Demo: ${demoPreference}.`
-        ].join(" "),
-        name: values.name,
-        objective: values.programType,
-        phone: values.phone,
-        preferredLanguage: conversationLanguage,
-        size: "not-specified",
-        transcript: formatConversationTranscript(messages),
-        triggerIntent: leadIntent,
-        wantsDemo: values.wantsDemo,
-        website: ""
-      }),
-      headers: {
-        "Content-Type": "application/json"
-      },
-      method: "POST"
-    }).catch(() => null);
-
-    setLeadFormOpen(false);
-    setMessages((current) => [
-      ...current,
-      createMessage(
-        "assistant",
-        response?.ok ? getSuccessReply(conversationLanguage) : getLeadFallbackReply(conversationLanguage),
-        conversationLanguage
-      )
-    ]);
+        if (reply.readyToSubmitLead) {
+          void submitLead(nextProfile, completeMessages, nextLanguage);
+        }
+      })
+      .catch(() => {
+        setMessages((current) => [
+          ...current,
+          createMessage(
+            "assistant",
+            conversationLanguage === "en"
+              ? "I could not process that right now. Tell me briefly what kind of loyalty or rewards program you need, and I will guide you."
+              : "No pude procesar eso en este momento. Cuéntame brevemente qué tipo de programa de lealtad o recompensas necesitas y te oriento.",
+            conversationLanguage
+          )
+        ]);
+      })
+      .finally(() => setIsTyping(false));
   }
 
   return (
@@ -416,10 +377,10 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
                 <div>
                   <div className="text-[11px] font-semibold uppercase tracking-[0.26em] text-white/78">Zendi</div>
                   <div className="mt-1 text-base font-semibold leading-tight">
-                    {conversationLanguage === "en" ? "Loyalty assistant" : "Asistente de loyalty"}
+                    {conversationLanguage === "en" ? "Loyalty agent" : "Agente de lealtad"}
                   </div>
                   <p className="mt-0.5 text-xs leading-5 text-white/78">
-                    {conversationLanguage === "en" ? "Focused on rewards programs." : "Programas de recompensas."}
+                    {conversationLanguage === "en" ? "Guided rewards advisory." : "Asesoría guiada en rewards."}
                   </p>
                 </div>
               </div>
@@ -428,16 +389,16 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
                 <button
                   className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white/18"
                   onClick={resetConversation}
-                  type="button"
                   title={conversationLanguage === "en" ? "Restart" : "Reiniciar"}
+                  type="button"
                 >
                   <RefreshCcw className="h-4 w-4" />
                 </button>
                 <button
                   className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/20 bg-white/10 text-white transition hover:bg-white/18"
                   onClick={() => setIsOpen(false)}
-                  type="button"
                   title={conversationLanguage === "en" ? "Close" : "Cerrar"}
+                  type="button"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -445,7 +406,7 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
             </div>
           </div>
 
-          <div className="flex h-[min(62vh,470px)] flex-col bg-[linear-gradient(180deg,#fbfff4_0%,#f0faf6_42%,#e8f3f5_100%)]">
+          <div className="flex h-[min(66vh,520px)] flex-col bg-[linear-gradient(180deg,#fbfff4_0%,#f0faf6_42%,#e8f3f5_100%)]">
             <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {messages.map((message) => (
                 <ChatMessage key={message.id} message={message} onQuickReply={handleSendMessage} />
@@ -463,50 +424,36 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
                 </div>
               ) : null}
 
-              {leadFormOpen ? (
-                <div ref={leadFormRef}>
-                  <LeadForm
-                    defaultProgramType={defaultProgramType}
-                    language={conversationLanguage}
-                    onCancel={() => setLeadFormOpen(false)}
-                    onSubmit={handleLeadSubmit}
-                    triggerIntent={leadIntent}
-                  />
-                </div>
-              ) : null}
-
               <div ref={endRef} />
             </div>
 
-            {!leadFormOpen ? (
-              <div className="border-t border-[#d7e6ea] bg-white/92 p-3">
-                <form
-                  className="rounded-[26px] border border-[#d7e6ea] bg-[#fffdf8] p-2 shadow-[0_10px_30px_rgba(22,90,110,0.06)]"
-                  onSubmit={(event) => {
-                    event.preventDefault();
-                    handleSendMessage(input);
-                  }}
-                >
-                  <div className="flex items-end gap-2">
-                    <textarea
-                      className="max-h-32 min-h-[52px] flex-1 resize-none bg-transparent px-3 py-2 text-sm text-[#1f2937] outline-none placeholder:text-slate-400"
-                      onChange={(event) => setInput(event.target.value)}
-                      placeholder={getInputPlaceholder(conversationLanguage)}
-                      rows={1}
-                      maxLength={420}
-                      value={input}
-                    />
-                    <button
-                      className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#165a6e_0%,#2aa3b9_55%,#8da020_135%)] text-white shadow-[0_12px_32px_rgba(42,163,185,0.24)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
-                      disabled={!input.trim() || isTyping}
-                      type="submit"
-                    >
-                      <SendHorizontal className="h-4 w-4" />
-                    </button>
-                  </div>
-                </form>
-              </div>
-            ) : null}
+            <div className="border-t border-[#d7e6ea] bg-white/92 p-3">
+              <form
+                className="rounded-[26px] border border-[#d7e6ea] bg-[#fffdf8] p-2 shadow-[0_10px_30px_rgba(22,90,110,0.06)]"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  handleSendMessage(input);
+                }}
+              >
+                <div className="flex items-end gap-2">
+                  <textarea
+                    className="max-h-32 min-h-[52px] flex-1 resize-none bg-transparent px-3 py-2 text-sm text-[#1f2937] outline-none placeholder:text-slate-400"
+                    maxLength={420}
+                    onChange={(event) => setInput(event.target.value)}
+                    placeholder={getInputPlaceholder(conversationLanguage)}
+                    rows={1}
+                    value={input}
+                  />
+                  <button
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#165a6e_0%,#2aa3b9_55%,#8da020_135%)] text-white shadow-[0_12px_32px_rgba(42,163,185,0.24)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    disabled={!input.trim() || isTyping}
+                    type="submit"
+                  >
+                    <SendHorizontal className="h-4 w-4" />
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       ) : null}
