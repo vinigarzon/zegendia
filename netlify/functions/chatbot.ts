@@ -9,8 +9,8 @@ type NetlifyEvent = {
 };
 
 const QUICK_REPLIES: Record<ChatLanguage, string[]> = {
-  en: ["Customers", "Sales teams", "Distributors", "Request a demo"],
-  es: ["Clientes", "Vendedores", "Distribuidores", "Quiero una demo"]
+  en: ["Request a demo", "Book a meeting", "Leave my details", "Talk to Zegendia"],
+  es: ["Quiero una demo", "Agendar reunión", "Dejar mis datos", "Hablar con Zegendia"]
 };
 
 const PROGRAM_TYPE_BY_INTENT: Record<ChatLanguage, Partial<Record<ChatIntent, string>>> = {
@@ -121,6 +121,34 @@ function getMissingKeyResponse(language: ChatLanguage, intent: ChatIntent, shoul
   };
 }
 
+function getHumanHandoffResponse(language: ChatLanguage, intent: ChatIntent): ChatbotApiResponse {
+  return {
+    defaultProgramType: getDefaultProgramType(intent, language),
+    intent: "contacto",
+    language,
+    message:
+      language === "en"
+        ? "There is no live human agent in this chat. Zendi will route your request to the right person at Zegendia, and you will receive a response, follow-up, meeting, or demo within 24 hours."
+        : "No hay un humano en vivo en este chat. Zendi se encarga de enrutar tu solicitud a la persona correcta en Zegendia y recibirás respuesta, seguimiento, reunión o demo en menos de 24 horas.",
+    quickReplies: QUICK_REPLIES[language],
+    shouldOpenLeadForm: true
+  };
+}
+
+function getCommercialCloseResponse(language: ChatLanguage, intent: ChatIntent): ChatbotApiResponse {
+  return {
+    defaultProgramType: getDefaultProgramType(intent, language),
+    intent,
+    language,
+    message:
+      language === "en"
+        ? "If you want a precise recommendation, Zendi can route your request to the Zegendia team. Leave your details and you will receive a response, follow-up, meeting, or demo within 24 hours."
+        : "Si quieres una recomendación precisa, Zendi puede enrutar tu solicitud al equipo de Zegendia. Deja tus datos y recibirás respuesta, seguimiento, reunión o demo en menos de 24 horas.",
+    quickReplies: QUICK_REPLIES[language],
+    shouldOpenLeadForm: true
+  };
+}
+
 function getLimitedResponse(language: ChatLanguage, intent: ChatIntent, reason: "limit" | "scope" | "rate"): ChatbotApiResponse {
   const copy = {
     en: {
@@ -149,6 +177,12 @@ function getLimitedResponse(language: ChatLanguage, intent: ChatIntent, reason: 
     quickReplies: QUICK_REPLIES[language],
     shouldOpenLeadForm: reason !== "scope"
   };
+}
+
+function wantsHuman(message: string) {
+  return /\b(humano|persona|asesor|ejecutivo|representante|alguien|human|person|agent|representative|someone)\b/i.test(
+    message
+  );
 }
 
 function hasStrongKnowledgeMatch(message: string, language: ChatLanguage, intent: ChatIntent) {
@@ -261,6 +295,10 @@ export async function handler(event: NetlifyEvent) {
     return json(200, getLimitedResponse(language, detected.intent, "rate"));
   }
 
+  if (wantsHuman(message)) {
+    return json(200, getHumanHandoffResponse(language, detected.intent));
+  }
+
   if (userMessages >= 8) {
     return json(200, getLimitedResponse(language, detected.intent, "limit"));
   }
@@ -310,8 +348,13 @@ export async function handler(event: NetlifyEvent) {
         "Answer in Spanish when the user writes in Spanish, and in English when the user writes in English.",
         "Only answer questions about Zegendia, loyalty, rewards, points, incentives, catalogs, gift cards, integrations, countries, stock, pricing, demos, and contact requests.",
         "Use only the approved Zegendia snippets and the current conversation. Do not invent prices, timelines, discounts, exact commercial terms, legal terms, integrations, countries, or guarantees.",
-        "Keep the answer to 2-4 short sentences and ask at most one follow-up question.",
+        "Keep the answer to 2-4 short sentences.",
+        "Do not behave like a general chatbot and do not try to keep the conversation going with open-ended follow-up questions.",
+        "Do not end with questions like 'what else would you like to know?' or 'do you want to explore more?'",
+        "End most answers with a clear commercial next step: invite the user to request a demo, book a meeting, or leave their details if they need a specific recommendation.",
+        "If the user asks for a human, person, advisor, representative, agent, or someone to contact them, explain that there is no live human in chat; Zendi routes the request to the right Zegendia person and they will receive a response, follow-up, meeting, or demo within 24 hours.",
         "Set shouldOpenLeadForm true only for demo, pricing/quote, contact, speaking with someone, or clear purchase interest.",
+        "Set shouldOpenLeadForm true when the answer requires a specific review by Zegendia or when you invite the user to leave details.",
         `Use these quick replies unless there is a better set: ${QUICK_REPLIES[language].join(", ")}.`,
         `Use this defaultProgramType unless the conversation strongly suggests another: ${getDefaultProgramType(detected.intent, language)}.`,
         'Return only JSON with keys: message, language, intent, shouldOpenLeadForm, defaultProgramType, quickReplies.'
@@ -331,7 +374,17 @@ export async function handler(event: NetlifyEvent) {
 
   try {
     const data = await response.json();
-    return json(200, safeReply(JSON.parse(parseOutputText(data)), fallback));
+    const reply = safeReply(JSON.parse(parseOutputText(data)), fallback);
+
+    if (detected.shouldCaptureLead || reply.shouldOpenLeadForm) {
+      return json(200, {
+        ...reply,
+        quickReplies: QUICK_REPLIES[reply.language],
+        shouldOpenLeadForm: true
+      });
+    }
+
+    return json(200, reply);
   } catch {
     return json(200, fallback);
   }

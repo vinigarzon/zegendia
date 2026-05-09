@@ -22,16 +22,16 @@ const QUICK_REPLIES = {
     "Loyalty for customers",
     "Sales incentives",
     "Rewards catalog",
-    "Multi-country program",
-    "API integration",
+    "Book a meeting",
+    "Leave my details",
     "Request a demo"
   ],
   es: [
     "Clientes finales",
     "Vendedores",
     "Distribuidores",
-    "Catálogo de premios",
-    "Varios países",
+    "Agendar reunión",
+    "Dejar mis datos",
     "Quiero una demo"
   ]
 } as const;
@@ -74,9 +74,9 @@ const PROGRAM_TYPE_BY_INTENT: Record<ChatLanguage, Partial<Record<ChatIntent, st
 };
 
 const LEAD_CAPTURE_PATTERNS: Array<{ intent: ChatIntent; pattern: RegExp }> = [
-  { intent: "demo", pattern: /\b(quiero|solicitar|agenda|agendar|request|book)\b.*\b(demo|demostracion|demostración)\b/i },
+  { intent: "demo", pattern: /\b(quiero|solicitar|agenda|agendar|request|book)\b.*\b(demo|demostracion|demostración|reunion|reunión|meeting)\b/i },
   { intent: "precio", pattern: /\b(cotizar|cotizacion|cotización|precio|precios|pricing|quote|cost|costos)\b/i },
-  { intent: "contacto", pattern: /\b(hablar con alguien|contacten|contactarme|contact me|talk to someone|more information|mas informacion|más información|me interesa)\b/i }
+  { intent: "contacto", pattern: /\b(hablar con alguien|hablar con zegendia|dejar mis datos|contacten|contactarme|contact me|talk to someone|leave my details|more information|mas informacion|más información|me interesa|humano|asesor|ejecutivo|representante|human|agent|representative)\b/i }
 ];
 
 function createId() {
@@ -123,10 +123,10 @@ function getLeadFallbackReply(language: ChatLanguage) {
 
 function getLeadPromptReply(language: ChatLanguage) {
   if (language === "en") {
-    return "Perfect. Share your details and Zendi will route your request to the right Zegendia team.";
+    return "Perfect. Share your details and Zendi will route your request to the right Zegendia team. You will receive a response, follow-up, meeting, or demo within 24 hours.";
   }
 
-  return "Perfecto. Déjame tus datos y Zendi pasará tu solicitud al equipo indicado de Zegendia.";
+  return "Perfecto. Déjame tus datos y Zendi pasará tu solicitud al equipo indicado de Zegendia. Recibirás respuesta, seguimiento, reunión o demo en menos de 24 horas.";
 }
 
 function getLimitReply(language: ChatLanguage) {
@@ -147,10 +147,10 @@ function getInputPlaceholder(language: ChatLanguage) {
 
 function getHelpQuickReplies(language: ChatLanguage) {
   if (language === "en") {
-    return ["Customers", "Sales teams", "Distributors", "Request a demo"];
+    return ["Request a demo", "Book a meeting", "Leave my details", "Talk to Zegendia"];
   }
 
-  return ["Clientes", "Vendedores", "Distribuidores", "Quiero una demo"];
+  return ["Quiero una demo", "Agendar reunión", "Dejar mis datos", "Hablar con Zegendia"];
 }
 
 function createAssistantMessage(language: ChatLanguage): ChatMessageType {

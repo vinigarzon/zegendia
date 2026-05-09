@@ -49,7 +49,7 @@ function getCopy(language: ChatLanguage) {
       programType: "Program type",
       wantsDemo: "Would you like to see a demo?",
       save: "Send to Zegendia",
-      subtitle: "Share your details and Zendi will route your request to the right Zegendia team.",
+      subtitle: "Zendi will route your request to the right person. You will receive a response, follow-up, meeting, or demo within 24 hours.",
       title: "Let Zendi connect you"
     };
   }
@@ -66,7 +66,7 @@ function getCopy(language: ChatLanguage) {
     programType: "Tipo de programa",
     wantsDemo: "¿Quieres ver un demo?",
     save: "Enviar a Zegendia",
-    subtitle: "Deja tus datos y Zendi pasará tu solicitud al equipo indicado de Zegendia.",
+    subtitle: "Zendi enrutará tu solicitud a la persona correcta. Recibirás respuesta, seguimiento, reunión o demo en menos de 24 horas.",
     title: "Zendi te conecta"
   };
 }
