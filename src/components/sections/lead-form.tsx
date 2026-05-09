@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown, ShieldCheck } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -26,6 +27,8 @@ type FormState = {
   website: string;
 };
 
+const CONTACT_FORM_NAME = "zegendia-contact";
+
 function FieldGroup({
   children,
   label,
@@ -44,8 +47,51 @@ function FieldGroup({
   );
 }
 
+function SelectFrame({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative">
+      {children}
+      <ChevronDown
+        aria-hidden="true"
+        className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-[#165a6e]"
+      />
+    </div>
+  );
+}
+
+function encodeFormData(formData: FormData) {
+  const params = new URLSearchParams();
+
+  formData.forEach((value, key) => {
+    if (typeof value === "string") {
+      params.append(key, value);
+    }
+  });
+
+  return params.toString();
+}
+
+async function submitNetlifyVerification(formElement: HTMLFormElement) {
+  if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
+    return true;
+  }
+
+  const formData = new FormData(formElement);
+  formData.set("form-name", CONTACT_FORM_NAME);
+
+  const response = await fetch("/", {
+    body: encodeFormData(formData),
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    method: "POST"
+  });
+
+  return response.ok;
+}
+
 const selectClass =
-  "h-13 min-h-12 w-full rounded-2xl border border-white/10 bg-[#071020]/72 px-4 py-3 text-sm text-white outline-none transition focus-visible:ring-2 focus-visible:ring-[#78d5d7]/45";
+  "h-13 min-h-12 w-full appearance-none rounded-2xl border border-[#d9e7e4] bg-white px-4 py-3 pr-12 text-sm font-medium text-[#1f2937] outline-none transition placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-[#2aa3b9]/40 [color-scheme:light]";
+const inputClass =
+  "border-[#d9e7e4] bg-white text-[#1f2937] placeholder:text-slate-400 focus-visible:ring-[#2aa3b9]/40 [color-scheme:light]";
 
 const initialState = (locale: Locale): FormState => ({
   name: "",
@@ -69,6 +115,17 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
+
+    const verified = await submitNetlifyVerification(event.currentTarget).catch(() => false);
+    if (!verified) {
+      setStatus("error");
+      setMessage(
+        locale === "en"
+          ? "We could not validate the security verification. Please complete it and try again."
+          : "No pudimos validar la verificación de seguridad. Complétala e intenta de nuevo."
+      );
+      return;
+    }
 
     const response = await fetch("/api/contact", {
       body: JSON.stringify(form),
@@ -95,11 +152,22 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
   }
 
   return (
-    <form className="grid gap-5" onSubmit={handleSubmit}>
+    <form
+      action="/contact"
+      className="grid gap-5"
+      data-netlify="true"
+      data-netlify-honeypot="website"
+      data-netlify-recaptcha="true"
+      method="POST"
+      name={CONTACT_FORM_NAME}
+      onSubmit={handleSubmit}
+    >
+      <input name="form-name" type="hidden" value={CONTACT_FORM_NAME} />
       <div className="grid gap-4 md:grid-cols-2">
         <FieldGroup label={locale === "en" ? "Your name" : "Tu nombre"}>
           <Input
-            className="bg-[#071020]/72"
+            className={inputClass}
+            name="name"
             onChange={(event) => update("name", event.target.value)}
             placeholder={locale === "en" ? "Name and last name" : "Nombre y apellido"}
             required
@@ -108,7 +176,8 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
         </FieldGroup>
         <FieldGroup label={locale === "en" ? "Company" : "Empresa"}>
           <Input
-            className="bg-[#071020]/72"
+            className={inputClass}
+            name="company"
             onChange={(event) => update("company", event.target.value)}
             placeholder={locale === "en" ? "Company or brand" : "Empresa o marca"}
             required
@@ -120,7 +189,8 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <FieldGroup label="Email">
           <Input
-            className="bg-[#071020]/72"
+            className={inputClass}
+            name="email"
             onChange={(event) => update("email", event.target.value)}
             placeholder={locale === "en" ? "work@email.com" : "correo@empresa.com"}
             required
@@ -130,7 +200,8 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
         </FieldGroup>
         <FieldGroup label={locale === "en" ? "Country" : "País"}>
           <Input
-            className="bg-[#071020]/72"
+            className={inputClass}
+            name="country"
             onChange={(event) => update("country", event.target.value)}
             placeholder={locale === "en" ? "Where will the program operate?" : "¿Dónde operará el programa?"}
             required
@@ -142,62 +213,72 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
       <div className="grid gap-4 md:grid-cols-2">
         <FieldGroup label={locale === "en" ? "Phone / WhatsApp" : "Teléfono / WhatsApp"}>
           <Input
-            className="bg-[#071020]/72"
+            className={inputClass}
+            name="phone"
             onChange={(event) => update("phone", event.target.value)}
             placeholder={locale === "en" ? "+1 / +593 / +52..." : "+593 / +52 / +57..."}
             value={form.phone}
           />
         </FieldGroup>
         <FieldGroup label={locale === "en" ? "Type of company" : "Tipo de empresa"}>
-          <select
-            className={selectClass}
-            onChange={(event) => update("companyType", event.target.value)}
-            required
-            value={form.companyType}
-          >
-            <option className="bg-slate-950" value="">{locale === "en" ? "Select one" : "Selecciona una opción"}</option>
-            {formContent.companyTypes.map((type) => (
-              <option className="bg-slate-950" key={type} value={type}>
-                {type}
-              </option>
-            ))}
-          </select>
+          <SelectFrame>
+            <select
+              className={selectClass}
+              name="companyType"
+              onChange={(event) => update("companyType", event.target.value)}
+              required
+              value={form.companyType}
+            >
+              <option value="">{locale === "en" ? "Select one" : "Selecciona una opción"}</option>
+              {formContent.companyTypes.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
+              ))}
+            </select>
+          </SelectFrame>
         </FieldGroup>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <FieldGroup label={locale === "en" ? "What do you want to motivate?" : "¿Qué quieres motivar?"}>
-          <select
-            className={selectClass}
-            onChange={(event) => update("objective", event.target.value)}
-            required
-            value={form.objective}
-          >
-            <option className="bg-slate-950" value="">
-              {locale === "en" ? "Choose the closest scenario" : "Elige el escenario más cercano"}
-            </option>
-            {formContent.objectives.map((objective) => (
-              <option className="bg-slate-950" key={objective.value} value={objective.value}>
-                {objective.label}
+          <SelectFrame>
+            <select
+              className={selectClass}
+              name="objective"
+              onChange={(event) => update("objective", event.target.value)}
+              required
+              value={form.objective}
+            >
+              <option value="">
+                {locale === "en" ? "Choose the closest scenario" : "Elige el escenario más cercano"}
               </option>
-            ))}
-          </select>
+              {formContent.objectives.map((objective) => (
+                <option key={objective.value} value={objective.value}>
+                  {objective.label}
+                </option>
+              ))}
+            </select>
+          </SelectFrame>
         </FieldGroup>
 
         <FieldGroup label={locale === "en" ? "Estimated size" : "Tamaño estimado"}>
-          <select
-            className={selectClass}
-            onChange={(event) => update("size", event.target.value)}
-            required
-            value={form.size}
-          >
-            <option className="bg-slate-950" value="">{locale === "en" ? "Select size" : "Selecciona el tamaño"}</option>
-            {formContent.sizes.map((size) => (
-              <option className="bg-slate-950" key={size.value} value={size.value}>
-                {size.label}
-              </option>
-            ))}
-          </select>
+          <SelectFrame>
+            <select
+              className={selectClass}
+              name="size"
+              onChange={(event) => update("size", event.target.value)}
+              required
+              value={form.size}
+            >
+              <option value="">{locale === "en" ? "Select size" : "Selecciona el tamaño"}</option>
+              {formContent.sizes.map((size) => (
+                <option key={size.value} value={size.value}>
+                  {size.label}
+                </option>
+              ))}
+            </select>
+          </SelectFrame>
         </FieldGroup>
       </div>
 
@@ -210,7 +291,8 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
         label={locale === "en" ? "Tell us what you want to build or solve" : "Cuéntanos qué quieres construir o resolver"}
       >
         <Textarea
-          className="min-h-40 bg-[#071020]/72"
+          className={`min-h-40 ${inputClass}`}
+          name="message"
           onChange={(event) => update("message", event.target.value)}
           placeholder={
             locale === "en"
@@ -224,14 +306,17 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
 
       <div className="grid gap-4 rounded-[26px] border border-white/10 bg-white/[0.035] p-4 md:grid-cols-[1fr_auto] md:items-center">
         <FieldGroup label={locale === "en" ? "Preferred language" : "Idioma preferido"}>
-          <select
-            className={selectClass}
-            onChange={(event) => update("preferredLanguage", event.target.value as Locale)}
-            value={form.preferredLanguage}
-          >
-            <option className="bg-slate-950" value="es">Español</option>
-            <option className="bg-slate-950" value="en">English</option>
-          </select>
+          <SelectFrame>
+            <select
+              className={selectClass}
+              name="preferredLanguage"
+              onChange={(event) => update("preferredLanguage", event.target.value as Locale)}
+              value={form.preferredLanguage}
+            >
+              <option value="es">Español</option>
+              <option value="en">English</option>
+            </select>
+          </SelectFrame>
         </FieldGroup>
         <div className="text-sm leading-6 text-slate-400 md:max-w-xs">
           {locale === "en"
@@ -248,17 +333,24 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
         value={form.website}
       />
 
-      <div className="rounded-[28px] border border-dashed border-white/10 bg-[#071020]/38 p-4">
-        <div className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500">
-          {locale === "en"
-            ? "Security verification"
-            : "Verificación de seguridad"}
+      <div className="rounded-[28px] border border-dashed border-[#2aa3b9]/30 bg-[#f7fbf2] p-4 text-[#1f2937]">
+        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#165a6e]">
+          <ShieldCheck className="h-4 w-4 text-[#8da020]" />
+          {locale === "en" ? "Security verification" : "Verificación de seguridad"}
         </div>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">
+        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
           {locale === "en"
             ? "Before sending, we may ask for a quick verification to protect the form."
             : "Antes de enviar, podremos pedir una verificación rápida para proteger el formulario."}
         </p>
+        <div className="mt-4 min-h-[78px] rounded-2xl border border-[#d9e7e4] bg-white p-3">
+          <div data-netlify-recaptcha="true" />
+          <div className="text-xs leading-5 text-slate-500">
+            {locale === "en"
+              ? "The verifier will appear here when Netlify serves the production form."
+              : "El verificador aparecerá aquí cuando Netlify sirva el formulario en producción."}
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-[#071020]/58 p-4 sm:flex-row sm:items-center sm:justify-between">

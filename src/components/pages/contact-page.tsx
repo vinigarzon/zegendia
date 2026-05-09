@@ -314,6 +314,30 @@ export async function ContactPage({ locale }: { locale: Locale }) {
                 {locale === "en" ? "Secure lead capture" : "Lead seguro"}
               </div>
             </div>
+            <form
+              aria-hidden="true"
+              className="hidden"
+              data-netlify="true"
+              data-netlify-honeypot="website"
+              data-netlify-recaptcha="true"
+              hidden
+              method="POST"
+              name="zegendia-contact"
+            >
+              <input name="form-name" type="hidden" value="zegendia-contact" />
+              <input name="name" type="text" />
+              <input name="company" type="text" />
+              <input name="email" type="email" />
+              <input name="country" type="text" />
+              <input name="phone" type="text" />
+              <input name="companyType" type="text" />
+              <input name="objective" type="text" />
+              <input name="size" type="text" />
+              <input name="preferredLanguage" type="text" />
+              <input name="website" type="text" />
+              <textarea name="message" />
+              <div data-netlify-recaptcha="true" />
+            </form>
             <LeadForm formContent={site.contact.form} locale={locale} />
           </div>
         </div>
