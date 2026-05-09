@@ -2,13 +2,13 @@ import Fuse from "fuse.js";
 
 import knowledgeBaseJson from "../../content/chatbot/knowledge-base.json";
 
-import { normalizeText } from "lib/chatbot/intentDetector";
+import { normalizeText } from "./intentDetector";
 import type {
   ChatIntent,
   ChatLanguage,
   KnowledgeBaseEntry,
   SearchKnowledgeBaseResult
-} from "types/chat";
+} from "../../types/chat";
 
 const knowledgeBase = knowledgeBaseJson as KnowledgeBaseEntry[];
 

@@ -1,4 +1,4 @@
-import type { ChatIntent, ChatLanguage, DetectedIntent } from "types/chat";
+import type { ChatIntent, ChatLanguage, DetectedIntent } from "../../types/chat";
 
 const INTENT_KEYWORDS: Record<ChatIntent, string[]> = {
   general: [

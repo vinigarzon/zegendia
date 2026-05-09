@@ -4,6 +4,8 @@ import { getSeedCaseStudies } from "@/lib/content";
 import { getAllBlogPosts } from "@/lib/blog";
 import { absoluteUrl } from "@/lib/utils";
 
+export const dynamic = "force-static";
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [postsEs, postsEn, casesEs, casesEn] = await Promise.all([
     getAllBlogPosts("es"),

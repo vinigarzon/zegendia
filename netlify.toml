@@ -1,9 +1,31 @@
 [build]
   command = "pnpm build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "22"
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/chatbot"
+  to = "/.netlify/functions/chatbot"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/api/contact"
+  to = "/.netlify/functions/contact"
+  status = 200
+  force = true
+
+[[redirects]]
+  from = "/es"
+  to = "/"
+  status = 301
+
+[[redirects]]
+  from = "/es/*"
+  to = "/:splat"
+  status = 301
