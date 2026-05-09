@@ -333,7 +333,7 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
         value={form.website}
       />
 
-      <div className="min-h-[92px] rounded-[28px] border border-[#d9e7e4] bg-white p-4">
+      <div className="min-h-[78px]">
         <div data-netlify-recaptcha="true" />
       </div>
 
