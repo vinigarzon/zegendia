@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown, ShieldCheck } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -333,24 +333,8 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
         value={form.website}
       />
 
-      <div className="rounded-[28px] border border-dashed border-[#2aa3b9]/30 bg-[#f7fbf2] p-4 text-[#1f2937]">
-        <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-[#165a6e]">
-          <ShieldCheck className="h-4 w-4 text-[#8da020]" />
-          {locale === "en" ? "Security verification" : "Verificación de seguridad"}
-        </div>
-        <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-600">
-          {locale === "en"
-            ? "Before sending, we may ask for a quick verification to protect the form."
-            : "Antes de enviar, podremos pedir una verificación rápida para proteger el formulario."}
-        </p>
-        <div className="mt-4 min-h-[78px] rounded-2xl border border-[#d9e7e4] bg-white p-3">
-          <div data-netlify-recaptcha="true" />
-          <div className="text-xs leading-5 text-slate-500">
-            {locale === "en"
-              ? "The verifier will appear here when Netlify serves the production form."
-              : "El verificador aparecerá aquí cuando Netlify sirva el formulario en producción."}
-          </div>
-        </div>
+      <div className="min-h-[92px] rounded-[28px] border border-[#d9e7e4] bg-white p-4">
+        <div data-netlify-recaptcha="true" />
       </div>
 
       <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-[#071020]/58 p-4 sm:flex-row sm:items-center sm:justify-between">

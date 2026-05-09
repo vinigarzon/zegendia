@@ -305,13 +305,10 @@ export async function ContactPage({ locale }: { locale: Locale }) {
 
           <div className="relative overflow-hidden rounded-[40px] border border-white/10 bg-white/[0.045] p-5 sm:p-7">
             <div className="absolute inset-x-0 top-0 h-px bg-[linear-gradient(90deg,#e44c44,#2e636b,#549c24,#3d284c)]" />
-            <div className="mb-7 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div className="mb-7">
               <div>
                 <div className="section-kicker section-kicker--cyan">{site.contact.form.title}</div>
                 <p className="max-w-3xl text-base leading-8 text-slate-300">{site.contact.form.description}</p>
-              </div>
-              <div className="rounded-full border border-white/10 bg-white/[0.035] px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
-                {locale === "en" ? "Secure lead capture" : "Lead seguro"}
               </div>
             </div>
             <form
