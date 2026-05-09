@@ -1,0 +1,24 @@
+<svg width="800" height="960" viewBox="0 0 800 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="960" rx="48" fill="#08101F"/>
+  <rect width="800" height="960" rx="48" fill="url(#bg)"/>
+  <circle cx="606" cy="166" r="150" fill="#3D284C" fill-opacity=".2"/>
+  <circle cx="174" cy="792" r="202" fill="#2E636B" fill-opacity=".18"/>
+  <path d="M92 164H708" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="2"/>
+  <path d="M92 198H520" stroke="#FFFFFF" stroke-opacity=".05" stroke-width="2"/>
+  <circle cx="400" cy="352" r="108" fill="#D9B79F"/>
+  <path d="M278 346C278 268 334 214 400 214C466 214 522 268 522 346V402H278V346Z" fill="#222931"/>
+  <path d="M250 772C250 626 319 548 400 548C481 548 550 626 550 772V834H250V772Z" fill="#D9E5EF"/>
+  <path d="M216 824C216 686 298 604 400 604C502 604 584 686 584 824V874H216V824Z" fill="#485061"/>
+  <path d="M330 404C342 456 368 492 400 492C432 492 458 456 470 404H330Z" fill="#D0AC92"/>
+  <rect x="84" y="84" width="154" height="42" rx="21" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <text x="161" y="111" fill="#C59FE2" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="3">LIMA</text>
+  <text x="84" y="902" fill="white" font-family="Arial, sans-serif" font-size="34" font-weight="700">Andrés Vega</text>
+  <text x="84" y="936" fill="#B8C1D5" font-family="Arial, sans-serif" font-size="20">Engineering Lead</text>
+  <defs>
+    <linearGradient id="bg" x1="104" y1="70" x2="694" y2="898" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#122136"/>
+      <stop offset=".56" stop-color="#09101F"/>
+      <stop offset="1" stop-color="#1A1524"/>
+    </linearGradient>
+  </defs>
+</svg>

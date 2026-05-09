@@ -1,0 +1,24 @@
+<svg width="800" height="960" viewBox="0 0 800 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="960" rx="48" fill="#08101F"/>
+  <rect width="800" height="960" rx="48" fill="url(#bg)"/>
+  <circle cx="625" cy="156" r="142" fill="#E44C44" fill-opacity=".18"/>
+  <circle cx="178" cy="810" r="188" fill="#3D284C" fill-opacity=".24"/>
+  <path d="M90 164H710" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="2"/>
+  <path d="M90 198H520" stroke="#FFFFFF" stroke-opacity=".05" stroke-width="2"/>
+  <circle cx="400" cy="350" r="110" fill="#F3C0B7"/>
+  <path d="M278 344C278 267 336 214 400 214C464 214 522 267 522 344V401H278V344Z" fill="#35263B"/>
+  <path d="M260 770C260 624 324 540 400 540C476 540 540 624 540 770V830H260V770Z" fill="#E9D3CF"/>
+  <path d="M228 816C228 670 306 586 400 586C494 586 572 670 572 816V870H228V816Z" fill="#C86F67"/>
+  <path d="M328 400C340 452 365 488 400 488C435 488 460 452 472 400H328Z" fill="#EDB9AF"/>
+  <rect x="84" y="84" width="164" height="42" rx="21" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <text x="166" y="111" fill="#FFB0AA" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="3">BOGOTÁ</text>
+  <text x="84" y="902" fill="white" font-family="Arial, sans-serif" font-size="34" font-weight="700">Valentina Rojas</text>
+  <text x="84" y="936" fill="#B8C1D5" font-family="Arial, sans-serif" font-size="20">Loyalty Strategy</text>
+  <defs>
+    <linearGradient id="bg" x1="96" y1="80" x2="700" y2="904" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#131F34"/>
+      <stop offset=".54" stop-color="#0A1224"/>
+      <stop offset="1" stop-color="#1D1627"/>
+    </linearGradient>
+  </defs>
+</svg>

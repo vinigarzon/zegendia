@@ -1,0 +1,24 @@
+<svg width="800" height="960" viewBox="0 0 800 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="960" rx="48" fill="#08101F"/>
+  <rect width="800" height="960" rx="48" fill="url(#bg)"/>
+  <circle cx="610" cy="172" r="154" fill="#2E636B" fill-opacity=".18"/>
+  <circle cx="174" cy="794" r="198" fill="#549C24" fill-opacity=".14"/>
+  <path d="M92 164H708" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="2"/>
+  <path d="M92 198H500" stroke="#FFFFFF" stroke-opacity=".05" stroke-width="2"/>
+  <circle cx="400" cy="354" r="108" fill="#F1C8B1"/>
+  <path d="M282 348C282 272 338 216 400 216C462 216 518 272 518 348V404H282V348Z" fill="#473038"/>
+  <path d="M252 774C252 628 320 550 400 550C480 550 548 628 548 774V836H252V774Z" fill="#E7E9F2"/>
+  <path d="M220 824C220 684 300 604 400 604C500 604 580 684 580 824V874H220V824Z" fill="#496B7A"/>
+  <path d="M330 404C342 456 367 490 400 490C433 490 458 456 470 404H330Z" fill="#E8BDA7"/>
+  <rect x="84" y="84" width="184" height="42" rx="21" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <text x="176" y="111" fill="#78D5D7" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="3">SÃO PAULO</text>
+  <text x="84" y="902" fill="white" font-family="Arial, sans-serif" font-size="34" font-weight="700">Mariana Costa</text>
+  <text x="84" y="936" fill="#B8C1D5" font-family="Arial, sans-serif" font-size="20">Product Lead</text>
+  <defs>
+    <linearGradient id="bg" x1="98" y1="72" x2="702" y2="902" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#112034"/>
+      <stop offset=".58" stop-color="#091221"/>
+      <stop offset="1" stop-color="#132428"/>
+    </linearGradient>
+  </defs>
+</svg>

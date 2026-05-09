@@ -1,0 +1,222 @@
+[
+  {
+    "id": "what-is-zegendia",
+    "intent": "general",
+    "title": "What is Zegendia?",
+    "keywords": ["zegendia", "loyalty", "programa de lealtad", "fidelizacion", "recompensas"],
+    "answer_es": "Zegendia ayuda a empresas a crear programas de lealtad, recompensas e incentivos para clientes, vendedores, distribuidores, colaboradores y comunidades comerciales.",
+    "answer_en": "Zegendia helps companies create loyalty, rewards, and incentive programs for customers, sales teams, distributors, employees, and business communities.",
+    "follow_up_es": "¿Quieres fidelizar clientes, vendedores, distribuidores o colaboradores?",
+    "follow_up_en": "Are you looking to engage customers, sales teams, distributors, or employees?"
+  },
+  {
+    "id": "points-program",
+    "intent": "puntos",
+    "title": "Points programs",
+    "keywords": ["puntos", "programa de puntos", "points", "wallet", "earn points", "acumular puntos"],
+    "answer_es": "Podemos ayudarte a diseñar programas de puntos donde las personas acumulan, consultan y canjean puntos con reglas adaptadas a tu negocio.",
+    "answer_en": "We can help you design points programs where users earn, check, and redeem points with rules tailored to your business.",
+    "follow_up_es": "Si quieres, te muestro cómo se adapta para clientes, fuerza comercial o distribuidores.",
+    "follow_up_en": "If you want, I can show you how it adapts for customers, sales teams, or distributors."
+  },
+  {
+    "id": "rewards-catalog",
+    "intent": "recompensas",
+    "title": "Rewards catalog",
+    "keywords": ["recompensas", "rewards", "catalogo", "catalog", "redemption", "canje"],
+    "answer_es": "Zegendia puede operar catálogos de recompensas con productos físicos, experiencias, gift cards y beneficios digitales según el objetivo del programa.",
+    "answer_en": "Zegendia can operate rewards catalogs with physical products, experiences, gift cards, and digital benefits depending on the program goal.",
+    "follow_up_es": "¿Te interesa un catálogo para clientes, colaboradores o canales comerciales?",
+    "follow_up_en": "Are you interested in a catalog for customers, employees, or channel partners?"
+  },
+  {
+    "id": "prizes-logistics",
+    "intent": "premios",
+    "title": "Prize fulfillment",
+    "keywords": ["premios", "premios fisicos", "fulfillment", "delivery", "logistica", "envios"],
+    "answer_es": "Si tu reto es operar premios, Zegendia puede centralizar catálogo, proveedores, entregas y seguimiento para que tu equipo no tenga que manejar la operación manualmente.",
+    "answer_en": "If your challenge is prize fulfillment, Zegendia can centralize the catalog, providers, deliveries, and tracking so your team does not need to run the operation manually.",
+    "follow_up_es": "¿Tu prioridad es ampliar el catálogo o simplificar la operación?",
+    "follow_up_en": "Is your priority expanding the catalog or simplifying operations?"
+  },
+  {
+    "id": "gift-cards",
+    "intent": "gift_cards",
+    "title": "Gift cards",
+    "keywords": ["gift card", "gift cards", "giftcard", "tarjetas regalo", "bonos digitales", "vales"],
+    "answer_es": "También podemos integrar gift cards y beneficios digitales como parte de un catálogo de recompensas o de una campaña puntual.",
+    "answer_en": "We can also include gift cards and digital benefits as part of a rewards catalog or a targeted campaign.",
+    "follow_up_es": "¿Buscas gift cards como premio, incentivo o parte de una estrategia omnicanal?",
+    "follow_up_en": "Are you looking for gift cards as rewards, incentives, or part of an omnichannel strategy?"
+  },
+  {
+    "id": "sales-incentives",
+    "intent": "vendedores",
+    "title": "Sales incentives",
+    "keywords": ["vendedores", "seller", "sales incentives", "fuerza comercial", "ventas", "incentivos vendedores"],
+    "answer_es": "Zegendia puede apoyar programas para motivar vendedores con metas, acumulación de puntos, rankings, campañas e incentivos ligados a desempeño.",
+    "answer_en": "Zegendia can support programs that motivate sales teams with goals, point earning, leaderboards, campaigns, and performance-based incentives.",
+    "follow_up_es": "¿Quieres motivar ventas, adopción de portafolio o comportamiento comercial?",
+    "follow_up_en": "Do you want to drive sales, portfolio adoption, or specific commercial behaviors?"
+  },
+  {
+    "id": "distributors-programs",
+    "intent": "distribuidores",
+    "title": "Distributor and channel programs",
+    "keywords": ["distribuidores", "distributors", "canal", "channel partners", "dealer", "mayoristas"],
+    "answer_es": "También podemos estructurar programas para distribuidores y canales, con reglas por compras, cobertura, mix de portafolio o activaciones comerciales.",
+    "answer_en": "We can also structure programs for distributors and channels, with rules based on purchases, coverage, portfolio mix, or commercial activations.",
+    "follow_up_es": "¿Tu caso está más cerca de distribuidores, subdistribuidores o retailers?",
+    "follow_up_en": "Is your case closer to distributors, sub-distributors, or retailers?"
+  },
+  {
+    "id": "b2c-loyalty",
+    "intent": "clientes_b2c",
+    "title": "B2C loyalty",
+    "keywords": ["clientes b2c", "clientes finales", "consumidores", "b2c", "shoppers", "retail customers"],
+    "answer_es": "Para B2C, Zegendia puede ayudarte a construir experiencias de fidelización que incentiven recurrencia, ticket promedio y relación de largo plazo.",
+    "answer_en": "For B2C, Zegendia can help you build loyalty experiences that encourage repeat behavior, larger baskets, and long-term relationships.",
+    "follow_up_es": "¿Quieres aumentar frecuencia, recompra o engagement con tu marca?",
+    "follow_up_en": "Do you want to increase purchase frequency, repeat behavior, or engagement with your brand?"
+  },
+  {
+    "id": "b2b-loyalty",
+    "intent": "clientes_b2b",
+    "title": "B2B loyalty",
+    "keywords": ["clientes b2b", "compradores", "buyers", "business customers", "corporate accounts", "b2b"],
+    "answer_es": "Para B2B, el enfoque suele combinar incentivos por compra, cumplimiento de metas, adopción de líneas estratégicas y visibilidad del desempeño comercial.",
+    "answer_en": "For B2B, the approach usually combines purchase incentives, target achievement, strategic line adoption, and visibility into commercial performance.",
+    "follow_up_es": "¿Buscas activar compras recurrentes, mix de portafolio o relación con cuentas clave?",
+    "follow_up_en": "Are you looking to drive repeat purchases, portfolio mix, or key-account engagement?"
+  },
+  {
+    "id": "employee-engagement",
+    "intent": "empleados",
+    "title": "Employee engagement",
+    "keywords": ["empleados", "employees", "colaboradores", "staff", "recognition", "employee rewards"],
+    "answer_es": "Zegendia también puede apoyar programas para colaboradores, con reconocimiento, incentivos, campañas internas y catálogos de premios.",
+    "answer_en": "Zegendia can also support employee programs with recognition, incentives, internal campaigns, and reward catalogs.",
+    "follow_up_es": "¿Quieres reconocimiento, bienestar, campañas internas o incentivos por desempeño?",
+    "follow_up_en": "Do you need recognition, wellbeing, internal campaigns, or performance incentives?"
+  },
+  {
+    "id": "api-integration",
+    "intent": "api",
+    "title": "API integration",
+    "keywords": ["api", "integracion api", "integration", "webhook", "crm", "erp", "sdk"],
+    "answer_es": "Zegendia puede integrarse con sistemas existentes para conectar acumulación, canje, catálogos o eventos comerciales, según el alcance del proyecto.",
+    "answer_en": "Zegendia can integrate with existing systems to connect earning, redemption, catalogs, or business events depending on project scope.",
+    "follow_up_es": "Si quieres, puedo orientarte sobre integraciones con ecommerce, CRM, ERP o apps existentes.",
+    "follow_up_en": "If you want, I can guide you through integrations with ecommerce, CRM, ERP, or existing apps."
+  },
+  {
+    "id": "ecommerce-connection",
+    "intent": "ecommerce",
+    "title": "Ecommerce integration",
+    "keywords": ["ecommerce", "shopify", "woocommerce", "magento", "checkout", "tienda online"],
+    "answer_es": "Podemos conectar la experiencia de lealtad o recompensas con un ecommerce para que puntos, beneficios o premios formen parte de la experiencia de compra.",
+    "answer_en": "We can connect loyalty or rewards with ecommerce so points, benefits, or prizes become part of the purchase journey.",
+    "follow_up_es": "¿Estás pensando en integrar catálogo, checkout, wallet o campañas promocionales?",
+    "follow_up_en": "Are you thinking about integrating a catalog, checkout, wallet, or promotional campaigns?"
+  },
+  {
+    "id": "request-demo",
+    "intent": "demo",
+    "title": "Request a demo",
+    "keywords": ["demo", "quiero una demo", "request a demo", "book a demo", "agendar demo"],
+    "answer_es": "Podemos coordinar una demo comercial para entender tu caso y mostrarte la ruta más relevante según tu audiencia, operación e integraciones.",
+    "answer_en": "We can arrange a commercial demo to understand your case and show the most relevant route based on your audience, operations, and integrations.",
+    "follow_up_es": "Si quieres, puedo tomar tus datos para que el equipo te contacte.",
+    "follow_up_en": "If you want, I can take your details so the team can contact you."
+  },
+  {
+    "id": "pricing-model",
+    "intent": "precio",
+    "title": "Pricing",
+    "keywords": ["precio", "pricing", "cost", "costo", "quote", "cotizar", "presupuesto"],
+    "answer_es": "Zegendia no maneja un precio único para todos los casos. El alcance depende del tipo de programa, países, integraciones, operación y volumen esperado.",
+    "answer_en": "Zegendia does not use one fixed price for every case. Scope depends on the program type, countries, integrations, operations, and expected volume.",
+    "follow_up_es": "Si quieres cotizar, lo mejor es que el equipo revise tu caso y te oriente con una propuesta adecuada.",
+    "follow_up_en": "If you need pricing, the best next step is for the team to review your case and guide you with the right proposal."
+  },
+  {
+    "id": "no-stock-needed",
+    "intent": "stock",
+    "title": "Do I need stock or inventory?",
+    "keywords": ["stock", "inventario", "inventory", "warehouse", "bodega", "comprar premios"],
+    "answer_es": "En muchos escenarios no necesitas comprar stock por adelantado. Zegendia puede ayudarte a operar catálogos y premios sin que tu equipo gestione inventario propio.",
+    "answer_en": "In many scenarios, you do not need to buy stock in advance. Zegendia can help operate catalogs and rewards without your team managing its own inventory.",
+    "follow_up_es": "¿Tu dolor principal es inventario, entregas o variedad del catálogo?",
+    "follow_up_en": "Is your main pain point inventory, deliveries, or catalog variety?"
+  },
+  {
+    "id": "countries-coverage",
+    "intent": "paises",
+    "title": "Countries and LATAM coverage",
+    "keywords": ["paises", "countries", "latam", "mexico", "colombia", "ecuador", "peru", "chile", "cobertura"],
+    "answer_es": "Zegendia trabaja con enfoque regional en LATAM. La cobertura específica puede variar según el tipo de premio, logística e integración requerida.",
+    "answer_en": "Zegendia works with a LATAM regional approach. Specific coverage can vary depending on the reward type, logistics, and required integrations.",
+    "follow_up_es": "Si quieres, dime en qué países operas y te indico si ese escenario suele encajar.",
+    "follow_up_en": "If you want, tell me which countries you operate in and I can tell you whether that scenario usually fits."
+  },
+  {
+    "id": "contact-team",
+    "intent": "contacto",
+    "title": "Talk to the team",
+    "keywords": ["contacto", "contact", "hablar con alguien", "contact me", "whatsapp", "telefono", "sales"],
+    "answer_es": "Si prefieres hablar con alguien del equipo, puedo tomar tus datos para que Zegendia te contacte con más contexto.",
+    "answer_en": "If you prefer to speak with someone on the team, I can take your details so Zegendia can follow up with better context.",
+    "follow_up_es": "Cuando quieras, abrimos el formulario y dejamos tu interés registrado.",
+    "follow_up_en": "Whenever you are ready, we can open the form and capture your interest."
+  },
+  {
+    "id": "catalog-flexibility",
+    "intent": "premios",
+    "title": "Catalog flexibility",
+    "keywords": ["catalogo flexible", "marketplace", "flexibilidad", "premios digitales", "premios fisicos", "experiencias"],
+    "answer_es": "El catálogo puede combinar distintos tipos de recompensas para ajustarse a cada audiencia y objetivo del programa.",
+    "answer_en": "The catalog can combine different reward types so it fits each audience and program objective.",
+    "follow_up_es": "¿Quieres enfocarte en variedad, velocidad operativa o percepción de valor?",
+    "follow_up_en": "Do you want to focus on variety, operating speed, or perceived value?"
+  },
+  {
+    "id": "implementation-scope",
+    "intent": "general",
+    "title": "Implementation scope",
+    "keywords": ["implementacion", "implementation", "timeline", "tiempo", "rollout", "alcance"],
+    "answer_es": "El tiempo y alcance de implementación dependen del programa, integraciones, países y nivel de personalización. Por eso conviene revisar cada caso antes de prometer tiempos exactos.",
+    "answer_en": "Implementation timing and scope depend on the program, integrations, countries, and level of customization. That is why each case should be reviewed before promising exact timelines.",
+    "follow_up_es": "Si compartes tu escenario, puedo orientarte sobre el tipo de despliegue que normalmente requiere.",
+    "follow_up_en": "If you share your scenario, I can guide you on the type of rollout it usually requires."
+  },
+  {
+    "id": "reporting-analytics",
+    "intent": "general",
+    "title": "Reporting and analytics",
+    "keywords": ["reportes", "analytics", "dashboards", "medicion", "tracking", "insights"],
+    "answer_es": "Estos programas suelen requerir visibilidad sobre actividad, canjes, campañas y desempeño, para poder medir impacto y optimizar la estrategia.",
+    "answer_en": "These programs usually require visibility into activity, redemptions, campaigns, and performance so the strategy can be measured and optimized.",
+    "follow_up_es": "¿Te interesa más medir comportamiento, ventas o adopción del programa?",
+    "follow_up_en": "Are you more interested in measuring behavior, sales, or program adoption?"
+  },
+  {
+    "id": "security-sensitive-data",
+    "intent": "api",
+    "title": "Sensitive data and security",
+    "keywords": ["seguridad", "security", "datos sensibles", "sensitive data", "compliance", "privacy"],
+    "answer_es": "Esta primera versión del chatbot debe operar solo con información pública o aprobada para exposición. No conviene cargar datos sensibles ni reglas comerciales confidenciales en la base local.",
+    "answer_en": "This first chatbot version should only use public or approved information. Sensitive data or confidential business rules should not be loaded into the local knowledge base.",
+    "follow_up_es": "Si luego quieren una versión más inteligente, se puede diseñar una capa segura con permisos y control de contexto.",
+    "follow_up_en": "If you later want a smarter version, we can design a secure layer with permissions and context control."
+  },
+  {
+    "id": "custom-rules",
+    "intent": "general",
+    "title": "Custom business rules",
+    "keywords": ["reglas", "business rules", "customizacion", "personalizacion", "segmentacion", "campaign logic"],
+    "answer_es": "Zegendia suele adaptarse mejor cuando el programa necesita reglas de negocio, segmentación, campañas o audiencias distintas dentro de un mismo marco operativo.",
+    "answer_en": "Zegendia is especially useful when the program needs business rules, segmentation, campaigns, or different audiences inside one operating framework.",
+    "follow_up_es": "¿Tu programa necesita algo estándar o una lógica más personalizada?",
+    "follow_up_en": "Does your program need something standard or more customized?"
+  }
+]

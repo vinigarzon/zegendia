@@ -1,0 +1,387 @@
+{
+  "meta": {
+    "siteName": "Zegendia",
+    "defaultTitle": "Zegendia | Loyalty and rewards systems for Latin America",
+    "defaultDescription": "Zegendia designs loyalty, rewards, gamification, and fulfillment systems for customers, teams, channels, and communities across Latin America.",
+    "shortTagline": "The new loyalty infrastructure for LATAM.",
+    "localeLabel": "EN"
+  },
+  "nav": [
+    { "label": "Home", "href": "/en" },
+    { "label": "About", "href": "/en/about" },
+    { "label": "Products", "href": "/en/products" },
+    { "label": "Case Studies", "href": "/en/case-studies" },
+    { "label": "Blog", "href": "/en/blog" },
+    { "label": "Contact", "href": "/en/contact" }
+  ],
+  "footer": {
+    "description": "We build loyalty, incentive, and rewards systems with regional execution, operational discipline, and technology built for growth.",
+    "columns": [
+      {
+        "title": "Explore",
+        "links": [
+          { "label": "Home", "href": "/en" },
+          { "label": "Products", "href": "/en/products" },
+          { "label": "Oh My Rewards", "href": "https://app.ohmyrewards.com" },
+          { "label": "PuntosPlus", "href": "https://puntosplus.com" }
+        ]
+      },
+      {
+        "title": "Portfolio",
+        "links": [
+          { "label": "About", "href": "/en/about" },
+          { "label": "Case studies", "href": "/en/case-studies" },
+          { "label": "Club Santa Lucía", "href": "/en/case-studies/club-santa-lucia" },
+          { "label": "Blog", "href": "/en/blog" },
+          { "label": "Contact", "href": "/en/contact" }
+        ]
+      }
+    ],
+    "contactCards": [
+      {
+        "market": "Panama",
+        "detail": ["Street Punta Colon, 43th Floor", "Panama City", "+507 833 7327", "info@zegendia.com"]
+      },
+      {
+        "market": "Mexico",
+        "detail": ["Av. Cuauhtémoc 1040, CDMX", "Torre Acora, 03020", "+52 55 8526 3044", "mexico@zegendia.com"]
+      },
+      {
+        "market": "United States",
+        "detail": ["110 North Wacker Drive", "Chicago, IL 60606", "+1 312 820 4788", "us@zegendia.com"]
+      },
+      {
+        "market": "LATAM coverage",
+        "detail": ["Physical and digital rewards across Latin America.", "We coordinate providers, delivery, support, and reconciliation under one regional model.", "Coverage adapts by country, reward category, and each program’s operating scope."]
+      }
+    ],
+    "legal": "© Zegendia. Loyalty programs, rewards fulfillment, and software for Latin America."
+  },
+  "common": {
+    "primaryCta": "Build my loyalty program",
+    "secondaryCta": "Explore Oh My Rewards",
+    "tertiaryCta": "Explore PuntosPlus",
+    "languageToggle": "Español",
+    "blogLabel": "Blog",
+    "caseStudiesLabel": "Case studies",
+    "productsLabel": "Products",
+    "contactLabel": "Contact"
+  },
+  "home": {
+    "seo": {
+      "title": "Zegendia | Loyalty, rewards, and fulfillment for Latin America",
+      "description": "We design loyalty programs, incentive platforms, and regional rewards fulfillment for customers, teams, channels, and communities across LATAM."
+    },
+    "hero": {
+      "eyebrow": "Zegendia ecosystem",
+      "headline": "The new loyalty infrastructure for LATAM.",
+      "subheadline": "Zegendia builds loyalty, rewards, gamification, and fulfillment systems for customers, companies, channels, teams, and communities across Latin America.",
+      "ctas": [
+        { "label": "Build my loyalty program", "href": "/en/contact" },
+        { "label": "Open Oh My Rewards", "href": "https://app.ohmyrewards.com" },
+        { "label": "Go to PuntosPlus", "href": "https://puntosplus.com" }
+      ],
+      "proofStrip": [
+        "20+ years of experience",
+        "Regional LATAM coverage",
+        "B2B, B2C, and employee programs",
+        "Physical and digital rewards"
+      ],
+      "spotlight": {
+        "title": "Three layers, one regional operation",
+        "text": "Custom design, fast-launch software, and rewards fulfillment connected inside the same ecosystem."
+      }
+    },
+    "positioning": {
+      "eyebrow": "Audiences we can activate",
+      "title": "We design loyalty, incentives, and rewards for multiple audiences.",
+      "text": "Whether you want to increase repeat behavior, drive commercial volume, reward performance, or strengthen engagement, Zegendia can turn that behavior into an operational, measurable, and scalable experience.",
+      "panelTitle": "Customers, channels, teams, and communities inside the same framework.",
+      "panelText": "One ecosystem can adapt to B2C programs, B2B models, commercial channels, sales forces, employees, partners, and verticals with very different needs.",
+      "audiences": [
+        "B2C customers",
+        "B2B buyers",
+        "Distributors and resellers",
+        "Sales teams",
+        "Employees and partners",
+        "Communities and influencers",
+        "Banks, retailers, and fintechs"
+      ]
+    },
+    "productCards": [
+      {
+        "name": "Zegendia Core",
+        "title": "Custom loyalty ecosystems",
+        "description": "Strategy, technology, campaigns, gamification, rewards, and operations for companies that need a loyalty model built around their business.",
+        "href": "/en/products",
+        "eyebrow": "Tailored loyalty"
+      },
+      {
+        "name": "Oh My Rewards",
+        "title": "Regional rewards fulfillment through one API",
+        "description": "Connect your existing loyalty stack and deliver mobile top-ups, gift cards, and physical rewards in LATAM without managing stock, couriers, or country-by-country integrations.",
+        "href": "https://app.ohmyrewards.com",
+        "eyebrow": "API + fulfillment"
+      },
+      {
+        "name": "PuntosPlus",
+        "title": "Launch a program in minutes",
+        "description": "The loyalty operating system for SMEs and growth-stage companies that want to motivate customers, buyers, teams, or channels without technical complexity.",
+        "href": "https://puntosplus.com",
+        "eyebrow": "Loyalty software"
+      }
+    ],
+    "selector": {
+      "eyebrow": "Interactive selector",
+      "title": "Who do you need to incentivize?",
+      "description": "Pick your audience and we will point you to the most logical entry point inside the Zegendia ecosystem.",
+      "options": {
+        "customers": {
+          "label": "Customers",
+          "recommendedProduct": "PuntosPlus or Zegendia Core",
+          "explanation": "If you need a complete loyalty program with points, tiers, promotions, and rewards, start with PuntosPlus or ask for a tailored build."
+        },
+        "buyers": {
+          "label": "B2B buyers",
+          "recommendedProduct": "Zegendia Core",
+          "explanation": "B2B loyalty usually needs more commercial logic, validations, catalogs, and reporting. That is where Zegendia Core leads."
+        },
+        "distributors": {
+          "label": "Distributors",
+          "recommendedProduct": "Zegendia Core + Oh My Rewards",
+          "explanation": "We can design the program and also operate regional reward delivery with visibility, support, and monthly reconciliation."
+        },
+        "sales": {
+          "label": "Sales teams",
+          "recommendedProduct": "PuntosPlus or Zegendia Core",
+          "explanation": "From simple incentives to advanced target engines, streaks, and rankings, the ecosystem adapts to the size of your operation."
+        },
+        "employees": {
+          "label": "Employees",
+          "recommendedProduct": "PuntosPlus or Zegendia Core",
+          "explanation": "Recognition, anniversaries, internal campaigns, and physical or digital rewards with regional tracking."
+        },
+        "communities": {
+          "label": "Communities",
+          "recommendedProduct": "Zegendia Core",
+          "explanation": "When motivation depends on engagement, reputation, and experience design, a more customized path usually makes more sense."
+        },
+        "existing": {
+          "label": "Existing loyalty users",
+          "recommendedProduct": "Oh My Rewards",
+          "explanation": "If you already have points, cashback, or loyalty and only need real rewards in LATAM, one API is the cleanest path."
+        }
+      }
+    },
+    "flow": {
+      "eyebrow": "The Zegendia ecosystem",
+      "title": "Behavior → rules → currency → rewards → delivery → measurement",
+      "steps": [
+        "Define the audience and the behavior you want to move.",
+        "Configure rules, currencies, controls, and experiences.",
+        "Connect catalogs, rewards, fulfillment, and tracking.",
+        "Measure redemption, repeat behavior, activation, and business value."
+      ]
+    },
+    "latam": {
+      "eyebrow": "Regional coverage",
+      "title": "Real rewards across LATAM.",
+      "text": "Zegendia works with regional providers, catalogs, and delivery capabilities so your program does not rely on an improvised chain in every market.",
+      "countries": ["Mexico", "Guatemala", "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama", "Dominican Republic", "Colombia", "Venezuela", "Ecuador", "Peru", "Bolivia", "Brazil", "Paraguay", "Chile", "Argentina", "Uruguay"]
+    },
+    "ai": {
+      "eyebrow": "AI + loyalty",
+      "title": "We use AI where it adds operational and commercial clarity.",
+      "bullets": [
+        "Catalog classification and intelligent curation.",
+        "Duplicate and inconsistency detection.",
+        "Audience-aware reward recommendations.",
+        "Behavior and engagement insights.",
+        "Progressive segmentation and personalization.",
+        "Predictive signals for retention campaigns."
+      ]
+    },
+    "stats": [
+      { "label": "Years of experience", "value": "20+" },
+      { "label": "Corporate clients served", "value": "500+" },
+      { "label": "LATAM markets covered", "value": "20" }
+    ],
+    "cta": {
+      "title": "We design loyalty programs for very different business models.",
+      "text": "If there is a behavior you want to motivate, we can turn it into rules, benefits, rewards, and measurable operations, from growing companies to organizations with regional scale.",
+      "primary": { "label": "Talk to Zegendia", "href": "/en/contact" },
+      "secondary": { "label": "See the portfolio", "href": "/en/case-studies" }
+    }
+  },
+  "about": {
+    "seo": {
+      "title": "About | Zegendia",
+      "description": "Discover Zegendia's evolution: real loyalty experience, regional reward operations, and a new SaaS vision for Latin America."
+    },
+    "hero": {
+      "eyebrow": "Who we are",
+      "title": "Real experience in loyalty, rewards, and regional operations.",
+      "text": "Zegendia was built from execution: programs, catalogs, integrations, fulfillment, campaigns, and support across multiple Latin American markets."
+    },
+    "story": [
+      "For years, Zegendia helped brands turn customers and employees into fans through loyalty programs, gamification, rewards catalogs, and gift cards.",
+      "That operational work created a difficult advantage to replicate: understanding how programs behave in the real world, where they break, how to scale logistics, and what users expect when they redeem a reward.",
+      "Today that experience is organized into three connected lines: Zegendia Core for custom projects, Oh My Rewards for regional rewards fulfillment, and PuntosPlus as the loyalty operating system for LATAM."
+    ],
+    "highlights": [
+      { "label": "Years building programs", "value": "20+" },
+      { "label": "Corporate clients", "value": "500+" },
+      { "label": "LATAM markets", "value": "20" }
+    ],
+    "capabilityIntro": {
+      "eyebrow": "How we operate",
+      "title": "Zegendia's edge is not only software. It is the combination of strategy, operations, and regional execution.",
+      "text": "We design loyalty models for complex realities: multiple audiences, commercial rules, physical and digital rewards, local providers, integrations, and operational follow-through."
+    },
+    "capabilities": [
+      {
+        "title": "Program design with real business logic",
+        "text": "We structure programs for customers, channels, teams, distributors, or communities with rules tied to measurable commercial objectives."
+      },
+      {
+        "title": "Regional rewards and fulfillment operations",
+        "text": "We coordinate catalogs, providers, deliveries, support, and reconciliation so the redemption promise actually works across LATAM."
+      },
+      {
+        "title": "Product, APIs, and integrations",
+        "text": "We connect loyalty engines to CRM, POS, ecommerce, fintech, or internal systems without losing visibility or speed."
+      },
+      {
+        "title": "Account management and program growth",
+        "text": "We support activation, adoption, campaigns, engagement, and program evolution with both operational and commercial discipline."
+      }
+    ],
+    "timeline": [
+      {
+        "year": "2010s",
+        "title": "Custom regional programs",
+        "text": "Experience across B2C, employee loyalty, benefits, catalogs, and delivery for recognized brands in the region."
+      },
+      {
+        "year": "2020s",
+        "title": "Operational maturity and rewards expansion",
+        "text": "More focus on fulfillment, integration, provider management, and multi-country rewards operations."
+      },
+      {
+        "year": "Now",
+        "title": "New ecosystem: Core + Oh My Rewards + PuntosPlus",
+        "text": "The same experience translated into a clearer architecture: consulting and custom builds, a regional API, and a SaaS layer built to operate loyalty in LATAM."
+      }
+    ],
+    "team": {
+      "eyebrow": "LATAM team",
+      "title": "A distributed regional team built to design, operate, and scale loyalty in real market conditions.",
+      "text": "Our team brings together strategy, product, technology, rewards operations, and client leadership to support loyalty programs with regional discipline and consistent execution across LATAM markets.",
+      "members": [
+        {
+          "name": "Valentina Rojas",
+          "role": "Regional Director of Loyalty Strategy",
+          "location": "Bogotá, Colombia",
+          "focus": "Program architecture, segmentation, value proposition, and loyalty journey design for enterprise accounts.",
+          "image": "/images/team/valentina-rojas.png"
+        },
+        {
+          "name": "Tomás Herrera",
+          "role": "Head of Rewards Operations",
+          "location": "Mexico City, Mexico",
+          "focus": "Catalogs, providers, SLAs, regional reconciliation, and the daily operation of physical and digital rewards.",
+          "image": "/images/team/tomas-herrera.png"
+        },
+        {
+          "name": "Mariana Costa",
+          "role": "Product Lead, PuntosPlus",
+          "location": "São Paulo, Brazil",
+          "focus": "SaaS roadmap, rule configuration, admin experience, and the evolution of the loyalty operating system.",
+          "image": "/images/team/mariana-costa.png"
+        },
+        {
+          "name": "Andrés Vega",
+          "role": "Engineering Lead, Integrations",
+          "location": "Lima, Peru",
+          "focus": "APIs, webhooks, security, and integrations with CRM, POS, ecommerce, and fintech systems across the region.",
+          "image": "/images/team/andres-vega.png"
+        },
+        {
+          "name": "Sofía Navarro",
+          "role": "Client Success & Program Growth",
+          "location": "Santiago, Chile",
+          "focus": "Onboarding, performance reviews, account expansion, and sustained program adoption by client teams.",
+          "image": "/images/team/sofia-navarro.png"
+        },
+        {
+          "name": "Camila Ortega",
+          "role": "Gamification & Campaign Design Manager",
+          "location": "Quito, Ecuador",
+          "focus": "Promotions, engagement mechanics, behavior-based activations, and campaign communication systems.",
+          "image": "/images/team/camila-ortega.png"
+        }
+      ]
+    }
+  },
+  "contact": {
+    "seo": {
+      "title": "Contact | Zegendia",
+      "description": "Tell us which audience you want to motivate and we will recommend the best mix of Zegendia Core, Oh My Rewards, or PuntosPlus."
+    },
+    "hero": {
+      "eyebrow": "Let's talk",
+      "title": "Tell us what you want to move and we’ll tell you where to start.",
+      "text": "We can help you launch a full loyalty program, operate a regional rewards catalog, or connect your current system to real rewards across Latin America."
+    },
+    "introCards": [
+      {
+        "title": "What we do now",
+        "lines": [
+          "Custom programs",
+          "Rewards fulfillment through one API",
+          "SaaS architecture for PuntosPlus"
+        ]
+      },
+      {
+        "title": "What we need from you",
+        "lines": [
+          "Audience you want to motivate",
+          "Countries where you operate",
+          "Organization size",
+          "Whether you already have a program running"
+        ]
+      }
+    ],
+    "form": {
+      "title": "Let's design your next loyalty system",
+      "description": "Complete the form and we’ll recommend the most logical path: PuntosPlus, Zegendia Core, or Oh My Rewards.",
+      "objectives": [
+        { "label": "Customers", "value": "customers" },
+        { "label": "B2B buyers", "value": "buyers" },
+        { "label": "Distributors", "value": "distributors" },
+        { "label": "Sales team", "value": "sales" },
+        { "label": "Employees", "value": "employees" },
+        { "label": "Community", "value": "community" },
+        { "label": "I already have a loyalty program", "value": "existing-loyalty" },
+        { "label": "I only need rewards fulfillment", "value": "fulfillment-only" },
+        { "label": "Other", "value": "other" }
+      ],
+      "sizes": [
+        { "label": "Small business", "value": "small-business" },
+        { "label": "Growing company", "value": "growing-company" },
+        { "label": "Enterprise", "value": "enterprise" },
+        { "label": "Bank / fintech / telco / retailer", "value": "regulated-enterprise" }
+      ],
+      "companyTypes": ["Retail", "CPG", "Distribution", "Fintech", "Bank", "Insurance", "Telco", "Healthcare", "Education", "Other"],
+      "successMessage": "Thank you. We received your request and the Zegendia team will reply shortly.",
+      "errorMessage": "We could not send your request. Please try again in a few minutes."
+    }
+  },
+  "admin": {
+    "loginTitle": "Admin login",
+    "loginDescription": "Simple protected access for blog management and lead review.",
+    "dashboardTitle": "Zegendia dashboard",
+    "postsTitle": "Blog management",
+    "leadsTitle": "Captured leads"
+  }
+}

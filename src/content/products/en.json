@@ -1,0 +1,190 @@
+{
+  "overview": {
+    "seo": {
+      "title": "Products | Zegendia",
+      "description": "Meet the Zegendia ecosystem: tailored loyalty, regional rewards fulfillment through Oh My Rewards, and PuntosPlus as loyalty software for LATAM."
+    },
+    "hero": {
+      "eyebrow": "Product ecosystem",
+      "title": "Three connected product lines to build, operate, and scale loyalty across Latin America.",
+      "text": "Not every company needs the same path. Some need a custom loyalty program. Others already have points and only need rewards delivery. Others want to launch fast without code. Zegendia covers all three realities."
+    },
+    "cards": [
+      {
+        "name": "Zegendia Core",
+        "status": "Tailored loyalty",
+        "headline": "Strategic design + technology + operations",
+        "description": "Built for banks, telcos, retailers, B2B industries, and any program where commercial logic, integration, and regional rollout truly matter.",
+        "bullets": [
+          "Program design and loyalty architecture",
+          "Gamification, campaigns, and segmentation",
+          "Rewards, catalogs, fulfillment, and support",
+          "Regional integrations and program operations"
+        ]
+      },
+      {
+        "name": "Oh My Rewards",
+        "status": "API + fulfillment",
+        "headline": "Your regional reward delivery engine",
+        "description": "For companies that already have a loyalty stack, app, or points system, but need a clean way to deliver physical and digital rewards across LATAM.",
+        "bullets": [
+          "One REST API and one contract",
+          "Regional catalog with local providers",
+          "Tracking, tickets, and consolidated billing",
+          "Built for banks, fintechs, loyalty apps, and CRM rewards"
+        ]
+      },
+      {
+        "name": "PuntosPlus",
+        "status": "Loyalty software",
+        "headline": "The loyalty operating system for LATAM",
+        "description": "A multi-tenant SaaS layer to launch loyalty, incentive, and engagement programs in under 30 minutes, starting at around US$29/month.",
+        "bullets": [
+          "Made for SMEs and growth-stage companies",
+          "Universal participant model",
+          "No-code configuration",
+          "Built from real loyalty cases"
+        ]
+      }
+    ],
+    "comparison": [
+      { "label": "You need a full custom loyalty program", "recommended": "Zegendia Core" },
+      { "label": "You already have loyalty and only need rewards fulfillment", "recommended": "Oh My Rewards" },
+      { "label": "You want to launch fast with an accessible budget", "recommended": "PuntosPlus" }
+    ]
+  },
+  "ohMyRewards": {
+    "seo": {
+      "title": "Oh My Rewards | Rewards API for Latin America",
+      "description": "Oh My Rewards by Zegendia is a B2B rewards fulfillment platform for LATAM: one API, one regional catalog, tracking, support, and consolidated billing."
+    },
+    "hero": {
+      "eyebrow": "Oh My Rewards by Zegendia",
+      "title": "Real rewards across LATAM, through one API.",
+      "text": "If you already run loyalty, cashback, bank rewards, CRM rewards, or internal incentives, we become your regional reward delivery engine."
+    },
+    "pillars": [
+      {
+        "title": "One API, one contract, one regional catalog",
+        "text": "Integrate once and avoid the operational mess of handling providers, stock, couriers, and reconciliation country by country."
+      },
+      {
+        "title": "Real operations, not just a nice catalog",
+        "text": "We manage local providers, deliveries, tracking, support, retries, incidents, and monthly consolidated billing."
+      },
+      {
+        "title": "Designed for loyalty and fintech ecosystems",
+        "text": "Works for banks, retailers, telcos, insurers, fintechs, loyalty apps, CRM rewards, and incentive programs."
+      }
+    ],
+    "features": [
+      "Multi-country catalog with physical products, gift cards, and mobile top-ups",
+      "Dynamic catalog selection by country, category, subcategory, or brand",
+      "Points vs. USD model so your program controls its own reward economy",
+      "Tenant portal with dashboard, orders, reports, invoices, users, and roles",
+      "REST API with API Key, signed webhooks, sandbox, and OpenAPI documentation",
+      "Order tracking, operational statuses, guides, carriers, and support tickets",
+      "Monthly consolidated billing with line-by-line order detail",
+      "Real-time notifications for new orders, status changes, and alerts",
+      "Managed delivery with primary providers, backup providers, and operations monitoring",
+      "Price checker, AI categorization, duplicate detection, and image validation",
+      "Security with Row-Level Security, rotatable API keys, and change auditing",
+      "Transparent FX rates and shipping costs by country and subcategory"
+    ],
+    "categories": [
+      "Mobile top-ups",
+      "Digital gift cards",
+      "Physical products",
+      "Premium rewards",
+      "Employee incentives",
+      "Technology",
+      "Home",
+      "Beauty",
+      "Sports",
+      "Toys",
+      "Fashion",
+      "Appliances",
+      "Automotive"
+    ],
+    "countries": ["Mexico", "Guatemala", "Honduras", "El Salvador", "Nicaragua", "Costa Rica", "Panama", "Dominican Republic", "Colombia", "Venezuela", "Ecuador", "Peru", "Bolivia", "Brazil", "Paraguay", "Chile", "Argentina", "Uruguay"],
+    "developerBlocks": [
+      {
+        "title": "For product and engineering teams",
+        "text": "Clean endpoints, a sandbox, webhook events, and an operating model designed for apps, banking systems, ecommerce loyalty, or CRM reward workflows."
+      },
+      {
+        "title": "For operations and finance",
+        "text": "Consolidated billing, order-level visibility, centralized support, and better multi-country reconciliation."
+      }
+    ],
+    "cta": {
+      "title": "If your loyalty program already exists, we deliver the reward.",
+      "text": "You do not need to rebuild your program. You need a regional execution layer that can keep the redemption promise.",
+      "primary": { "label": "Open platform", "href": "https://app.ohmyrewards.com" },
+      "secondary": { "label": "Talk API", "href": "/en/contact" }
+    }
+  },
+  "puntosPlus": {
+    "seo": {
+      "title": "PuntosPlus | Loyalty software for LATAM",
+      "description": "PuntosPlus is Zegendia’s loyalty operating system for launching loyalty, incentives, points, rewards, gamification, and engagement programs in LATAM without code."
+    },
+    "hero": {
+      "eyebrow": "PuntosPlus",
+      "title": "Motivate anything. Any way. Any time.",
+      "text": "PuntosPlus is the loyalty operating system for LATAM: a configurable engine to launch points, incentives, rewards, gamification, and engagement programs in less than 30 minutes."
+    },
+    "highlights": [
+      "From US$29/month",
+      "Launch in 30 minutes",
+      "No-code setup",
+      "Universal participant",
+      "B2C, B2B, channels, teams, employees, and communities"
+    ],
+    "primitives": [
+      { "name": "Audience", "description": "Who you want to motivate: customers, buyers, teams, employees, or partners." },
+      { "name": "Behavior", "description": "What action you want to move: buy, return, refer, learn, or sell more." },
+      { "name": "Currency", "description": "What gets accumulated: points, coins, credits, stars, or internal cashback." },
+      { "name": "Rule", "description": "How value is earned, lost, or multiplied." },
+      { "name": "Reward", "description": "What can be redeemed: physical rewards, digital rewards, perks, or benefits." },
+      { "name": "Control", "description": "What limits, approvals, and anti-fraud rules you need." },
+      { "name": "Experience", "description": "How the user lives the program: portal, app, campaigns, messaging, and gamification." },
+      { "name": "Measurement", "description": "How you know it is working: activation, redemption, repeat behavior, and ROI." }
+    ],
+    "whoFor": [
+      "B2C customers across retail, restaurants, gyms, and ecommerce",
+      "B2B buyers, distributors, resellers, dealers, and franchisees",
+      "Internal sales teams, external sellers, and promoters",
+      "Employees, teams, HR areas, and culture programs",
+      "Communities, referrers, influencers, allies, and affiliates"
+    ],
+    "plans": [
+      {
+        "name": "Starter",
+        "price": "From US$29/month",
+        "items": ["1 active template", "1 currency", "Base portal", "Initial digital marketplace"]
+      },
+      {
+        "name": "Pro",
+        "price": "US$79/month",
+        "items": ["Up to 3 templates", "5 branches", "Gamification", "POS/ecommerce integrations"]
+      },
+      {
+        "name": "Business",
+        "price": "US$199/month",
+        "items": ["Unlimited templates", "Physical catalog + marketplace", "Custom domain", "Priority support"]
+      },
+      {
+        "name": "Enterprise",
+        "price": "Custom",
+        "items": ["Multi-country", "SSO", "SLA", "Integrations and dedicated manager"]
+      }
+    ],
+    "cta": {
+      "title": "Built from real cases, not from theory.",
+      "text": "PuntosPlus comes from years of operating loyalty programs across the region. That is why it does not begin as a generic app, but as a system designed for real LATAM business conditions.",
+      "primary": { "label": "Go to PuntosPlus", "href": "https://puntosplus.com" },
+      "secondary": { "label": "See applied cases", "href": "/en/case-studies" }
+    }
+  }
+}

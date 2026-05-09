@@ -1,0 +1,24 @@
+<svg width="800" height="960" viewBox="0 0 800 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="960" rx="48" fill="#08101F"/>
+  <rect width="800" height="960" rx="48" fill="url(#bg)"/>
+  <circle cx="610" cy="166" r="152" fill="#549C24" fill-opacity=".15"/>
+  <circle cx="176" cy="792" r="198" fill="#3D284C" fill-opacity=".18"/>
+  <path d="M92 164H708" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="2"/>
+  <path d="M92 198H500" stroke="#FFFFFF" stroke-opacity=".05" stroke-width="2"/>
+  <circle cx="400" cy="350" r="108" fill="#F2C6AF"/>
+  <path d="M280 346C280 266 338 208 400 208C462 208 520 266 520 346V404H280V346Z" fill="#2A2633"/>
+  <path d="M252 774C252 628 321 548 400 548C479 548 548 628 548 774V838H252V774Z" fill="#ECE4DD"/>
+  <path d="M220 824C220 684 300 602 400 602C500 602 580 684 580 824V876H220V824Z" fill="#5B506B"/>
+  <path d="M330 404C342 456 366 490 400 490C434 490 458 456 470 404H330Z" fill="#E5B79C"/>
+  <rect x="84" y="84" width="160" height="42" rx="21" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <text x="164" y="111" fill="#B7E78C" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="3">QUITO</text>
+  <text x="84" y="902" fill="white" font-family="Arial, sans-serif" font-size="34" font-weight="700">Camila Ortega</text>
+  <text x="84" y="936" fill="#B8C1D5" font-family="Arial, sans-serif" font-size="20">Campaign Design</text>
+  <defs>
+    <linearGradient id="bg" x1="96" y1="72" x2="700" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#112034"/>
+      <stop offset=".56" stop-color="#091120"/>
+      <stop offset="1" stop-color="#1B1725"/>
+    </linearGradient>
+  </defs>
+</svg>

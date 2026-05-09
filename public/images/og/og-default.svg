@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
+  <rect width="1200" height="630" fill="#071021"/>
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="974" cy="111" r="143" fill="#4BE7FF" fill-opacity=".16"/>
+  <circle cx="974" cy="111" r="143" fill="url(#orb)" fill-opacity=".24"/>
+  <circle cx="207" cy="520" r="130" fill="#E75CFF" fill-opacity=".12"/>
+  <path d="M124 109H403L187 321H465" stroke="url(#logo)" stroke-linecap="round" stroke-linejoin="round" stroke-width="28"/>
+  <text fill="#ffffff" font-family="Arial, sans-serif" font-size="72" font-weight="700" x="115" y="404">Zegendia</text>
+  <text fill="#C7D2FE" font-family="Arial, sans-serif" font-size="34" x="118" y="456">Loyalty for anyone you need to motivate.</text>
+  <text fill="#7DD3FC" font-family="Arial, sans-serif" font-size="24" letter-spacing="7" x="118" y="513">LOYALTY • REWARDS • FULFILLMENT • LATAM</text>
+  <defs>
+    <linearGradient id="bg" x1="58" x2="1146" y1="24" y2="615" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#081224"/>
+      <stop offset=".47" stop-color="#0B1630"/>
+      <stop offset="1" stop-color="#0C1C33"/>
+    </linearGradient>
+    <linearGradient id="logo" x1="124" x2="495" y1="109" y2="343" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4BE7FF"/>
+      <stop offset=".52" stop-color="#57C2FF"/>
+      <stop offset="1" stop-color="#E75CFF"/>
+    </linearGradient>
+    <radialGradient id="orb" cx="0" cy="0" r="1" gradientTransform="translate(974 111) rotate(90) scale(143)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#4BE7FF"/>
+      <stop offset="1" stop-color="#4BE7FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+</svg>

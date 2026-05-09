@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" fill="none">
+  <rect width="1200" height="800" fill="#081224"/>
+  <rect width="1200" height="800" fill="url(#bg)"/>
+  <path d="M191 557C191 537.67 206.67 522 226 522H420C439.33 522 455 537.67 455 557V617C455 636.33 439.33 652 420 652H226C206.67 652 191 636.33 191 617V557Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+  <path d="M744 238C744 218.67 759.67 203 779 203H973C992.33 203 1008 218.67 1008 238V298C1008 317.33 992.33 333 973 333H779C759.67 333 744 317.33 744 298V238Z" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.16)"/>
+  <path d="M283 400H915" stroke="url(#line)" stroke-dasharray="10 10" stroke-width="6"/>
+  <path d="M343 364C343 330.86 369.86 304 403 304H796C829.14 304 856 330.86 856 364V464C856 497.14 829.14 524 796 524H403C369.86 524 343 497.14 343 464V364Z" fill="rgba(9,20,38,0.78)" stroke="rgba(107,231,255,0.22)"/>
+  <circle cx="600" cy="404" r="126" fill="url(#core)" fill-opacity=".24"/>
+  <circle cx="600" cy="404" r="77" fill="#0E1D34" stroke="rgba(111,231,255,0.5)"/>
+  <text fill="#D9FBFF" font-family="Arial, sans-serif" font-size="26" font-weight="700" letter-spacing="4" x="565" y="394">1 pt</text>
+  <text fill="#7DD3FC" font-family="Arial, sans-serif" font-size="18" x="548" y="423">= US$1</text>
+  <text fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="700" x="225" y="564">PANADERÍAS</text>
+  <text fill="#A5B4FC" font-family="Arial, sans-serif" font-size="16" x="225" y="592">Compras de harina e insumos</text>
+  <text fill="#ffffff" font-family="Arial, sans-serif" font-size="22" font-weight="700" x="776" y="246">REWARDS</text>
+  <text fill="#A5B4FC" font-family="Arial, sans-serif" font-size="16" x="776" y="274">Premios físicos + soporte</text>
+  <text fill="#ffffff" font-family="Arial, sans-serif" font-size="48" font-weight="700" x="112" y="136">Club Santa Lucía</text>
+  <text fill="#7DD3FC" font-family="Arial, sans-serif" font-size="22" x="114" y="178">B2B bakery loyalty platform for Ecuador</text>
+  <text fill="#D1D5DB" font-family="Arial, sans-serif" font-size="18" x="114" y="230">Portal • promociones • POS • logística • fraude • reporting</text>
+  <defs>
+    <linearGradient id="bg" x1="58" x2="1098" y1="49" y2="736" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0A142A"/>
+      <stop offset=".52" stop-color="#0B1A31"/>
+      <stop offset="1" stop-color="#0E1830"/>
+    </linearGradient>
+    <linearGradient id="core" x1="474" x2="737" y1="279" y2="535" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#47E4FF"/>
+      <stop offset=".55" stop-color="#34D399"/>
+      <stop offset="1" stop-color="#F97316"/>
+    </linearGradient>
+    <linearGradient id="line" x1="283" x2="915" y1="400" y2="400" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#47E4FF"/>
+      <stop offset="1" stop-color="#E75CFF"/>
+    </linearGradient>
+  </defs>
+</svg>

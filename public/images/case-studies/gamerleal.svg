@@ -1,0 +1,17 @@
+<svg width="1200" height="800" viewBox="0 0 1200 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="800" fill="#071021"/>
+  <circle cx="250" cy="150" r="180" fill="#3D284C" fill-opacity="0.9"/>
+  <circle cx="920" cy="180" r="140" fill="#2E636B" fill-opacity="0.8"/>
+  <circle cx="950" cy="640" r="210" fill="#549C24" fill-opacity="0.18"/>
+  <circle cx="180" cy="620" r="220" fill="#E44C44" fill-opacity="0.18"/>
+  <rect x="278" y="216" width="644" height="368" rx="68" fill="#0D1B32" stroke="#2E636B" stroke-width="4"/>
+  <rect x="334" y="272" width="532" height="256" rx="40" fill="#081221" stroke="#3D284C" stroke-width="2"/>
+  <path d="M442 366H520V394H442V470H414V394H336V366H414V290H442V366Z" fill="#E44C44"/>
+  <circle cx="710" cy="342" r="32" fill="#549C24"/>
+  <circle cx="786" cy="418" r="32" fill="#2E636B"/>
+  <circle cx="786" cy="342" r="20" fill="#E44C44"/>
+  <circle cx="710" cy="418" r="20" fill="#9BE15B"/>
+  <path d="M430 596C505 630 578 646 658 646C744 646 820 628 886 596" stroke="#2E636B" stroke-width="4" stroke-linecap="round"/>
+  <text x="600" y="690" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="96" font-weight="700">GamerLeal</text>
+  <text x="600" y="742" text-anchor="middle" fill="#9DE1E3" font-family="Arial, sans-serif" font-size="28" letter-spacing="8">LOYALTY FOR DIGITAL COMMUNITIES</text>
+</svg>

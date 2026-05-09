@@ -1,0 +1,24 @@
+<svg width="800" height="960" viewBox="0 0 800 960" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="800" height="960" rx="48" fill="#08101F"/>
+  <rect width="800" height="960" rx="48" fill="url(#bg)"/>
+  <circle cx="612" cy="172" r="156" fill="#549C24" fill-opacity=".17"/>
+  <circle cx="170" cy="788" r="202" fill="#2E636B" fill-opacity=".22"/>
+  <path d="M92 164H708" stroke="#FFFFFF" stroke-opacity=".08" stroke-width="2"/>
+  <path d="M92 198H538" stroke="#FFFFFF" stroke-opacity=".05" stroke-width="2"/>
+  <circle cx="400" cy="356" r="108" fill="#DAB397"/>
+  <path d="M282 346C282 276 334 224 400 224C466 224 518 276 518 346V402H282V346Z" fill="#1F2831"/>
+  <path d="M252 768C252 622 320 548 400 548C480 548 548 622 548 768V832H252V768Z" fill="#CCE2DB"/>
+  <path d="M220 820C220 680 300 600 400 600C500 600 580 680 580 820V872H220V820Z" fill="#5B7C68"/>
+  <path d="M332 404C344 454 368 490 400 490C432 490 456 454 468 404H332Z" fill="#D4AB8D"/>
+  <rect x="84" y="84" width="198" height="42" rx="21" fill="#FFFFFF" fill-opacity=".06" stroke="#FFFFFF" stroke-opacity=".08"/>
+  <text x="183" y="111" fill="#B7E78C" font-family="Arial, sans-serif" font-size="18" text-anchor="middle" letter-spacing="3">CIUDAD DE MÉXICO</text>
+  <text x="84" y="902" fill="white" font-family="Arial, sans-serif" font-size="34" font-weight="700">Tomás Herrera</text>
+  <text x="84" y="936" fill="#B8C1D5" font-family="Arial, sans-serif" font-size="20">Rewards Operations</text>
+  <defs>
+    <linearGradient id="bg" x1="100" y1="76" x2="694" y2="894" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#112034"/>
+      <stop offset=".56" stop-color="#0A1224"/>
+      <stop offset="1" stop-color="#121E1A"/>
+    </linearGradient>
+  </defs>
+</svg>
