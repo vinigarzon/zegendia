@@ -189,6 +189,15 @@ function detectLeadCaptureIntent(message: string): ChatIntent | null {
   return match?.intent ?? null;
 }
 
+function formatConversationTranscript(messages: ChatMessageType[]) {
+  return messages
+    .map((message) => {
+      const speaker = message.role === "assistant" ? "Zendi" : "Usuario";
+      return `[${speaker}] ${message.content}`;
+    })
+    .join("\n\n");
+}
+
 async function getBotReply(
   message: string,
   fallbackLanguage: ChatLanguage,
@@ -361,6 +370,9 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
         phone: values.phone,
         preferredLanguage: conversationLanguage,
         size: "not-specified",
+        transcript: formatConversationTranscript(messages),
+        triggerIntent: leadIntent,
+        wantsDemo: values.wantsDemo,
         website: ""
       }),
       headers: {
