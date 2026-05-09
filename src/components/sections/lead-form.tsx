@@ -24,10 +24,24 @@ type FormState = {
   size: string;
   message: string;
   preferredLanguage: Locale;
+  securityA: string;
+  securityAnswer: string;
+  securityB: string;
   website: string;
 };
 
 const CONTACT_FORM_NAME = "zegendia-contact";
+
+function createSecurityChallenge() {
+  const a = Math.floor(Math.random() * 7) + 3;
+  const b = Math.floor(Math.random() * 6) + 2;
+
+  return {
+    securityA: String(a),
+    securityAnswer: "",
+    securityB: String(b)
+  };
+}
 
 function FieldGroup({
   children,
@@ -71,7 +85,7 @@ function encodeFormData(formData: FormData) {
   return params.toString();
 }
 
-async function submitNetlifyVerification(formElement: HTMLFormElement) {
+async function submitNetlifyFormCopy(formElement: HTMLFormElement) {
   if (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1") {
     return true;
   }
@@ -104,6 +118,7 @@ const initialState = (locale: Locale): FormState => ({
   size: "",
   message: "",
   preferredLanguage: locale,
+  ...createSecurityChallenge(),
   website: ""
 });
 
@@ -116,16 +131,18 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
     event.preventDefault();
     setStatus("loading");
 
-    const verified = await submitNetlifyVerification(event.currentTarget).catch(() => false);
-    if (!verified) {
+    const expectedAnswer = Number(form.securityA) + Number(form.securityB);
+    if (Number(form.securityAnswer) !== expectedAnswer) {
       setStatus("error");
       setMessage(
         locale === "en"
-          ? "We could not validate the security verification. Please complete it and try again."
-          : "No pudimos validar la verificación de seguridad. Complétala e intenta de nuevo."
+          ? "Please complete the human verification before sending."
+          : "Completa la verificación humana antes de enviar."
       );
       return;
     }
+
+    await submitNetlifyFormCopy(event.currentTarget).catch(() => null);
 
     const response = await fetch("/api/contact", {
       body: JSON.stringify(form),
@@ -157,7 +174,6 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
       className="grid gap-5"
       data-netlify="true"
       data-netlify-honeypot="website"
-      data-netlify-recaptcha="true"
       method="POST"
       name={CONTACT_FORM_NAME}
       onSubmit={handleSubmit}
@@ -327,14 +343,46 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
 
       <input
         className="hidden"
+        name="securityA"
+        readOnly
+        value={form.securityA}
+      />
+      <input
+        className="hidden"
+        name="securityB"
+        readOnly
+        value={form.securityB}
+      />
+      <input
+        className="hidden"
         name="website"
         onChange={(event) => update("website", event.target.value)}
         tabIndex={-1}
         value={form.website}
       />
 
-      <div className="min-h-[78px]">
-        <div data-netlify-recaptcha="true" />
+      <div className="rounded-[28px] border border-[#d9e7e4] bg-white p-4 text-[#1f2937]">
+        <div className="grid gap-3 sm:grid-cols-[1fr_220px] sm:items-center">
+          <div>
+            <div className="text-xs font-semibold uppercase tracking-[0.18em] text-[#165a6e]">
+              {locale === "en" ? "Human check" : "Verificación humana"}
+            </div>
+            <p className="mt-1 text-sm leading-6 text-slate-500">
+              {locale === "en"
+                ? `Solve ${form.securityA} + ${form.securityB} to continue.`
+                : `Resuelve ${form.securityA} + ${form.securityB} para continuar.`}
+            </p>
+          </div>
+          <Input
+            className={inputClass}
+            inputMode="numeric"
+            name="securityAnswer"
+            onChange={(event) => update("securityAnswer", event.target.value)}
+            placeholder={`${form.securityA} + ${form.securityB} = ?`}
+            required
+            value={form.securityAnswer}
+          />
+        </div>
       </div>
 
       <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-[#071020]/58 p-4 sm:flex-row sm:items-center sm:justify-between">

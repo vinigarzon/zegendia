@@ -32,6 +32,9 @@ type ContactPayload = {
   };
   phone?: string;
   preferredLanguage?: "es" | "en";
+  securityA?: string;
+  securityAnswer?: string;
+  securityB?: string;
   sessionId?: string;
   size?: string;
   suggestedSolution?: string;
@@ -41,6 +44,10 @@ type ContactPayload = {
   wantsDemo?: "yes" | "no" | "not_sure";
   website?: string;
 };
+
+const CONTACT_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
+const CONTACT_RATE_LIMIT_MAX = 10;
+const contactRateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
 function json(statusCode: number, body: unknown) {
   return {
@@ -116,6 +123,19 @@ function getIp(event: NetlifyEvent) {
   );
 }
 
+function isRateLimited(key: string) {
+  const now = Date.now();
+  const current = contactRateLimitStore.get(key);
+
+  if (!current || current.resetAt <= now) {
+    contactRateLimitStore.set(key, { count: 1, resetAt: now + CONTACT_RATE_LIMIT_WINDOW_MS });
+    return false;
+  }
+
+  current.count += 1;
+  return current.count > CONTACT_RATE_LIMIT_MAX;
+}
+
 function createId() {
   return `lead-${Date.now()}-${Math.round(Math.random() * 100000)}`;
 }
@@ -184,6 +204,7 @@ export async function handler(event: NetlifyEvent) {
   const email = String(payload.email || "").trim();
   const country = String(payload.country || "").trim();
   const message = String(payload.message || "").trim();
+  const companyType = String(payload.companyType || "").trim();
   const preferredLanguage = payload.preferredLanguage === "en" ? "en" : "es";
   const pageContext = payload.pageContext || {};
   const sessionId = String(payload.sessionId || pageContext.sessionId || "").trim();
@@ -196,14 +217,44 @@ export async function handler(event: NetlifyEvent) {
   const intentLevel = String(payload.intentLevel || "medium").trim();
   const loyaltyTarget = String(payload.loyaltyTarget || "").trim();
   const createdAt = new Date().toISOString();
+  const ip = getIp(event);
+
+  if (isRateLimited(ip)) {
+    return json(429, {
+      message:
+        preferredLanguage === "en"
+          ? "Too many requests. Please wait a moment and try again."
+          : "Demasiadas solicitudes. Espera un momento e intenta de nuevo."
+    });
+  }
 
   if (name.length < 2 || company.length < 2 || country.length < 2 || !isEmail(email) || message.length < 10) {
     return json(400, { message: "Please complete all required fields." });
   }
 
+  if (companyType !== "chatbot") {
+    const expectedSecurityAnswer = Number(payload.securityA) + Number(payload.securityB);
+    const providedSecurityAnswer = Number(payload.securityAnswer);
+
+    if (
+      !payload.securityA ||
+      !payload.securityB ||
+      !payload.securityAnswer ||
+      !Number.isFinite(expectedSecurityAnswer) ||
+      providedSecurityAnswer !== expectedSecurityAnswer
+    ) {
+      return json(400, {
+        message:
+          preferredLanguage === "en"
+            ? "Please complete the human verification before sending."
+            : "Completa la verificación humana antes de enviar."
+      });
+    }
+  }
+
   await createLead({
     company,
-    companyType: String(payload.companyType || "chatbot").trim(),
+    companyType: companyType || "chatbot",
     country,
     countriesNeeded: String(payload.countriesNeeded || "").trim(),
     createdAt,
@@ -212,7 +263,7 @@ export async function handler(event: NetlifyEvent) {
     hasExistingProgram: String(payload.hasExistingProgram || "").trim(),
     id: createId(),
     intentLevel,
-    ip: getIp(event),
+    ip,
     loyaltyTarget,
     message,
     name,
