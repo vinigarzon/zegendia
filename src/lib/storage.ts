@@ -17,7 +17,11 @@ async function ensureLocalDataDir() {
 }
 
 function useNetlifyBlobs() {
-  return process.env.NETLIFY_DATABASE_MODE === "blobs" || Boolean(process.env.NETLIFY);
+  const isBuildPhase =
+    process.env.NEXT_PHASE === "phase-production-build" ||
+    process.env.npm_lifecycle_event === "build";
+
+  return process.env.NETLIFY_DATABASE_MODE === "blobs" && !isBuildPhase;
 }
 
 async function readLocalJson<T>(fileName: string, fallback: T) {
