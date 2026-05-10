@@ -40,15 +40,17 @@ const INTENT_KEYWORDS: Record<ChatIntent, string[]> = {
     "cotizar",
     "quote",
     "budget",
-    "cuanto",
     "cuanto cuesta",
     "cuánto cuesta",
+    "cuanto vale",
+    "cuánto vale",
     "cuesta",
+    "cuesta cuanto",
     "tarifa",
     "tarifas",
     "planes"
   ],
-  stock: ["stock", "inventario", "inventory", "warehouse", "bodega", "comprar premios"],
+  stock: ["stock", "inventario", "inventory", "warehouse", "bodega", "comprar premios", "comprar inventario"],
   paises: ["paises", "countries", "latam", "mexico", "colombia", "ecuador", "peru", "chile", "coverage"],
   contacto: ["contacto", "contact", "hablar con alguien", "contact me", "call me", "whatsapp", "telefono"]
 };
@@ -146,7 +148,8 @@ export function detectIntent(message: string, fallbackLanguage: ChatLanguage = "
   let matchedKeywords: string[] = [];
 
   const priorityIntentPatterns: Array<[ChatIntent, RegExp]> = [
-    ["precio", /\b(precio|precios|pricing|price|cost|costo|costos|cuanto|cuesta|cotizar|quote|tarifa|tarifas|planes)\b/i],
+    ["stock", /\b(stock|inventario|inventory|warehouse|bodega|comprar premios|comprar inventario)\b/i],
+    ["precio", /\b(precio|precios|pricing|price|cost|costo|costos|cuanto cuesta|cuánto cuesta|cuanto vale|cuánto vale|cuesta|cotizar|quote|tarifa|tarifas|planes)\b/i],
     ["contacto", /\b(contacto|contactar|contact|talk to someone|hablar con alguien|humano|asesor|whatsapp|telefono|teléfono)\b/i],
     ["api", /\b(api|integracion|integración|webhook|crm|erp|ecommerce|shopify|woocommerce)\b/i],
     ["paises", /\b(paises|países|pais|país|latam|cobertura|coverage|office|offices|oficina|oficinas)\b/i]

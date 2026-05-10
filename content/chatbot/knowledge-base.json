@@ -3,11 +3,11 @@
     "id": "what-is-zegendia",
     "intent": "general",
     "title": "What is Zegendia?",
-    "keywords": ["zegendia", "loyalty", "programa de lealtad", "fidelizacion", "recompensas"],
-    "answer_es": "Zegendia ayuda a empresas a crear programas de lealtad, recompensas e incentivos para clientes, vendedores, distribuidores, colaboradores y comunidades comerciales.",
-    "answer_en": "Zegendia helps companies create loyalty, rewards, and incentive programs for customers, sales teams, distributors, employees, and business communities.",
-    "follow_up_es": "¿Quieres fidelizar clientes, vendedores, distribuidores o colaboradores?",
-    "follow_up_en": "Are you looking to engage customers, sales teams, distributors, or employees?"
+    "keywords": ["zegendia", "loyalty", "programa de lealtad", "fidelizacion", "recompensas", "que hace zegendia", "que hacen", "what does zegendia do"],
+    "answer_es": "Zegendia diseña, implementa y opera programas de lealtad, incentivos y recompensas para empresas de cualquier tamaño. Puede ayudar a fidelizar clientes B2C, compradores B2B, distribuidores, vendedores, empleados, aliados o comunidades. Hoy no solo hace programas de puntos: construye ecosistemas completos de fidelización con tecnología, premios, logística, gamificación y medición.",
+    "answer_en": "Zegendia designs, implements, and operates loyalty, incentive, and rewards programs for companies of any size. It can help engage B2C customers, B2B buyers, distributors, sales teams, employees, partners, or communities. Today it does more than points programs: it builds complete loyalty ecosystems with technology, rewards, logistics, gamification, and measurement.",
+    "follow_up_es": "Si quieres, puedo orientarte según la audiencia que buscas fidelizar.",
+    "follow_up_en": "If you want, I can guide you based on the audience you want to engage."
   },
   {
     "id": "puntosplus-overview",
@@ -173,21 +173,21 @@
     "id": "pricing-model",
     "intent": "precio",
     "title": "Pricing",
-    "keywords": ["precio", "pricing", "cost", "costo", "quote", "cotizar", "presupuesto"],
-    "answer_es": "Zegendia no maneja un precio único para todos los casos. El alcance depende del tipo de programa, países, integraciones, operación y volumen esperado.",
-    "answer_en": "Zegendia does not use one fixed price for every case. Scope depends on the program type, countries, integrations, operations, and expected volume.",
-    "follow_up_es": "Si quieres cotizar, lo mejor es que el equipo revise tu caso y te oriente con una propuesta adecuada.",
-    "follow_up_en": "If you need pricing, the best next step is for the team to review your case and guide you with the right proposal."
+    "keywords": ["precio", "precios", "pricing", "price", "cost", "costo", "costos", "quote", "cotizar", "presupuesto", "caro", "cuanto cuesta", "cuánto cuesta"],
+    "answer_es": "No necesariamente es caro lanzar un programa de lealtad. Antes podía requerir desarrollo costoso, inventario, proveedores, logística y meses de trabajo. Con PuntosPlus, una empresa puede comenzar desde un plan accesible, desde aproximadamente US$29 al mes, y crecer según sus necesidades. Para soluciones personalizadas o regionales, el precio depende del alcance, países, integraciones, operación y volumen esperado.",
+    "answer_en": "Launching a loyalty program is not necessarily expensive. In the past, it could require costly development, inventory, providers, logistics, and months of work. With PuntosPlus, a business can start from an accessible plan, beginning around US$29 per month, and grow over time according to its needs. For custom or regional solutions, pricing depends on scope, countries, integrations, operations, and expected volume.",
+    "follow_up_es": "Si necesitas una cifra para un caso corporativo, conviene que el equipo revise el alcance antes de cotizar.",
+    "follow_up_en": "If you need a number for a corporate case, the team should review the scope before quoting."
   },
   {
     "id": "no-stock-needed",
     "intent": "stock",
     "title": "Do I need stock or inventory?",
-    "keywords": ["stock", "inventario", "inventory", "warehouse", "bodega", "comprar premios"],
-    "answer_es": "En muchos escenarios no necesitas comprar stock por adelantado. Zegendia puede ayudarte a operar catálogos y premios sin que tu equipo gestione inventario propio.",
-    "answer_en": "In many scenarios, you do not need to buy stock in advance. Zegendia can help operate catalogs and rewards without your team managing its own inventory.",
-    "follow_up_es": "¿Tu dolor principal es inventario, entregas o variedad del catálogo?",
-    "follow_up_en": "Is your main pain point inventory, deliveries, or catalog variety?"
+    "keywords": ["stock", "inventario", "inventory", "warehouse", "bodega", "comprar premios", "comprar inventario", "tengo que comprar inventario", "tengo que comprar stock"],
+    "answer_es": "No. Esa es una de las mayores ventajas de Oh My Rewards. No necesitas comprar productos por adelantado, llenar bodegas, negociar con proveedores ni manejar entregas. Zegendia puede encargarse del catálogo, proveedores, productos físicos, gift cards, recargas, entregas y tracking en diferentes países de LATAM.",
+    "answer_en": "No. That is one of the biggest advantages of Oh My Rewards. You do not need to buy products in advance, fill warehouses, negotiate with providers, or manage deliveries. Zegendia can handle the catalog, providers, physical products, gift cards, top-ups, deliveries, and tracking across different LATAM countries.",
+    "follow_up_es": "Si ya tienes un programa, Oh My Rewards puede funcionar como la capa de fulfillment.",
+    "follow_up_en": "If you already have a program, Oh My Rewards can work as the fulfillment layer."
   },
   {
     "id": "countries-coverage",
@@ -223,11 +223,71 @@
     "id": "implementation-scope",
     "intent": "general",
     "title": "Implementation scope",
-    "keywords": ["implementacion", "implementation", "timeline", "tiempo", "rollout", "alcance"],
-    "answer_es": "El tiempo y alcance de implementación dependen del programa, integraciones, países y nivel de personalización. Por eso conviene revisar cada caso antes de prometer tiempos exactos.",
-    "answer_en": "Implementation timing and scope depend on the program, integrations, countries, and level of customization. That is why each case should be reviewed before promising exact timelines.",
-    "follow_up_es": "Si compartes tu escenario, puedo orientarte sobre el tipo de despliegue que normalmente requiere.",
-    "follow_up_en": "If you share your scenario, I can guide you on the type of rollout it usually requires."
+    "keywords": ["implementacion", "implementation", "timeline", "tiempo", "rollout", "alcance", "cuanto tiempo", "cuánto tiempo", "lanzar plataforma", "plataforma personalizada", "48 horas"],
+    "answer_es": "Depende del nivel de personalización, pero hoy Zegendia puede avanzar mucho más rápido que antes. Con modelos como PuntosPlus, una empresa puede configurar un programa base en muy poco tiempo. Para casos con una estructura clara de puntos, premios, portal y reglas, se puede tener una versión operativa inicial en tiempos muy cortos, incluso alrededor de 48 horas si el alcance está bien definido.",
+    "answer_en": "It depends on the level of customization, but today Zegendia can move much faster than before. With models such as PuntosPlus, a company can configure a base program very quickly. For cases with a clear structure of points, rewards, portal, and rules, an initial operating version can be available in a very short time, even around 48 hours if the scope is well defined.",
+    "follow_up_es": "Para una plataforma totalmente a la medida, sí conviene revisar integraciones, países y reglas antes de prometer un plazo exacto.",
+    "follow_up_en": "For a fully custom platform, integrations, countries, and rules should be reviewed before promising an exact timeline."
+  },
+  {
+    "id": "existing-program",
+    "intent": "general",
+    "title": "Do I need an existing loyalty program?",
+    "keywords": ["programa existente", "ya tengo un programa", "existing loyalty program", "no tengo programa", "crear desde cero"],
+    "answer_es": "No necesitas tener ya un programa de lealtad. Si ya tienes uno, Oh My Rewards puede conectarse para entregar premios reales en Latinoamérica mediante una sola API. Si todavía no tienes programa, PuntosPlus permite crear uno desde cero de forma rápida, configurable y accesible.",
+    "answer_en": "You do not need an existing loyalty program. If you already have one, Oh My Rewards can connect to deliver real rewards across Latin America through one API. If you do not yet have a program, PuntosPlus lets you create one from scratch quickly, flexibly, and affordably.",
+    "follow_up_es": "La ruta depende de si necesitas plataforma completa o solo fulfillment de premios.",
+    "follow_up_en": "The right path depends on whether you need a full platform or only rewards fulfillment."
+  },
+  {
+    "id": "physical-rewards",
+    "intent": "premios",
+    "title": "Can I deliver physical rewards?",
+    "keywords": ["premios fisicos", "premios físicos", "cupones digitales", "physical rewards", "digital coupons", "premios reales"],
+    "answer_es": "Sí. Zegendia puede operar premios físicos, gift cards digitales, recargas, productos premium, incentivos corporativos y catálogos personalizados. Oh My Rewards está diseñado para resolver la parte más difícil: convertir puntos o beneficios en premios reales entregados al usuario final.",
+    "answer_en": "Yes. Zegendia can operate physical rewards, digital gift cards, top-ups, premium products, corporate incentives, and custom catalogs. Oh My Rewards is designed to solve the hardest part: turning points or benefits into real rewards delivered to the end user.",
+    "follow_up_es": "Esto puede conectarse a un programa existente o a una solución nueva.",
+    "follow_up_en": "This can connect to an existing program or to a new solution."
+  },
+  {
+    "id": "puntosplus-audiences",
+    "intent": "puntos",
+    "title": "Is PuntosPlus only for end customers?",
+    "keywords": ["puntosplus clientes finales", "puntosplus b2c", "puntosplus vendedores", "puntosplus distribuidores", "solo clientes finales", "only end customers"],
+    "answer_es": "No. PuntosPlus no está pensado solo para clientes B2C. Puede usarse para motivar panaderías, ferreterías, distribuidores, vendedores, empleados, canales comerciales, aliados, referidores, influencers o comunidades. El sistema se basa en un participante universal, lo que permite adaptar el programa a muchos tipos de audiencia.",
+    "answer_en": "No. PuntosPlus is not limited to B2C customers. It can be used to motivate bakeries, hardware stores, distributors, sales reps, employees, commercial channels, partners, referrers, influencers, or communities. The system is built around a universal participant model, which makes it adaptable to many audience types.",
+    "follow_up_es": "Por eso puede servir para clientes, fuerza comercial, canales o comunidades.",
+    "follow_up_en": "That is why it can serve customers, sales teams, channels, or communities."
+  },
+  {
+    "id": "company-fit",
+    "intent": "general",
+    "title": "What kind of company can use Zegendia?",
+    "keywords": ["tipo de empresa", "que empresa", "empresa puede usar", "small business", "large corporation", "restaurant", "retail", "fintech"],
+    "answer_es": "Zegendia puede servir desde una pequeña empresa hasta una gran corporación: restaurante, panadería, gimnasio, retail, distribuidor, fintech, banco, aseguradora, telco, e-commerce o empresa con fuerza comercial. Si hay una conducta que quieres incentivar, Zegendia puede ayudarte a convertirla en puntos, beneficios, premios o recompensas.",
+    "answer_en": "Zegendia can serve anything from a small business to a large corporation: restaurant, bakery, gym, retailer, distributor, fintech, bank, insurer, telco, e-commerce business, or company with a sales force. If there is a behavior you want to encourage, Zegendia can help turn it into points, benefits, rewards, or measurable incentives.",
+    "follow_up_es": "Lo importante es definir qué conducta quieres motivar.",
+    "follow_up_en": "The key is defining which behavior you want to encourage."
+  },
+  {
+    "id": "club-santa-lucia-like",
+    "intent": "clientes_b2b",
+    "title": "Can Zegendia create a program like Club Santa Lucia?",
+    "keywords": ["club santa lucia", "club santa lucía", "programa como club santa lucia", "b2b compras volumen", "panaderias", "panaderías"],
+    "answer_es": "Sí. Club Santa Lucía es un ejemplo de cómo una empresa B2B puede premiar a sus clientes por compras, volumen o comportamiento comercial. En ese caso, las panaderías acumulan puntos por compras y luego los canjean por premios físicos. La plataforma incluye portal del cliente, panel administrativo, reglas de puntos, POS, gamificación, logística, facturación, soporte y reportes.",
+    "answer_en": "Yes. Club Santa Lucía is an example of how a B2B company can reward customers based on purchases, volume, or commercial behavior. In that case, bakeries earn points through purchases and later redeem them for physical rewards. The platform includes a customer portal, admin panel, points rules, POS, gamification, logistics, billing, support, and reporting.",
+    "follow_up_es": "Ese tipo de estructura puede adaptarse a otros verticales.",
+    "follow_up_en": "That structure can be adapted to other verticals."
+  },
+  {
+    "id": "zegendia-differentiator",
+    "intent": "general",
+    "title": "What makes Zegendia different?",
+    "keywords": ["diferente", "diferencia", "otras plataformas", "why zegendia", "different from other loyalty platforms"],
+    "answer_es": "Zegendia no solo entrega software. Integra estrategia, tecnología, premios, logística, experiencia regional en LATAM y capacidad operativa real. Puede crear el programa, conectarlo con APIs, operar los premios, medir resultados y escalarlo. En pocas palabras: no solo te da una plataforma; ayuda a que la lealtad funcione en la vida real.",
+    "answer_en": "Zegendia does not only deliver software. It combines strategy, technology, rewards, logistics, regional LATAM experience, and real operational capability. It can create the program, connect it through APIs, operate rewards, measure results, and scale it. In short: it does not just give you a platform; it helps loyalty work in real life.",
+    "follow_up_es": "La diferencia está en combinar software con operación real de recompensas.",
+    "follow_up_en": "The difference is combining software with real rewards operations."
   },
   {
     "id": "reporting-analytics",

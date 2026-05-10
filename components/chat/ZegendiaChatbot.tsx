@@ -16,6 +16,8 @@ import type {
 const STORAGE_KEY = "zegendia:zendi:conversation:v2";
 const SESSION_KEY = "zegendia:zendi:session-id";
 const MAX_LOCAL_MESSAGES = 24;
+const INACTIVITY_WARNING_MS = 5 * 60 * 1000;
+const INACTIVITY_CLOSE_MS = 10 * 60 * 1000;
 
 type StoredConversation = {
   language: ChatLanguage;
@@ -28,6 +30,16 @@ function createId() {
   return typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
     : `chat-${Date.now()}-${Math.round(Math.random() * 100000)}`;
+}
+
+function normalizeQuickReply(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}\s]/gu, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function getInitialLanguage(locale: Locale): ChatLanguage {
@@ -271,12 +283,23 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   const [messages, setMessages] = useState<ChatMessageType[]>(initialState.messages);
   const [profile, setProfile] = useState<ZendiLeadProfile>(initialState.profile);
   const [sessionId, setSessionId] = useState(initialState.sessionId);
+  const [hasInactivityWarning, setHasInactivityWarning] = useState(false);
+  const [isSessionExpired, setIsSessionExpired] = useState(false);
+  const [lastUserActivityAt, setLastUserActivityAt] = useState(() => Date.now());
   const endRef = useRef<HTMLDivElement | null>(null);
   const submittedLeadRef = useRef(Boolean(initialState.profile.leadSubmitted));
-  const isConversationClosed = Boolean(profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none"));
+  const isConversationClosed = Boolean(
+    isSessionExpired || profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none")
+  );
   const lastInteractiveAssistantId = [...messages]
     .reverse()
     .find((message) => message.role === "assistant" && message.quickReplies?.length)?.id;
+  const usedQuickReplies = new Set(
+    messages
+      .filter((message) => message.role === "user")
+      .map((message) => normalizeQuickReply(message.content))
+      .filter(Boolean)
+  );
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -298,6 +321,51 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [isOpen, isTyping, messages]);
 
+  useEffect(() => {
+    if (!isOpen || isConversationClosed) {
+      return;
+    }
+
+    const elapsed = Date.now() - lastUserActivityAt;
+    const warningDelay = Math.max(INACTIVITY_WARNING_MS - elapsed, 0);
+    const closeDelay = Math.max(INACTIVITY_CLOSE_MS - elapsed, 0);
+    const warningTimer = hasInactivityWarning
+      ? undefined
+      : window.setTimeout(() => {
+          setHasInactivityWarning(true);
+          setMessages((current) => [
+            ...current,
+            createMessage(
+              "assistant",
+              conversationLanguage === "en"
+                ? "Are you still there? If you want to continue, send me a message and I’ll keep guiding you."
+                : "¿Sigues ahí? Si quieres continuar, escríbeme y sigo orientándote.",
+              conversationLanguage
+            )
+          ]);
+        }, warningDelay);
+    const closeTimer = window.setTimeout(() => {
+      setIsSessionExpired(true);
+      setMessages((current) => [
+        ...current,
+        createMessage(
+          "assistant",
+          conversationLanguage === "en"
+            ? "I closed this Zendi conversation due to inactivity. You can restart whenever you want."
+            : "Cerré esta conversación con Zendi por inactividad. Puedes reiniciarla cuando quieras.",
+          conversationLanguage
+        )
+      ]);
+    }, closeDelay);
+
+    return () => {
+      if (warningTimer) {
+        window.clearTimeout(warningTimer);
+      }
+      window.clearTimeout(closeTimer);
+    };
+  }, [conversationLanguage, hasInactivityWarning, isConversationClosed, isOpen, lastUserActivityAt]);
+
   function resetConversation() {
     const language = getInitialLanguage(locale);
     const nextSessionId = createSessionId();
@@ -309,6 +377,9 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
     setConversationLanguage(language);
     setInput("");
     setIsTyping(false);
+    setHasInactivityWarning(false);
+    setIsSessionExpired(false);
+    setLastUserActivityAt(Date.now());
     setMessages([createAssistantMessage(language)]);
     setProfile({});
     setSessionId(nextSessionId);
@@ -386,7 +457,9 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
 
     setMessages(nextMessages);
     setInput("");
+    setHasInactivityWarning(false);
     setIsTyping(true);
+    setLastUserActivityAt(Date.now());
 
     void getBotReply({
       conversation: nextMessages.map((message) => ({
@@ -486,17 +559,28 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
 
           <div className="flex h-[min(66vh,520px)] flex-col bg-[linear-gradient(180deg,#fbfff4_0%,#eef9fb_44%,#eaf6f1_100%)]">
             <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
-              {messages.map((message) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  onQuickReply={
-                    !isTyping && !isConversationClosed && message.id === lastInteractiveAssistantId
-                      ? handleSendMessage
-                      : undefined
-                  }
-                />
-              ))}
+              {messages.map((message) => {
+                const visibleQuickReplies =
+                  message.role === "assistant"
+                    ? message.quickReplies?.filter((reply) => !usedQuickReplies.has(normalizeQuickReply(reply)))
+                    : message.quickReplies;
+                const visibleMessage = { ...message, quickReplies: visibleQuickReplies };
+
+                return (
+                  <ChatMessage
+                    key={message.id}
+                    message={visibleMessage}
+                    onQuickReply={
+                      visibleQuickReplies?.length &&
+                      !isTyping &&
+                      !isConversationClosed &&
+                      message.id === lastInteractiveAssistantId
+                        ? handleSendMessage
+                        : undefined
+                    }
+                  />
+                );
+              })}
 
               {isTyping ? (
                 <div className="flex justify-start">

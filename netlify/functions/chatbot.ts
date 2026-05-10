@@ -369,7 +369,7 @@ function isGreetingOnly(message: string) {
 function hasBusinessIntent(message: string) {
   const normalized = normalizeText(message);
 
-  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|contacto|contactar|demo|oficina|oficinas|pais|país|paises|países|latam|api|integracion|integración|puntos|puntosplus|puntos plus|lealtad|loyalty|recompensas|premios|gift|fulfillment|catalogo|catálogo|stock|vendedores|distribuidores|clientes|empleados|programa|crear|mejorar|desde cero|ecommerce|shopify|crm|erp|pricing|price|cost|quote|contact|office|countries|rewards|points|incentives|sales|customers|employees|distributors)\b/i.test(
+  return /\b(precio|precios|cuesta|costo|costos|cotizar|contacto|contactar|demo|oficina|oficinas|pais|país|paises|países|latam|api|integracion|integración|puntos|puntosplus|puntos plus|lealtad|loyalty|recompensas|premios|gift|fulfillment|catalogo|catálogo|stock|inventario|tiempo|lanzar|implementacion|implementación|personalizada|vendedores|distribuidores|clientes|empleados|programa|crear|mejorar|desde cero|ecommerce|shopify|crm|erp|pricing|price|cost|quote|contact|office|countries|rewards|points|incentives|sales|customers|employees|distributors)\b/i.test(
     normalized
   );
 }
@@ -384,9 +384,25 @@ function isContactAction(message: string) {
 }
 
 function hasPriceIntent(message: string) {
-  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|pricing|price|cost|quote|tarifa|tarifas|planes)\b/i.test(
+  const normalized = normalizeText(message);
+
+  if (hasTimingIntent(message) || /\b(no.*precio|no del precio|not price|not pricing)\b/i.test(normalized)) {
+    return false;
+  }
+
+  return /\b(precio|precios|cuanto cuesta|cuánto cuesta|cuanto vale|cuánto vale|cuesta|costo|costos|cotizar|pricing|price|cost|quote|tarifa|tarifas|planes)\b/i.test(
+    normalized
+  );
+}
+
+function hasTimingIntent(message: string) {
+  return /\b(cuanto tiempo|cuánto tiempo|tiempo|lanzar|implementar|implementacion|implementación|timeline|rollout|48 horas|how long|launch time|implementation time)\b/i.test(
     normalizeText(message)
   );
+}
+
+function hasStockIntent(message: string) {
+  return /\b(stock|inventario|inventory|warehouse|bodega|comprar premios|comprar inventario)\b/i.test(normalizeText(message));
 }
 
 function isRefusalOrDeflection(message: string) {
@@ -444,6 +460,12 @@ function getContactInfoReply(language: ChatLanguage) {
   return language === "en"
     ? "For general contact, you can use https://www.zegendia.com/contact. If you want me to route a loyalty or rewards case from here, choose “Guide my case”."
     : "Para contacto general, puedes usar https://www.zegendia.com/contact. Si quieres que yo enrute un caso de lealtad o recompensas desde aquí, elige “Orientar mi caso”.";
+}
+
+function getUnknownPublicReply(language: ChatLanguage) {
+  return language === "en"
+    ? "I do not want to give you an imprecise answer because I do not see that information in the approved Zegendia content I can use here. For a general request, the best path is https://www.zegendia.com/contact. If it is a loyalty, rewards, or incentives case, I can guide it from here."
+    : "No quiero darte una respuesta imprecisa porque no veo esa información en el contenido aprobado de Zegendia que puedo usar aquí. Para una consulta general, el mejor camino es https://www.zegendia.com/contact. Si es un caso de lealtad, recompensas o incentivos, puedo orientarlo desde aquí.";
 }
 
 function isGarbageMessage(message: string) {
@@ -658,7 +680,13 @@ function getEarlyTopicAnswer(message: string, language: ChatLanguage) {
       : "PuntosPlus es la capa de Zegendia para lanzar programas de lealtad más rápido: permite crear programas configurables de puntos, recompensas y beneficios sin construir todo desde cero.";
   }
 
-  if (/\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|pricing|price|cost)\b/i.test(normalized)) {
+  if (hasTimingIntent(message)) {
+    return language === "en"
+      ? "Implementation timing depends on customization, integrations, countries, and rules. With models like PuntosPlus, a base program can be configured very quickly; with a clear scope, an initial operating version can sometimes be available in very short timelines, even around 48 hours."
+      : "El tiempo de implementación depende de la personalización, integraciones, países y reglas. Con modelos como PuntosPlus, un programa base puede configurarse muy rápido; con un alcance claro, una versión operativa inicial puede estar disponible en tiempos muy cortos, incluso alrededor de 48 horas.";
+  }
+
+  if (hasPriceIntent(message)) {
     return language === "en"
       ? "Pricing depends on the type of program, number of users, countries, rewards, integrations, and customization level. If you need something fast, we can look at PuntosPlus; if it is corporate or regional, the team should review the case."
       : "El precio depende del tipo de programa, número de usuarios, países, premios, integraciones y nivel de personalización. Si buscas algo rápido, podemos mirar PuntosPlus; si es corporativo o regional, conviene revisar tu caso.";
@@ -688,10 +716,26 @@ function getEarlyTopicAnswer(message: string, language: ChatLanguage) {
 }
 
 function getPriorityPublicAnswer(message: string, language: ChatLanguage, intent: ChatIntent) {
+  if (isSupportOrDirectoryQuestion(message)) {
+    return getEarlyTopicAnswer(message, language);
+  }
+
+  if (hasTimingIntent(message)) {
+    return language === "en"
+      ? "Implementation timing depends on the level of customization. With models such as PuntosPlus, a company can configure a base program very quickly. For cases with a clear structure of points, rewards, portal, and rules, an initial operating version can be available in very short timelines, even around 48 hours if the scope is well defined. For a fully custom platform, integrations, countries, and rules should be reviewed before promising an exact timeline."
+      : "Depende del nivel de personalización. Con modelos como PuntosPlus, una empresa puede configurar un programa base en muy poco tiempo. Para casos con una estructura clara de puntos, premios, portal y reglas, se puede tener una versión operativa inicial en tiempos muy cortos, incluso alrededor de 48 horas si el alcance está bien definido. Para una plataforma totalmente a la medida, conviene revisar integraciones, países y reglas antes de prometer un plazo exacto.";
+  }
+
+  if (hasStockIntent(message) || intent === "stock") {
+    return language === "en"
+      ? "No. With Oh My Rewards, you do not need to buy products in advance, fill warehouses, negotiate with providers, or manage deliveries. Zegendia can handle the catalog, providers, physical products, gift cards, top-ups, deliveries, and tracking across different LATAM countries."
+      : "No. Con Oh My Rewards no necesitas comprar productos por adelantado, llenar bodegas, negociar con proveedores ni manejar entregas. Zegendia puede encargarse del catálogo, proveedores, productos físicos, gift cards, recargas, entregas y tracking en diferentes países de LATAM.";
+  }
+
   if (hasPriceIntent(message) || intent === "precio") {
     return language === "en"
-      ? "The price depends on the type of program, number of users, countries, rewards, integrations, and level of customization. I do not want to invent a fixed number. If you need something quick, we can review whether PuntosPlus fits; if it is corporate or regional, the Zegendia team should review the case to give you the right proposal."
-      : "El precio depende del tipo de programa, número de usuarios, países, premios, integraciones y nivel de personalización. No quiero inventarte un valor fijo. Si buscas algo rápido, podemos revisar si PuntosPlus encaja; si es corporativo o regional, conviene que el equipo de Zegendia revise el caso para darte una propuesta correcta.";
+      ? "Launching a loyalty program is not necessarily expensive. With PuntosPlus, a business can start from an accessible plan, beginning around US$29 per month, and grow over time according to its needs. For custom or regional solutions, pricing depends on scope, countries, integrations, operations, and expected volume, so the team should review the case before quoting."
+      : "No necesariamente es caro lanzar un programa de lealtad. Con PuntosPlus, una empresa puede comenzar desde un plan accesible, desde aproximadamente US$29 al mes, y crecer según sus necesidades. Para soluciones personalizadas o regionales, el precio depende del alcance, países, integraciones, operación y volumen esperado, por eso conviene revisar el caso antes de cotizar.";
   }
 
   if (intent === "contacto" || isContactAction(message)) {
@@ -716,24 +760,21 @@ function getPriorityPublicAnswer(message: string, language: ChatLanguage, intent
 function buildPublicInfoReply(message: string, language: ChatLanguage, intent: ChatIntent) {
   const priorityAnswer = getPriorityPublicAnswer(message, language, intent);
   const match = priorityAnswer ? null : searchKnowledgeBase(message, { intent, language, limit: 1 })[0];
+  const hasClearMatch = Boolean(match && match.score >= 12);
   const answer =
     priorityAnswer ||
-    (match && match.score >= 12
+    (hasClearMatch && match
       ? language === "en"
         ? match.entry.answer_en
         : match.entry.answer_es
-      : getEarlyTopicAnswer(message, language));
+      : getUnknownPublicReply(language));
+  const followUp = hasClearMatch && match ? (language === "en" ? match.entry.follow_up_en : match.entry.follow_up_es) : "";
 
   if (intent === "contacto" || isContactAction(message)) {
     return answer;
   }
 
-  const cta =
-    language === "en"
-      ? "Do you want me to help you see whether this fits your company?"
-      : "¿Quieres que te ayude a ver si esto encaja con tu empresa?";
-
-  return `${answer}\n\n${cta}`;
+  return followUp ? `${answer}\n\n${followUp}` : answer;
 }
 
 function getInfoFallbackReply(language: ChatLanguage) {
@@ -923,7 +964,18 @@ function getOnboardingReply({
   }
 
   if (!advisorMode) {
-    if (wantsContactPath(message) || isSupportOrDirectoryQuestion(message)) {
+    if (isSupportOrDirectoryQuestion(message)) {
+      return response({
+        intent: "contacto",
+        language,
+        message: getEarlyTopicAnswer(message, language),
+        profile: { ...nextProfile, mode: "info" },
+        quickReplies:
+          language === "en" ? ["Guide my case", "What is PuntosPlus?"] : ["Orientar mi caso", "¿Qué es PuntosPlus?"]
+      });
+    }
+
+    if (wantsContactPath(message)) {
       return response({
         intent: "contacto",
         language,
@@ -963,8 +1015,7 @@ function getOnboardingReply({
         language,
         message: buildPublicInfoReply(message, language, detectedIntent),
         profile: { ...nextProfile, mode: "info" },
-        quickReplies:
-          language === "en" ? ["Guide my case", "What is Zegendia?", "Contact"] : ["Orientar mi caso", "¿Qué es Zegendia?", "Contacto"]
+        quickReplies: language === "en" ? ["Guide my case", "Contact"] : ["Orientar mi caso", "Contacto"]
       });
     }
 

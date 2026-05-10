@@ -62,14 +62,18 @@ export function searchKnowledgeBase(
       score += answerMatch * 9;
       score += (fuseMap.get(entry.id) ?? 0) * 40;
 
-      if (options.intent && entry.intent === options.intent) {
+      if (options.intent && options.intent !== "general" && entry.intent === options.intent) {
         score += 24;
       } else if (options.intent && entry.intent === "general") {
         score += 4;
       }
 
       const matchType: SearchKnowledgeBaseResult["matchType"] =
-        keywordHits > 0 ? "keyword" : options.intent && entry.intent === options.intent ? "intent" : "fuse";
+        keywordHits > 0
+          ? "keyword"
+          : options.intent && options.intent !== "general" && entry.intent === options.intent
+            ? "intent"
+            : "fuse";
 
       return {
         entry,
