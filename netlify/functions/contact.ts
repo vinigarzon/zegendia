@@ -83,9 +83,12 @@ async function sendResendEmail({
     return;
   }
 
+  const configuredFrom = process.env.RESEND_FROM || "zegendia@gurumba.com";
+  const from = configuredFrom.includes("<") ? configuredFrom : `Zegendia Contact <${configuredFrom}>`;
+
   const response = await fetch("https://api.resend.com/emails", {
     body: JSON.stringify({
-      from: process.env.RESEND_FROM || "Zegendia <hello@zegendia.com>",
+      from,
       html,
       subject,
       to
@@ -112,6 +115,84 @@ function demoPreferenceLabel(value: ContactPayload["wantsDemo"], language: "es" 
   if (value === "yes") return "Sí quiere demo";
   if (value === "no") return "No, solo quiere contacto";
   return "Todavía no está seguro";
+}
+
+const OBJECTIVE_LABELS = {
+  en: {
+    buyers: "B2B buyers",
+    community: "Community",
+    customers: "Customers",
+    distributors: "Distributors",
+    employees: "Employees",
+    "existing-loyalty": "I already have a loyalty program",
+    "fulfillment-only": "I only need rewards fulfillment",
+    other: "Other",
+    sales: "Sales team"
+  },
+  es: {
+    buyers: "Compradores B2B",
+    community: "Comunidad",
+    customers: "Clientes",
+    distributors: "Distribuidores",
+    employees: "Empleados",
+    "existing-loyalty": "Ya tengo un programa de loyalty",
+    "fulfillment-only": "Solo necesito fulfillment de premios",
+    other: "Otro",
+    sales: "Equipo comercial"
+  }
+} as const;
+
+const SIZE_LABELS = {
+  en: {
+    enterprise: "Enterprise",
+    "growing-company": "Growing company",
+    "regulated-enterprise": "Bank / fintech / telco / retailer",
+    "small-business": "Small business"
+  },
+  es: {
+    enterprise: "Enterprise",
+    "growing-company": "Empresa en crecimiento",
+    "regulated-enterprise": "Banco / fintech / telco / retailer",
+    "small-business": "Pequeño negocio"
+  }
+} as const;
+
+function fallbackLabel(language: "es" | "en") {
+  return language === "en" ? "Not provided" : "No especificado";
+}
+
+function displayValue(value: string, language: "es" | "en") {
+  return value.trim() || fallbackLabel(language);
+}
+
+function optionLabel(
+  value: string,
+  options: typeof OBJECTIVE_LABELS | typeof SIZE_LABELS,
+  language: "es" | "en"
+) {
+  const cleanValue = value.trim();
+  if (!cleanValue) {
+    return fallbackLabel(language);
+  }
+
+  return (options[language] as Record<string, string>)[cleanValue] || cleanValue;
+}
+
+function renderDetailTable(rows: { label: string; value: string }[]) {
+  return `
+    <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;line-height:1.6;">
+      ${rows
+        .map(
+          (row) => `
+            <tr>
+              <td style="padding:8px 0;color:#165a6e;font-weight:700;width:190px;vertical-align:top;">${escapeHtml(row.label)}</td>
+              <td style="padding:8px 0;color:#1f2937;vertical-align:top;">${escapeHtml(row.value)}</td>
+            </tr>
+          `
+        )
+        .join("")}
+    </table>
+  `;
 }
 
 function getIp(event: NetlifyEvent) {
@@ -203,8 +284,7 @@ function emailShell({
               </tr>
               <tr>
                 <td style="padding:26px 28px;background:#165a6e;color:#ffffff;">
-                  <div style="font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#bdeaf0;font-weight:700;">Zegendia</div>
-                  <h1 style="margin:10px 0 0;font-size:30px;line-height:1.18;font-weight:800;color:#ffffff;">${escapeHtml(title)}</h1>
+                  <h1 style="margin:0;font-size:30px;line-height:1.18;font-weight:800;color:#ffffff;">${escapeHtml(title)}</h1>
                 </td>
               </tr>
               <tr>
@@ -263,10 +343,19 @@ export async function handler(event: NetlifyEvent) {
   const triggerIntent = String(payload.triggerIntent || "contacto").trim();
   const demoPreference = demoPreferenceLabel(payload.wantsDemo, preferredLanguage);
   const summary = String(payload.summary || message).trim();
+  const objectiveRaw = String(payload.objective || payload.needType || "").trim();
   const needType = String(payload.needType || payload.objective || "").trim();
   const suggestedSolution = String(payload.suggestedSolution || "").trim();
   const intentLevel = String(payload.intentLevel || "medium").trim();
   const loyaltyTarget = String(payload.loyaltyTarget || "").trim();
+  const estimatedUsersRaw = String(payload.estimatedUsers || payload.size || "").trim();
+  const objectiveDisplay = optionLabel(objectiveRaw, OBJECTIVE_LABELS, preferredLanguage);
+  const sizeDisplay = optionLabel(estimatedUsersRaw, SIZE_LABELS, preferredLanguage);
+  const companyTypeDisplay = isChatbotLead
+    ? preferredLanguage === "en"
+      ? "Zendi chatbot"
+      : "Chatbot Zendi"
+    : displayValue(companyType, preferredLanguage);
   const createdAt = new Date().toISOString();
   const ip = getIp(event);
 
@@ -351,37 +440,110 @@ export async function handler(event: NetlifyEvent) {
     preferredLanguage === "en"
       ? `A new lead came from ${leadSourceLabel}. The full context is included below so you can respond with the right angle.`
       : `Nuevo lead capturado desde ${leadSourceLabel}. El contexto principal está incluido abajo para que puedas responder con el enfoque correcto.`;
+  const labels =
+    preferredLanguage === "en"
+      ? {
+          company: "Company",
+          companyType: "Type of company",
+          countriesNeeded: "Countries needed",
+          country: "Country",
+          demo: "Demo",
+          email: "Email",
+          estimatedSize: "Estimated size",
+          executiveSummary: "Executive summary",
+          existingProgram: "Existing program",
+          intent: "Intent",
+          intentLevel: "Intent level",
+          language: "Language",
+          leadDetails: "Lead details",
+          loyaltyTarget: "Loyalty target",
+          message: "Message / context",
+          name: "Name",
+          need: "Need",
+          phone: "Phone / WhatsApp",
+          requestDetails: "Request details",
+          source: "Source",
+          suggestedSolution: "Suggested solution",
+          technicalContext: "Technical context",
+          zendiThread: "Zendi conversation thread",
+          whatToFidelize: "Who they want to engage"
+        }
+      : {
+          company: "Empresa",
+          companyType: "Tipo de empresa",
+          countriesNeeded: "Países requeridos",
+          country: "País",
+          demo: "Demo",
+          email: "Email",
+          estimatedSize: "Tamaño estimado",
+          executiveSummary: "Resumen ejecutivo",
+          existingProgram: "Programa existente",
+          intent: "Intención",
+          intentLevel: "Nivel de intención",
+          language: "Idioma",
+          leadDetails: "Datos del lead",
+          loyaltyTarget: "Audiencia a fidelizar",
+          message: "Mensaje / contexto",
+          name: "Nombre",
+          need: "Necesidad",
+          phone: "Teléfono / WhatsApp",
+          requestDetails: "Detalle de la solicitud",
+          source: "Origen",
+          suggestedSolution: "Solución sugerida",
+          technicalContext: "Contexto técnico",
+          zendiThread: "Hilo de conversación con Zendi",
+          whatToFidelize: "Qué quiere fidelizar"
+        };
+  const contactConfirmationRows = [
+    { label: labels.company, value: displayValue(company, preferredLanguage) },
+    { label: labels.country, value: displayValue(country, preferredLanguage) },
+    { label: labels.companyType, value: companyTypeDisplay },
+    { label: labels.whatToFidelize, value: objectiveDisplay },
+    { label: labels.estimatedSize, value: sizeDisplay },
+    { label: labels.message, value: displayValue(message, preferredLanguage) }
+  ];
+  const internalLeadRows = [
+    { label: labels.source, value: isChatbotLead ? "Zendi" : preferredLanguage === "en" ? "Contact form" : "Formulario de contacto" },
+    { label: labels.name, value: displayValue(name, preferredLanguage) },
+    { label: labels.company, value: displayValue(company, preferredLanguage) },
+    { label: labels.email, value: displayValue(email, preferredLanguage) },
+    { label: labels.country, value: displayValue(country, preferredLanguage) },
+    { label: labels.phone, value: displayValue(String(payload.phone || ""), preferredLanguage) },
+    { label: labels.companyType, value: companyTypeDisplay },
+    { label: labels.whatToFidelize, value: objectiveDisplay },
+    { label: labels.estimatedSize, value: sizeDisplay },
+    { label: labels.message, value: displayValue(message, preferredLanguage) },
+    { label: labels.need, value: displayValue(needType, preferredLanguage) },
+    { label: labels.loyaltyTarget, value: displayValue(loyaltyTarget, preferredLanguage) },
+    { label: labels.suggestedSolution, value: displayValue(suggestedSolution, preferredLanguage) },
+    { label: labels.intent, value: displayValue(triggerIntent, preferredLanguage) },
+    { label: labels.intentLevel, value: displayValue(intentLevel, preferredLanguage) },
+    { label: labels.demo, value: demoPreference },
+    { label: labels.existingProgram, value: displayValue(String(payload.hasExistingProgram || ""), preferredLanguage) },
+    { label: labels.countriesNeeded, value: displayValue(String(payload.countriesNeeded || ""), preferredLanguage) },
+    { label: labels.language, value: preferredLanguage }
+  ];
+  const shouldRenderExecutiveSummary = isChatbotLead || summary !== message;
   const leadHtml = emailShell({
     language: preferredLanguage,
     preview: `${name} from ${company} submitted a lead through ${leadSourceLabel}.`,
     title: isChatbotLead ? "Nuevo lead desde Zendi" : "Nuevo lead desde Contacto",
     children: `
       <p style="margin:0 0 18px;font-size:15px;line-height:1.7;">${escapeHtml(leadIntro)}</p>
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;line-height:1.6;">
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Name</td><td style="padding:7px 0;">${escapeHtml(name)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Company</td><td style="padding:7px 0;">${escapeHtml(company)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Email</td><td style="padding:7px 0;">${escapeHtml(email)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Country</td><td style="padding:7px 0;">${escapeHtml(country)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Phone / WhatsApp</td><td style="padding:7px 0;">${escapeHtml(String(payload.phone || ""))}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Need</td><td style="padding:7px 0;">${escapeHtml(needType)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Loyalty target</td><td style="padding:7px 0;">${escapeHtml(loyaltyTarget)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Suggested solution</td><td style="padding:7px 0;">${escapeHtml(suggestedSolution)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Intent</td><td style="padding:7px 0;">${escapeHtml(triggerIntent)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Intent level</td><td style="padding:7px 0;">${escapeHtml(intentLevel)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Demo</td><td style="padding:7px 0;">${escapeHtml(demoPreference)}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Existing program</td><td style="padding:7px 0;">${escapeHtml(String(payload.hasExistingProgram || ""))}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Countries needed</td><td style="padding:7px 0;">${escapeHtml(String(payload.countriesNeeded || ""))}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Estimated users</td><td style="padding:7px 0;">${escapeHtml(String(payload.estimatedUsers || payload.size || ""))}</td></tr>
-        <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Language</td><td style="padding:7px 0;">${preferredLanguage}</td></tr>
-      </table>
-      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Executive summary</h2>
-      <p style="margin:0 0 18px;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
+      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">${escapeHtml(labels.leadDetails)}</h2>
+      ${renderDetailTable(internalLeadRows)}
       ${
-        isChatbotLead
-          ? `<h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Zendi conversation thread</h2>${renderTranscript(transcript)}`
+        shouldRenderExecutiveSummary
+          ? `<h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">${escapeHtml(labels.executiveSummary)}</h2>
+            <p style="margin:0 0 18px;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>`
           : ""
       }
-      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Technical context</h2>
+      ${
+        isChatbotLead
+          ? `<h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">${escapeHtml(labels.zendiThread)}</h2>${renderTranscript(transcript)}`
+          : ""
+      }
+      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">${escapeHtml(labels.technicalContext)}</h2>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:13px;line-height:1.6;">
         <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">IP</td><td style="padding:5px 0;">${escapeHtml(getIp(event))}</td></tr>
         <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Session ID</td><td style="padding:5px 0;">${escapeHtml(sessionId)}</td></tr>
@@ -410,8 +572,12 @@ export async function handler(event: NetlifyEvent) {
                   : "Thanks for contacting Zegendia through our website form. We received your information and the context of your request."
               }</p>
               <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
-                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">${isChatbotLead ? "Conversation summary" : "Request summary"}</div>
-                <p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">${isChatbotLead ? "Conversation summary" : "Request details"}</div>
+                ${
+                  isChatbotLead
+                    ? `<p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>`
+                    : renderDetailTable(contactConfirmationRows)
+                }
               </div>
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Our team will review it and get back to you within 24 hours with the right follow-up, meeting, or demo if applicable.</p>
               <p style="margin:24px 0 0;font-size:15px;line-height:1.8;">Best,<br /><strong>Zegendia</strong></p>
@@ -433,7 +599,11 @@ export async function handler(event: NetlifyEvent) {
               }</p>
               <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
                 <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">${isChatbotLead ? "Resumen de lo conversado" : "Resumen de tu solicitud"}</div>
-                <p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
+                ${
+                  isChatbotLead
+                    ? `<p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>`
+                    : renderDetailTable(contactConfirmationRows)
+                }
               </div>
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Nuestro equipo revisará tu solicitud y te responderá en menos de 24 horas con el seguimiento correcto, una reunión o un demo si aplica.</p>
               <p style="margin:24px 0 0;font-size:15px;line-height:1.8;">Saludos,<br /><strong>Zegendia</strong></p>

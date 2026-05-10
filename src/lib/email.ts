@@ -31,7 +31,8 @@ export async function sendLeadEmails(lead: LeadRecord) {
   }
 
   const salesEmail = process.env.ZEGENDIA_SALES_EMAIL ?? "info@zegendia.com";
-  const from = process.env.RESEND_FROM ?? "hello@zegendia.com";
+  const configuredFrom = process.env.RESEND_FROM ?? "zegendia@gurumba.com";
+  const from = configuredFrom.includes("<") ? configuredFrom : `Zegendia Contact <${configuredFrom}>`;
   const confirmation = confirmationCopy(lead.preferredLanguage, lead.name);
 
   await Promise.all([

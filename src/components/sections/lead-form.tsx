@@ -102,6 +102,21 @@ async function submitNetlifyFormCopy(formElement: HTMLFormElement) {
   return response.ok;
 }
 
+function getPageContext() {
+  const params = new URLSearchParams(window.location.search);
+
+  return {
+    pageUrl: window.location.href,
+    referrer: document.referrer,
+    sessionId: window.localStorage.getItem("zegendia:zendi:session-id") || "",
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    userAgent: window.navigator.userAgent,
+    utmCampaign: params.get("utm_campaign") || "",
+    utmMedium: params.get("utm_medium") || "",
+    utmSource: params.get("utm_source") || ""
+  };
+}
+
 const selectClass =
   "h-13 min-h-12 w-full appearance-none rounded-2xl border border-[#d9e7e4] bg-white px-4 py-3 pr-12 text-sm font-medium text-[#1f2937] outline-none transition placeholder:text-slate-400 focus-visible:ring-2 focus-visible:ring-[#2aa3b9]/40 [color-scheme:light]";
 const inputClass =
@@ -145,7 +160,7 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
     await submitNetlifyFormCopy(event.currentTarget).catch(() => null);
 
     const response = await fetch("/api/contact", {
-      body: JSON.stringify(form),
+      body: JSON.stringify({ ...form, pageContext: getPageContext() }),
       headers: {
         "Content-Type": "application/json"
       },
@@ -257,7 +272,7 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <FieldGroup label={locale === "en" ? "What do you want to motivate?" : "¿Qué quieres motivar?"}>
+        <FieldGroup label={locale === "en" ? "Who do you want to engage?" : "¿Qué quieres fidelizar?"}>
           <SelectFrame>
             <select
               className={selectClass}
