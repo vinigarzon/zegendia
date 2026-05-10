@@ -87,9 +87,9 @@ const RESERVED_CHAT_ACTIONS = [
 ];
 
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
-const RATE_LIMIT_MAX_REQUESTS = 40;
+const RATE_LIMIT_MAX_REQUESTS = 120;
 const MESSAGE_LIMIT_WINDOW_MS = 60 * 1000;
-const MESSAGE_LIMIT_MAX_REQUESTS = 8;
+const MESSAGE_LIMIT_MAX_REQUESTS = 24;
 const hourlyLimitStore = new Map<string, { count: number; resetAt: number }>();
 const minuteLimitStore = new Map<string, { count: number; resetAt: number }>();
 

@@ -274,6 +274,9 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   const endRef = useRef<HTMLDivElement | null>(null);
   const submittedLeadRef = useRef(Boolean(initialState.profile.leadSubmitted));
   const isConversationClosed = Boolean(profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none"));
+  const lastInteractiveAssistantId = [...messages]
+    .reverse()
+    .find((message) => message.role === "assistant" && message.quickReplies?.length)?.id;
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -484,7 +487,15 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
           <div className="flex h-[min(66vh,520px)] flex-col bg-[linear-gradient(180deg,#fbfff4_0%,#eef9fb_44%,#eaf6f1_100%)]">
             <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {messages.map((message) => (
-                <ChatMessage key={message.id} message={message} onQuickReply={handleSendMessage} />
+                <ChatMessage
+                  key={message.id}
+                  message={message}
+                  onQuickReply={
+                    !isTyping && !isConversationClosed && message.id === lastInteractiveAssistantId
+                      ? handleSendMessage
+                      : undefined
+                  }
+                />
               ))}
 
               {isTyping ? (
