@@ -36,10 +36,18 @@ function getInitialLanguage(locale: Locale): ChatLanguage {
 
 function getGreeting(language: ChatLanguage) {
   if (language === "en") {
-    return "Hi, I’m Zendi, your loyalty agent at Zegendia. I can help you create, improve, or operate a loyalty program. Who do I have the pleasure of speaking with?";
+    return "Hi, I’m Zendi, your loyalty agent at Zegendia. I can answer questions about our public solutions or help you explore the right loyalty, rewards, or incentive path for your company. What would you like to know or build?";
   }
 
-  return "Hola, soy Zendi, tu agente de lealtad en Zegendia. Te puedo ayudar a crear, mejorar o administrar un programa de fidelización. ¿Con quién tengo el gusto?";
+  return "Hola, soy Zendi, tu agente de lealtad en Zegendia. Puedo responder preguntas sobre nuestras soluciones públicas o ayudarte a explorar el mejor camino de lealtad, recompensas o incentivos para tu empresa. ¿Qué quieres saber o construir?";
+}
+
+function getInitialQuickReplies(language: ChatLanguage) {
+  if (language === "en") {
+    return ["What is PuntosPlus?", "Rewards fulfillment", "Guide my case", "Contact"];
+  }
+
+  return ["¿Qué es PuntosPlus?", "Fulfillment de premios", "Orientar mi caso", "Contacto"];
 }
 
 function getInputPlaceholder(language: ChatLanguage) {
@@ -67,6 +75,7 @@ function createAssistantMessage(language: ChatLanguage): ChatMessageType {
     content: getGreeting(language),
     id: createId(),
     language,
+    quickReplies: getInitialQuickReplies(language),
     role: "assistant",
     timestamp: new Date().toISOString()
   };

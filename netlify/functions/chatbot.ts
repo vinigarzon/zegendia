@@ -68,6 +68,11 @@ const QUICK_REPLIES: Record<ChatLanguage, string[]> = {
   es: ["Empezar rápido", "Programa personalizado", "Mejorar mi programa", "Catálogo de premios"]
 };
 
+const INFO_QUICK_REPLIES: Record<ChatLanguage, string[]> = {
+  en: ["What is PuntosPlus?", "Rewards fulfillment", "Guide my case", "Contact"],
+  es: ["¿Qué es PuntosPlus?", "Fulfillment de premios", "Orientar mi caso", "Contacto"]
+};
+
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 40;
 const MESSAGE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -393,6 +398,26 @@ function isSupportOrDirectoryQuestion(message: string) {
   );
 }
 
+function wantsAdvisoryStart(message: string) {
+  const normalized = normalizeText(message);
+
+  return /\b(orientar mi caso|guia mi caso|guíame|ayudame|ayúdame|asesorar|asesoria|asesoría|quiero crear|crear un programa|quiero lanzar|quiero implementar|necesito un programa|quiero una demo|agendar demo|cotizar|quiero cotizar|guide my case|help me|advise me|i want to create|launch a program|need a program|request a demo|book a demo|quote|pricing)\b/i.test(
+    normalized
+  );
+}
+
+function wantsContactPath(message: string) {
+  return /\b(contacto|contactar|hablar con alguien|humano|asesor|ejecutivo|whatsapp|telefono|teléfono|contact|talk to someone|human|representative|phone)\b/i.test(
+    normalizeText(message)
+  );
+}
+
+function getContactInfoReply(language: ChatLanguage) {
+  return language === "en"
+    ? "For general contact, you can use https://www.zegendia.com/contact. If you want me to route a loyalty or rewards case from here, choose “Guide my case”."
+    : "Para contacto general, puedes usar https://www.zegendia.com/contact. Si quieres que yo enrute un caso de lealtad o recompensas desde aquí, elige “Orientar mi caso”.";
+}
+
 function isGarbageMessage(message: string) {
   const normalized = normalizeText(message);
   const compact = normalized.replace(/\s+/g, "");
@@ -632,6 +657,28 @@ function getEarlyTopicAnswer(message: string, language: ChatLanguage) {
     : "Puedo ayudarte con eso y mantener la conversación enfocada en lealtad, recompensas, incentivos, APIs y fulfillment.";
 }
 
+function buildPublicInfoReply(message: string, language: ChatLanguage, intent: ChatIntent) {
+  const match = searchKnowledgeBase(message, { intent, language, limit: 1 })[0];
+  const answer =
+    match && match.score >= 12
+      ? language === "en"
+        ? match.entry.answer_en
+        : match.entry.answer_es
+      : getEarlyTopicAnswer(message, language);
+  const cta =
+    language === "en"
+      ? "Do you want me to help you see whether this fits your company?"
+      : "¿Quieres que te ayude a ver si esto encaja con tu empresa?";
+
+  return `${answer}\n\n${cta}`;
+}
+
+function getInfoFallbackReply(language: ChatLanguage) {
+  return language === "en"
+    ? "I can answer public information about Zegendia’s loyalty, rewards, PuntosPlus, fulfillment, APIs, and LATAM coverage. If your question is about something else, the best path is https://www.zegendia.com/contact."
+    : "Puedo responder información pública sobre lealtad, recompensas, PuntosPlus, fulfillment, APIs y cobertura LATAM de Zegendia. Si tu pregunta es sobre otro tema, el mejor camino es https://www.zegendia.com/contact.";
+}
+
 function appendNextQuestion(answer: string, question: string) {
   return `${answer}\n\n${question}`;
 }
@@ -694,6 +741,10 @@ function shouldAskContact(profile: ZendiLeadProfile, message: string, userMessag
     return false;
   }
 
+  if (profile.mode !== "advisor") {
+    return false;
+  }
+
   if (!profile.name || !profile.country || !profile.company) {
     return false;
   }
@@ -713,10 +764,12 @@ function shouldAskContact(profile: ZendiLeadProfile, message: string, userMessag
 }
 
 function getOnboardingReply({
+  detectedIntent,
   language,
   message,
   profile
 }: {
+  detectedIntent: ChatIntent;
   language: ChatLanguage;
   message: string;
   profile: ZendiLeadProfile;
@@ -724,6 +777,8 @@ function getOnboardingReply({
   const inferred = inferProfileFromMessage(message, profile);
   const nextProfile = { ...profile, ...inferred };
   const businessIntent = hasBusinessIntent(message);
+  const advisorStart = wantsAdvisoryStart(message);
+  const advisorMode = nextProfile.mode === "advisor" || advisorStart;
 
   if (nextProfile.contactStep === "email") {
     if (!isEmail(message)) {
@@ -793,11 +848,76 @@ function getOnboardingReply({
     });
   }
 
+  if (!advisorMode) {
+    if (wantsContactPath(message) || isSupportOrDirectoryQuestion(message)) {
+      return response({
+        intent: "contacto",
+        language,
+        message: getContactInfoReply(language),
+        profile: { ...nextProfile, mode: "info" },
+        quickReplies:
+          language === "en" ? ["Guide my case", "What is PuntosPlus?"] : ["Orientar mi caso", "¿Qué es PuntosPlus?"]
+      });
+    }
+
+    if (isGreetingOnly(message)) {
+      return response({
+        intent: "general",
+        language,
+        message:
+          language === "en"
+            ? "Hi. You can ask me about Zegendia, PuntosPlus, rewards fulfillment, APIs, pricing criteria, or LATAM coverage. If you want, I can also guide your specific case."
+            : "Hola. Puedes preguntarme sobre Zegendia, PuntosPlus, fulfillment de premios, APIs, criterios de precio o cobertura LATAM. Si quieres, también puedo orientar tu caso específico.",
+        profile: { ...nextProfile, mode: "info" },
+        quickReplies: INFO_QUICK_REPLIES[language]
+      });
+    }
+
+    if (isLowQualityAnswer(message)) {
+      return response({
+        intent: "general",
+        language,
+        message: getInfoFallbackReply(language),
+        profile: { ...nextProfile, mode: "info" },
+        quickReplies: INFO_QUICK_REPLIES[language]
+      });
+    }
+
+    if (isQuestionLike(message) || businessIntent || detectedIntent !== "general") {
+      return response({
+        intent: detectedIntent,
+        language,
+        message: buildPublicInfoReply(message, language, detectedIntent),
+        profile: { ...nextProfile, mode: "info" },
+        quickReplies:
+          language === "en" ? ["Guide my case", "What is Zegendia?", "Contact"] : ["Orientar mi caso", "¿Qué es Zegendia?", "Contacto"]
+      });
+    }
+
+    return response({
+      intent: "general",
+      language,
+      message: getInfoFallbackReply(language),
+      profile: { ...nextProfile, mode: "info" },
+      quickReplies: INFO_QUICK_REPLIES[language]
+    });
+  }
+
+  nextProfile.mode = "advisor";
+
   if (!nextProfile.name) {
     if (!looksLikeName(message)) {
-      const answer = !isLowQualityAnswer(message) && (businessIntent || isQuestionLike(message)) ? getEarlyTopicAnswer(message, language) : "";
+      const answer =
+        !isLowQualityAnswer(message) && (businessIntent || isQuestionLike(message))
+          ? buildPublicInfoReply(message, language, detectedIntent)
+          : "";
       const intro =
         answer ||
+        (advisorStart
+          ? language === "en"
+            ? "Perfect, I can guide your case."
+            : "Perfecto, puedo orientar tu caso."
+          : "") ||
         (isGreetingOnly(message)
           ? language === "en"
             ? "Hi."
@@ -814,7 +934,7 @@ function getOnboardingReply({
             ? "Before I guide you, who do I have the pleasure of speaking with?"
             : "Antes de orientarte, ¿con quién tengo el gusto?"
         ),
-        profile: nextProfile,
+        profile: { ...nextProfile, mode: "advisor" },
         quickReplies: []
       });
     }
@@ -827,7 +947,7 @@ function getOnboardingReply({
         language === "en"
           ? `Nice to meet you, ${name}. What country are you writing from?`
           : `Mucho gusto, ${name}. ¿Desde qué país nos escribes?`,
-      profile: { ...nextProfile, name },
+      profile: { ...nextProfile, mode: "advisor", name },
       quickReplies: []
     });
   }
@@ -839,13 +959,13 @@ function getOnboardingReply({
         language,
         message: appendNextQuestion(
           businessIntent || isQuestionLike(message)
-            ? getEarlyTopicAnswer(message, language)
+            ? buildPublicInfoReply(message, language, detectedIntent)
             : language === "en"
               ? "I understand."
               : "Entiendo.",
           language === "en" ? "What country are you writing from?" : "¿Desde qué país nos escribes?"
         ),
-        profile: nextProfile,
+        profile: { ...nextProfile, mode: "advisor" },
         quickReplies: []
       });
     }
@@ -858,7 +978,7 @@ function getOnboardingReply({
         language === "en"
           ? "Perfect. What company or type of business are you representing?"
           : "Perfecto. ¿Qué empresa o tipo de negocio representas?",
-      profile: { ...nextProfile, country },
+      profile: { ...nextProfile, mode: "advisor", country },
       quickReplies: []
     });
   }
@@ -870,7 +990,7 @@ function getOnboardingReply({
         language,
         message: appendNextQuestion(
           businessIntent || isQuestionLike(message)
-            ? getEarlyTopicAnswer(message, language)
+            ? buildPublicInfoReply(message, language, detectedIntent)
             : language === "en"
               ? "I need a bit more context to route you well."
               : "Necesito un poco más de contexto para enrutar bien tu caso.",
@@ -878,7 +998,7 @@ function getOnboardingReply({
             ? "What company or type of business are you representing?"
             : "¿Qué empresa o tipo de negocio representas?"
         ),
-        profile: nextProfile,
+        profile: { ...nextProfile, mode: "advisor" },
         quickReplies: []
       });
     }
@@ -891,7 +1011,7 @@ function getOnboardingReply({
         language === "en"
           ? "Great. Are you looking to create a loyalty program from scratch, improve an existing one, or handle rewards/fulfillment?"
           : "Excelente. ¿Buscas crear un programa desde cero, mejorar uno existente o resolver premios/fulfillment?",
-      profile: { ...nextProfile, company },
+      profile: { ...nextProfile, mode: "advisor", company },
       quickReplies:
         language === "en"
           ? ["Start from scratch", "Improve existing program", "Rewards fulfillment"]
@@ -1205,7 +1325,7 @@ export async function handler(event: NetlifyEvent) {
     return jsonWithChatLog({ event, message, payload, reply, sessionId });
   }
 
-  const deterministic = getOnboardingReply({ language, message, profile });
+  const deterministic = getOnboardingReply({ detectedIntent: detected.intent, language, message, profile });
 
   if (deterministic) {
     return jsonWithChatLog({ event, message, payload, reply: deterministic, sessionId });

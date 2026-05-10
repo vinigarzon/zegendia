@@ -86,6 +86,8 @@ export type ZendiContactStep = "none" | "email" | "whatsapp";
 
 export type ZendiIntentLevel = "low" | "medium" | "high";
 
+export type ZendiConversationMode = "info" | "advisor";
+
 export type ZendiSuggestedSolution =
   | "PuntosPlus"
   | "OH Fulfillment"
@@ -94,6 +96,7 @@ export type ZendiSuggestedSolution =
   | "Otro";
 
 export interface ZendiLeadProfile {
+  mode?: ZendiConversationMode;
   name?: string;
   country?: string;
   company?: string;

@@ -10,6 +10,46 @@
     "follow_up_en": "Are you looking to engage customers, sales teams, distributors, or employees?"
   },
   {
+    "id": "puntosplus-overview",
+    "intent": "puntos",
+    "title": "What is PuntosPlus?",
+    "keywords": ["puntosplus", "puntos plus", "programa rapido", "programa configurable", "points platform", "quick loyalty"],
+    "answer_es": "PuntosPlus es la solución de Zegendia para lanzar programas de puntos y recompensas de forma más rápida y configurable, sin construir una plataforma desde cero.",
+    "answer_en": "PuntosPlus is Zegendia’s solution for launching configurable points and rewards programs faster, without building a platform from scratch.",
+    "follow_up_es": "¿Quieres que te ayude a ver si PuntosPlus encaja con tu caso?",
+    "follow_up_en": "Would you like me to help you see whether PuntosPlus fits your case?"
+  },
+  {
+    "id": "oh-my-rewards-overview",
+    "intent": "premios",
+    "title": "What is Oh My Rewards?",
+    "keywords": ["oh my rewards", "ohmyrewards", "fulfillment", "rewards fulfillment", "premios", "catalogo de premios"],
+    "answer_es": "Oh My Rewards es la capa de fulfillment de Zegendia para operar catálogos, redenciones, premios físicos o digitales y entregas según el país y el alcance del programa.",
+    "answer_en": "Oh My Rewards is Zegendia’s fulfillment layer for operating catalogs, redemptions, physical or digital rewards, and deliveries depending on country and program scope.",
+    "follow_up_es": "¿Tu necesidad está más cerca de catálogo, redenciones o entregas?",
+    "follow_up_en": "Is your need closer to catalogs, redemptions, or deliveries?"
+  },
+  {
+    "id": "zegendia-core-overview",
+    "intent": "general",
+    "title": "What is Zegendia Core?",
+    "keywords": ["zegendia core", "programa personalizado", "custom loyalty", "solucion a la medida", "programa a la medida"],
+    "answer_es": "Zegendia Core es el enfoque para programas personalizados de lealtad, incentivos y recompensas cuando la empresa necesita reglas, audiencias, campañas, integraciones u operación más específica.",
+    "answer_en": "Zegendia Core is the path for custom loyalty, incentive, and rewards programs when a company needs more specific rules, audiences, campaigns, integrations, or operations.",
+    "follow_up_es": "¿Buscas algo configurable o una solución más a la medida?",
+    "follow_up_en": "Are you looking for something configurable or a more custom solution?"
+  },
+  {
+    "id": "zegendia-offices-contact",
+    "intent": "contacto",
+    "title": "Zegendia offices and contact",
+    "keywords": ["oficinas", "office", "contacto", "panama", "mexico", "estados unidos", "chicago", "telefono", "email"],
+    "answer_es": "Zegendia tiene presencia con oficinas en Panamá, México y Estados Unidos. Para contacto general, el mejor camino es la página de contacto del sitio.",
+    "answer_en": "Zegendia has offices in Panama, Mexico, and the United States. For general contact, the best path is the website contact page.",
+    "follow_up_es": "Puedes escribir desde https://www.zegendia.com/contact si necesitas una consulta general.",
+    "follow_up_en": "You can reach out through https://www.zegendia.com/contact for a general inquiry."
+  },
+  {
     "id": "points-program",
     "intent": "puntos",
     "title": "Points programs",
