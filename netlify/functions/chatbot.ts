@@ -360,6 +360,27 @@ function isRefusalOrDeflection(message: string) {
   return /\b(no importa|prefiero no|despues|después|luego|no quiero|no aplica|n\/a)\b/i.test(normalizeText(message));
 }
 
+function isConfusedMessage(message: string) {
+  return /\b(no entiendo|no te entiendo|que dices|qué dices|q dices|dije|eso no|what do you mean|i do not understand|don't understand)\b/i.test(
+    normalizeText(message)
+  );
+}
+
+function isGarbageMessage(message: string) {
+  const normalized = normalizeText(message);
+  const compact = normalized.replace(/\s+/g, "");
+
+  return (
+    /^(x+|y+|z+|w+|asdf+|qwerty|test|testing|prueba|blah|foo|bar|nada|na|none)$/i.test(compact) ||
+    /^([a-z])\1{2,}$/i.test(compact) ||
+    /^[^a-z0-9áéíóúñü+@.-]+$/i.test(compact)
+  );
+}
+
+function isLowQualityAnswer(message: string) {
+  return isGarbageMessage(message) || isConfusedMessage(message) || isRefusalOrDeflection(message);
+}
+
 function isLikelySpam(message: string) {
   const normalized = normalizeText(message);
   const repeated = /(.)\1{8,}/.test(message);
@@ -369,6 +390,48 @@ function isLikelySpam(message: string) {
   const irrelevant = /\b(casino|crypto|porn|bet|weather|clima|receta|recipe|tarea|homework)\b/i.test(normalized);
 
   return repeated || hostile || irrelevant;
+}
+
+function getClarifyingQuestion(profile: ZendiLeadProfile, language: ChatLanguage) {
+  if (!profile.name) {
+    return language === "en"
+      ? "Please share your name so I can guide the conversation properly."
+      : "Compárteme tu nombre para poder orientarte bien.";
+  }
+
+  if (!profile.country) {
+    return language === "en"
+      ? "What country are you writing from? For example: Ecuador, Colombia, Mexico, Panama, USA."
+      : "¿Desde qué país nos escribes? Por ejemplo: Ecuador, Colombia, México, Panamá o USA.";
+  }
+
+  if (!profile.company) {
+    return language === "en"
+      ? "What company or type of business are you representing? For example: retail, CPG, fintech, bank, distribution."
+      : "¿Qué empresa o tipo de negocio representas? Por ejemplo: retail, consumo masivo, fintech, banco o distribución.";
+  }
+
+  if (!profile.hasExistingProgram) {
+    return language === "en"
+      ? "Are you creating a program from scratch, improving an existing one, or looking for rewards fulfillment?"
+      : "¿Buscas crear un programa desde cero, mejorar uno existente o resolver premios/fulfillment?";
+  }
+
+  if (!profile.loyaltyTarget) {
+    return language === "en"
+      ? "Who do you want to engage: customers, sales teams, distributors, employees, or partners?"
+      : "¿A quién quieres fidelizar: clientes, vendedores, distribuidores, colaboradores o aliados?";
+  }
+
+  if (!profile.estimatedUsers) {
+    return language === "en"
+      ? "Approximately how many participants would the program have?"
+      : "¿Aproximadamente cuántas personas participarían en el programa?";
+  }
+
+  return language === "en"
+    ? "Tell me briefly what you want to solve with the program."
+    : "Cuéntame brevemente qué quieres resolver con el programa.";
 }
 
 function looksLikeName(message: string) {
@@ -382,6 +445,8 @@ function looksLikeName(message: string) {
     wordCount >= 1 &&
     wordCount <= 4 &&
     !isGreetingOnly(message) &&
+    !isLowQualityAnswer(message) &&
+    !/\bhola\b|\bhello\b|\bhi\b/i.test(normalized) &&
     !businessKeywords &&
     !hasBusinessIntent(message) &&
     !isEmail(message) &&
@@ -394,6 +459,41 @@ function extractName(message: string) {
   const named = /(?:soy|me llamo|mi nombre es|i am|my name is)\s+(.+)/i.exec(cleaned);
 
   return cleanText(named?.[1] || cleaned, 80);
+}
+
+function looksLikeCompanyOrBusiness(message: string) {
+  const normalized = normalizeText(message);
+  const wordCount = normalized.split(" ").filter(Boolean).length;
+
+  if (
+    isGreetingOnly(message) ||
+    isLowQualityAnswer(message) ||
+    isEmail(message) ||
+    isWhatsapp(message) ||
+    /\b(varios|varias|cualquiera|ninguna|no se|no sé|empresa|negocio)\b/i.test(normalized)
+  ) {
+    return false;
+  }
+
+  return wordCount <= 8 && normalized.length >= 3;
+}
+
+function extractEstimatedUsers(message: string) {
+  const normalized = normalizeText(message);
+  const numberMatch = /(\d[\d.,\s]{0,12})(?:\s*(usuarios|personas|participantes|clientes|colaboradores|empleados|vendedores))?/i.exec(
+    message
+  );
+
+  if (numberMatch) {
+    return cleanText(numberMatch[0], 80);
+  }
+
+  if (/\b(menos de 100|menos de cien|pequeño|pequeno|small)\b/i.test(normalized)) return "Menos de 100";
+  if (/\b(100|500|mediano|medium)\b/i.test(normalized)) return "100 a 500";
+  if (/\b(1000|1.000|mil|grande|large)\b/i.test(normalized)) return "Más de 1.000";
+  if (/\b(no se|no sé|no estoy seguro|not sure|por definir|todavia no|todavía no)\b/i.test(normalized)) return "Por definir";
+
+  return "";
 }
 
 function inferProfileFromMessage(message: string, current: ZendiLeadProfile): Partial<ZendiLeadProfile> {
@@ -424,6 +524,8 @@ function inferProfileFromMessage(message: string, current: ZendiLeadProfile): Pa
     updates.suggestedSolution = "PuntosPlus";
   } else if (/\b(personalizado|medida|corporativo|regional|custom|enterprise)\b/i.test(normalized)) {
     updates.suggestedSolution = "Zegendia personalizado";
+  } else if (/\b(asesoria|asesoría|orientacion|orientación|no estoy seguro|not sure|advice)\b/i.test(normalized)) {
+    updates.suggestedSolution = "Otro";
   }
 
   if (/\b(precio|precios|cuanto cuesta|cuánto cuesta|cotizar|pricing|price|quote)\b/i.test(normalized)) {
@@ -447,7 +549,7 @@ function isLikelyCountryAnswer(message: string) {
     /\b(usa|eeuu|estados unidos|united states|mexico|méxico|colombia|ecuador|peru|perú|chile|argentina|panama|panamá|costa rica|guatemala|honduras|el salvador|republica dominicana|república dominicana|dominicana|brasil|brazil|latam|canada|canadá|spain|españa)\b/i;
   const wordCount = normalized.split(" ").filter(Boolean).length;
 
-  if (isRefusalOrDeflection(message)) {
+  if (isLowQualityAnswer(message)) {
     return false;
   }
 
@@ -548,7 +650,7 @@ function shouldAskContact(profile: ZendiLeadProfile, message: string, userMessag
     return false;
   }
 
-  if (!profile.name || !profile.country) {
+  if (!profile.name || !profile.country || !profile.company) {
     return false;
   }
 
@@ -556,7 +658,14 @@ function shouldAskContact(profile: ZendiLeadProfile, message: string, userMessag
     return true;
   }
 
-  return Boolean(profile.needType && profile.suggestedSolution && userMessages >= 4);
+  return Boolean(
+    profile.needType &&
+      profile.hasExistingProgram &&
+      profile.loyaltyTarget &&
+      profile.estimatedUsers &&
+      profile.suggestedSolution &&
+      userMessages >= 6
+  );
 }
 
 function getOnboardingReply({
@@ -643,11 +752,20 @@ function getOnboardingReply({
   if (!nextProfile.name) {
     if (!looksLikeName(message)) {
       const answer = businessIntent ? getEarlyTopicAnswer(message, language) : "";
+      const intro =
+        answer ||
+        (isGreetingOnly(message)
+          ? language === "en"
+            ? "Hi."
+            : "Hola."
+          : language === "en"
+            ? "I do not want to register that as your name."
+            : "No quiero registrar eso como tu nombre.");
       return response({
         intent: "general",
         language,
         message: appendNextQuestion(
-          answer || (language === "en" ? "I can help with that." : "Claro, puedo ayudarte con eso."),
+          intro,
           language === "en"
             ? "Before I guide you, who do I have the pleasure of speaking with?"
             : "Antes de orientarte, ¿con quién tengo el gusto?"
@@ -698,12 +816,12 @@ function getOnboardingReply({
   }
 
   if (!nextProfile.company) {
-    if (businessIntent || isRefusalOrDeflection(message)) {
+    if (businessIntent || !looksLikeCompanyOrBusiness(message)) {
       return response({
         intent: "general",
         language,
         message: appendNextQuestion(
-          businessIntent ? getEarlyTopicAnswer(message, language) : language === "en" ? "No problem." : "No hay problema.",
+          businessIntent ? getEarlyTopicAnswer(message, language) : language === "en" ? "I need a bit more context to route you well." : "Necesito un poco más de contexto para enrutar bien tu caso.",
           language === "en"
             ? "What company or type of business are you representing?"
             : "¿Qué empresa o tipo de negocio representas?"
@@ -726,6 +844,104 @@ function getOnboardingReply({
         language === "en"
           ? ["Start from scratch", "Improve existing program", "Rewards fulfillment"]
           : ["Crear desde cero", "Mejorar programa actual", "Premios / fulfillment"]
+    });
+  }
+
+  if (isLowQualityAnswer(message)) {
+    return response({
+      intent: "general",
+      language,
+      message: getClarifyingQuestion(nextProfile, language),
+      profile: nextProfile,
+      quickReplies: []
+    });
+  }
+
+  if (!nextProfile.hasExistingProgram) {
+    const answer = businessIntent ? getEarlyTopicAnswer(message, language) : "";
+
+    return response({
+      intent: "general",
+      language,
+      message: appendNextQuestion(
+        answer || (language === "en" ? "Good context." : "Buen contexto."),
+        language === "en"
+          ? "Are you creating a program from scratch, improving an existing one, or looking for rewards fulfillment?"
+          : "¿Buscas crear un programa desde cero, mejorar uno existente o resolver premios/fulfillment?"
+      ),
+      profile: nextProfile,
+      quickReplies:
+        language === "en"
+          ? ["Start from scratch", "Improve existing program", "Rewards fulfillment"]
+          : ["Crear desde cero", "Mejorar programa actual", "Premios / fulfillment"]
+    });
+  }
+
+  if (!nextProfile.loyaltyTarget) {
+    return response({
+      intent: "general",
+      language,
+      message:
+        language === "en"
+          ? "Perfect. Who do you want to engage first: customers, sales teams, distributors, employees, or partners?"
+          : "Perfecto. ¿A quién quieres fidelizar primero: clientes, vendedores, distribuidores, colaboradores o aliados?",
+      profile: nextProfile,
+      quickReplies:
+        language === "en"
+          ? ["Customers", "Sales teams", "Distributors", "Employees"]
+          : ["Clientes", "Vendedores", "Distribuidores", "Colaboradores"]
+    });
+  }
+
+  if (!nextProfile.estimatedUsers) {
+    const estimatedUsers = extractEstimatedUsers(message);
+
+    if (estimatedUsers) {
+      const updatedProfile = { ...nextProfile, estimatedUsers };
+
+      return response({
+        intent: "general",
+        language,
+        message:
+          language === "en"
+            ? "Thanks. Do you prefer something fast to launch or a more custom solution?"
+            : "Gracias. ¿Prefieres algo rápido para lanzar o una solución más personalizada?",
+        profile: updatedProfile,
+        quickReplies:
+          language === "en"
+            ? ["Fast to launch", "Custom solution", "Not sure"]
+            : ["Rápido para lanzar", "Solución personalizada", "No estoy seguro"]
+      });
+    }
+
+    return response({
+      intent: "general",
+      language,
+      message:
+        language === "en"
+          ? "That helps. Approximately how many participants would the program have?"
+          : "Eso ayuda. ¿Aproximadamente cuántas personas participarían en el programa?",
+      profile: nextProfile,
+      quickReplies:
+        language === "en"
+          ? ["Less than 100", "100 to 500", "More than 1,000", "Not sure"]
+          : ["Menos de 100", "100 a 500", "Más de 1.000", "No estoy seguro"]
+    });
+  }
+
+  if (!nextProfile.suggestedSolution) {
+    return response({
+      intent: "general",
+      language,
+      message:
+        language === "en"
+          ? "Understood. Do you need something fast to launch or a more custom corporate solution?"
+          : "Entendido. ¿Necesitas algo rápido para lanzar o una solución corporativa más personalizada?",
+      profile: nextProfile,
+      quickReplies:
+        language === "en"
+          ? ["Fast to launch", "Custom solution", "Need advice"]
+          : ["Rápido para lanzar", "Solución personalizada", "Necesito asesoría"]
     });
   }
 
