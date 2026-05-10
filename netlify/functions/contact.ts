@@ -120,25 +120,37 @@ function demoPreferenceLabel(value: ContactPayload["wantsDemo"], language: "es" 
 const OBJECTIVE_LABELS = {
   en: {
     buyers: "B2B buyers",
+    clientes: "Customers",
     community: "Community",
+    comunidad: "Community",
     customers: "Customers",
     distributors: "Distributors",
+    distribuidores: "Distributors",
     employees: "Employees",
+    empleados: "Employees",
     "existing-loyalty": "I already have a loyalty program",
     "fulfillment-only": "I only need rewards fulfillment",
     other: "Other",
-    sales: "Sales team"
+    otro: "Other",
+    sales: "Sales team",
+    vendedores: "Sales team"
   },
   es: {
     buyers: "Compradores B2B",
+    clientes: "Clientes",
     community: "Comunidad",
+    comunidad: "Comunidad",
     customers: "Clientes",
     distributors: "Distribuidores",
+    distribuidores: "Distribuidores",
     employees: "Empleados",
+    empleados: "Empleados",
     "existing-loyalty": "Ya tengo un programa de loyalty",
     "fulfillment-only": "Solo necesito fulfillment de premios",
     other: "Otro",
-    sales: "Equipo comercial"
+    otro: "Otro",
+    sales: "Equipo comercial",
+    vendedores: "Equipo comercial"
   }
 } as const;
 
@@ -351,11 +363,7 @@ export async function handler(event: NetlifyEvent) {
   const estimatedUsersRaw = String(payload.estimatedUsers || payload.size || "").trim();
   const objectiveDisplay = optionLabel(objectiveRaw, OBJECTIVE_LABELS, preferredLanguage);
   const sizeDisplay = optionLabel(estimatedUsersRaw, SIZE_LABELS, preferredLanguage);
-  const companyTypeDisplay = isChatbotLead
-    ? preferredLanguage === "en"
-      ? "Zendi chatbot"
-      : "Chatbot Zendi"
-    : displayValue(companyType, preferredLanguage);
+  const companyTypeDisplay = displayValue(companyType, preferredLanguage);
   const createdAt = new Date().toISOString();
   const ip = getIp(event);
 
@@ -444,6 +452,7 @@ export async function handler(event: NetlifyEvent) {
     preferredLanguage === "en"
       ? {
           company: "Company",
+          companyOrBusinessType: "Company / business type",
           companyType: "Type of company",
           countriesNeeded: "Countries needed",
           country: "Country",
@@ -470,6 +479,7 @@ export async function handler(event: NetlifyEvent) {
         }
       : {
           company: "Empresa",
+          companyOrBusinessType: "Empresa / tipo de negocio",
           companyType: "Tipo de empresa",
           countriesNeeded: "Países requeridos",
           country: "País",
@@ -494,10 +504,14 @@ export async function handler(event: NetlifyEvent) {
           zendiThread: "Hilo de conversación con Zendi",
           whatToFidelize: "Qué quiere fidelizar"
         };
+  const companyRow = {
+    label: isChatbotLead ? labels.companyOrBusinessType : labels.company,
+    value: displayValue(company, preferredLanguage)
+  };
   const contactConfirmationRows = [
-    { label: labels.company, value: displayValue(company, preferredLanguage) },
+    companyRow,
     { label: labels.country, value: displayValue(country, preferredLanguage) },
-    { label: labels.companyType, value: companyTypeDisplay },
+    ...(isChatbotLead ? [] : [{ label: labels.companyType, value: companyTypeDisplay }]),
     { label: labels.whatToFidelize, value: objectiveDisplay },
     { label: labels.estimatedSize, value: sizeDisplay },
     { label: labels.message, value: displayValue(message, preferredLanguage) }
@@ -505,11 +519,11 @@ export async function handler(event: NetlifyEvent) {
   const internalLeadRows = [
     { label: labels.source, value: isChatbotLead ? "Zendi" : preferredLanguage === "en" ? "Contact form" : "Formulario de contacto" },
     { label: labels.name, value: displayValue(name, preferredLanguage) },
-    { label: labels.company, value: displayValue(company, preferredLanguage) },
+    companyRow,
     { label: labels.email, value: displayValue(email, preferredLanguage) },
     { label: labels.country, value: displayValue(country, preferredLanguage) },
     { label: labels.phone, value: displayValue(String(payload.phone || ""), preferredLanguage) },
-    { label: labels.companyType, value: companyTypeDisplay },
+    ...(isChatbotLead ? [] : [{ label: labels.companyType, value: companyTypeDisplay }]),
     { label: labels.whatToFidelize, value: objectiveDisplay },
     { label: labels.estimatedSize, value: sizeDisplay },
     { label: labels.message, value: displayValue(message, preferredLanguage) },

@@ -341,6 +341,25 @@ function isWhatsapp(value: string) {
   return /^[+()\d\s.-]{7,24}$/.test(value);
 }
 
+function isGreetingOnly(message: string) {
+  const normalized = normalizeText(message);
+  return /^(hola|hello|hi|buenas|buenos dias|buenos días|buenas tardes|buenas noches|hey|saludos|gracias|thanks|thank you)[\s!.]*$/i.test(
+    normalized
+  );
+}
+
+function hasBusinessIntent(message: string) {
+  const normalized = normalizeText(message);
+
+  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|demo|oficina|oficinas|pais|país|paises|países|latam|api|integracion|integración|puntos|lealtad|loyalty|recompensas|premios|gift|fulfillment|catalogo|catálogo|stock|vendedores|distribuidores|clientes|empleados|programa|crear|mejorar|desde cero|ecommerce|shopify|crm|erp|pricing|price|cost|quote|office|countries|rewards|points|incentives|sales|customers|employees|distributors)\b/i.test(
+    normalized
+  );
+}
+
+function isRefusalOrDeflection(message: string) {
+  return /\b(no importa|prefiero no|despues|después|luego|no quiero|no aplica|n\/a)\b/i.test(normalizeText(message));
+}
+
 function isLikelySpam(message: string) {
   const normalized = normalizeText(message);
   const repeated = /(.)\1{8,}/.test(message);
@@ -359,7 +378,15 @@ function looksLikeName(message: string) {
     normalized
   );
 
-  return wordCount >= 1 && wordCount <= 4 && !businessKeywords && !isEmail(message) && !isWhatsapp(message);
+  return (
+    wordCount >= 1 &&
+    wordCount <= 4 &&
+    !isGreetingOnly(message) &&
+    !businessKeywords &&
+    !hasBusinessIntent(message) &&
+    !isEmail(message) &&
+    !isWhatsapp(message)
+  );
 }
 
 function extractName(message: string) {
@@ -381,25 +408,133 @@ function inferProfileFromMessage(message: string, current: ZendiLeadProfile): Pa
 
   if (/\b(ya tenemos|tenemos uno|actualmente|existente|already have|existing)\b/i.test(normalized)) {
     updates.hasExistingProgram = "yes";
+    updates.needType = updates.needType || "Mejorar programa existente";
   } else if (/\b(desde cero|crear|nuevo|empezar|start|new)\b/i.test(normalized)) {
     updates.hasExistingProgram = "no";
+    updates.needType = updates.needType || "Crear programa desde cero";
   }
 
   if (/\b(api|integracion|integración|webhook|crm|erp|ecommerce|shopify|woocommerce)\b/i.test(normalized)) {
     updates.suggestedSolution = "API/integración";
+    updates.needType = updates.needType || "Integración API";
   } else if (/\b(premios|recompensas|catalogo|catálogo|gift|fulfillment|redenciones|stock)\b/i.test(normalized)) {
     updates.suggestedSolution = "OH Fulfillment";
+    updates.needType = updates.needType || "Premios y fulfillment";
   } else if (/\b(rapido|rápido|simple|sencillo|puntosplus|puntos plus|quick|fast)\b/i.test(normalized)) {
     updates.suggestedSolution = "PuntosPlus";
   } else if (/\b(personalizado|medida|corporativo|regional|custom|enterprise)\b/i.test(normalized)) {
     updates.suggestedSolution = "Zegendia personalizado";
   }
 
-  if (!current.needType) {
-    updates.needType = cleanText(message, 160);
+  if (/\b(precio|precios|cuanto cuesta|cuánto cuesta|cotizar|pricing|price|quote)\b/i.test(normalized)) {
+    updates.needType = updates.needType || "Consulta de precios";
+  }
+
+  if (/\b(demo|reunion|reunión|agenda|agendar|meeting)\b/i.test(normalized)) {
+    updates.needType = updates.needType || "Solicitud de demo o reunión";
+  }
+
+  if (current.needType && updates.needType) {
+    delete updates.needType;
   }
 
   return updates;
+}
+
+function isLikelyCountryAnswer(message: string) {
+  const normalized = normalizeText(message);
+  const countryKeywords =
+    /\b(usa|eeuu|estados unidos|united states|mexico|méxico|colombia|ecuador|peru|perú|chile|argentina|panama|panamá|costa rica|guatemala|honduras|el salvador|republica dominicana|república dominicana|dominicana|brasil|brazil|latam|canada|canadá|spain|españa)\b/i;
+  const wordCount = normalized.split(" ").filter(Boolean).length;
+
+  if (isRefusalOrDeflection(message)) {
+    return false;
+  }
+
+  return countryKeywords.test(normalized) || (wordCount <= 4 && !hasBusinessIntent(message) && !isGreetingOnly(message));
+}
+
+function getEarlyTopicAnswer(message: string, language: ChatLanguage) {
+  const normalized = normalizeText(message);
+
+  if (/\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|pricing|price|cost)\b/i.test(normalized)) {
+    return language === "en"
+      ? "Pricing depends on the type of program, number of users, countries, rewards, integrations, and customization level. If you need something fast, we can look at PuntosPlus; if it is corporate or regional, the team should review the case."
+      : "El precio depende del tipo de programa, número de usuarios, países, premios, integraciones y nivel de personalización. Si buscas algo rápido, podemos mirar PuntosPlus; si es corporativo o regional, conviene revisar tu caso.";
+  }
+
+  if (/\b(oficina|oficinas|pais|país|paises|países|latam|cobertura|coverage|office|offices|countries)\b/i.test(normalized)) {
+    return language === "en"
+      ? "Zegendia has offices in Panama, Mexico, and the United States, and works with loyalty, rewards, and fulfillment operations across Latin America depending on the scope."
+      : "Zegendia tiene oficinas en Panamá, México y Estados Unidos, y trabaja con operación de lealtad, recompensas y fulfillment en Latinoamérica según el alcance.";
+  }
+
+  if (/\b(api|integracion|integración|webhook|crm|erp|ecommerce|shopify|woocommerce)\b/i.test(normalized)) {
+    return language === "en"
+      ? "Yes. Zegendia can support API integrations to connect external systems, e-commerce, CRM, points platforms, catalogs, and rewards/order workflows."
+      : "Sí. Zegendia puede trabajar con integraciones vía API para conectar sistemas externos, e-commerce, CRM, plataformas de puntos, catálogos y procesos de órdenes o premios.";
+  }
+
+  if (/\b(premios|recompensas|catalogo|catálogo|gift|fulfillment|redenciones|stock|rewards|prizes)\b/i.test(normalized)) {
+    return language === "en"
+      ? "Zegendia can help with physical and digital rewards, gift cards, catalogs, redemptions, and fulfillment depending on the country and program model."
+      : "Zegendia puede ayudarte con premios físicos y digitales, gift cards, catálogos, redenciones y fulfillment según el país y el modelo del programa.";
+  }
+
+  return language === "en"
+    ? "I can help with that and keep the conversation focused on loyalty, rewards, incentives, APIs, and fulfillment."
+    : "Puedo ayudarte con eso y mantener la conversación enfocada en lealtad, recompensas, incentivos, APIs y fulfillment.";
+}
+
+function appendNextQuestion(answer: string, question: string) {
+  return `${answer}\n\n${question}`;
+}
+
+function buildExecutiveSummary(profile: ZendiLeadProfile, language: ChatLanguage) {
+  const parts: string[] = [];
+  const name = profile.name || (language === "en" ? "The visitor" : "La persona");
+  const country = profile.country ? (language === "en" ? ` in ${profile.country}` : ` en ${profile.country}`) : "";
+  const business = profile.company ? ` (${profile.company})` : "";
+  const need = profile.needType || (language === "en" ? "a loyalty solution" : "una solución de lealtad");
+  const target = profile.loyaltyTarget ? (language === "en" ? ` for ${profile.loyaltyTarget}` : ` para ${profile.loyaltyTarget}`) : "";
+
+  parts.push(
+    language === "en"
+      ? `${name}${business} is looking for ${need}${target}${country}.`
+      : `${name}${business} busca ${need}${target}${country}.`
+  );
+
+  if (profile.suggestedSolution) {
+    parts.push(language === "en" ? `Suggested solution: ${profile.suggestedSolution}.` : `Solución sugerida: ${profile.suggestedSolution}.`);
+  }
+
+  if (profile.hasExistingProgram === "yes") {
+    parts.push(language === "en" ? "They already have a program and want to improve it." : "Ya cuenta con un programa y busca mejorarlo.");
+  } else if (profile.hasExistingProgram === "no") {
+    parts.push(language === "en" ? "They want to create a program from scratch." : "Busca crear un programa desde cero.");
+  }
+
+  return parts.join(" ");
+}
+
+function sanitizeProfile(profile: ZendiLeadProfile) {
+  const nextProfile = { ...profile };
+  const normalizedNeed = normalizeText(nextProfile.needType || "");
+  const invalidNeedValues = [
+    nextProfile.name,
+    nextProfile.country,
+    nextProfile.company,
+    nextProfile.email,
+    nextProfile.whatsapp
+  ]
+    .map((value) => normalizeText(value || ""))
+    .filter(Boolean);
+
+  if (normalizedNeed && invalidNeedValues.includes(normalizedNeed)) {
+    delete nextProfile.needType;
+  }
+
+  return nextProfile;
 }
 
 function wantsContact(message: string) {
@@ -409,6 +544,10 @@ function wantsContact(message: string) {
 }
 
 function shouldAskContact(profile: ZendiLeadProfile, message: string, userMessages: number) {
+  if (profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none")) {
+    return false;
+  }
+
   if (!profile.name || !profile.country) {
     return false;
   }
@@ -431,6 +570,7 @@ function getOnboardingReply({
 }) {
   const inferred = inferProfileFromMessage(message, profile);
   const nextProfile = { ...profile, ...inferred };
+  const businessIntent = hasBusinessIntent(message);
 
   if (nextProfile.contactStep === "email") {
     if (!isEmail(message)) {
@@ -475,10 +615,13 @@ function getOnboardingReply({
       });
     }
 
-    const summary =
-      language === "en"
-        ? `${nextProfile.name} is looking for ${nextProfile.needType || "a loyalty solution"} in ${nextProfile.country}. Suggested solution: ${nextProfile.suggestedSolution || "Zegendia advisory"}.`
-        : `${nextProfile.name} busca ${nextProfile.needType || "una solución de lealtad"} en ${nextProfile.country}. Solución sugerida: ${nextProfile.suggestedSolution || "asesoría Zegendia"}.`;
+    const finalProfile = {
+      ...nextProfile,
+      contactStep: "none" as const,
+      intentLevel: "high" as const,
+      whatsapp: message
+    };
+    const summary = buildExecutiveSummary(finalProfile, language);
 
     return response({
       contactStep: "none",
@@ -489,11 +632,8 @@ function getOnboardingReply({
           ? `Thanks, ${nextProfile.name}. I have the main information. A person from Zegendia will review your case and contact you to guide you better. It was a pleasure helping you.`
           : `Gracias, ${nextProfile.name}. Ya tengo la información principal. Una persona del equipo de Zegendia revisará tu caso y te contactará para orientarte mejor. Fue un gusto ayudarte.`,
       profile: {
-        ...nextProfile,
-        contactStep: "none",
-        intentLevel: "high",
-        summary,
-        whatsapp: message
+        ...finalProfile,
+        summary
       },
       quickReplies: [],
       readyToSubmitLead: true
@@ -502,13 +642,16 @@ function getOnboardingReply({
 
   if (!nextProfile.name) {
     if (!looksLikeName(message)) {
+      const answer = businessIntent ? getEarlyTopicAnswer(message, language) : "";
       return response({
         intent: "general",
         language,
-        message:
+        message: appendNextQuestion(
+          answer || (language === "en" ? "I can help with that." : "Claro, puedo ayudarte con eso."),
           language === "en"
-            ? "I can help with that. Before I guide you, who do I have the pleasure of speaking with?"
-            : "Claro, puedo ayudarte con eso. Antes de orientarte, ¿con quién tengo el gusto?",
+            ? "Before I guide you, who do I have the pleasure of speaking with?"
+            : "Antes de orientarte, ¿con quién tengo el gusto?"
+        ),
         profile: nextProfile,
         quickReplies: []
       });
@@ -528,6 +671,19 @@ function getOnboardingReply({
   }
 
   if (!nextProfile.country) {
+    if (!isLikelyCountryAnswer(message) || businessIntent) {
+      return response({
+        intent: "general",
+        language,
+        message: appendNextQuestion(
+          businessIntent ? getEarlyTopicAnswer(message, language) : language === "en" ? "I understand." : "Entiendo.",
+          language === "en" ? "What country are you writing from?" : "¿Desde qué país nos escribes?"
+        ),
+        profile: nextProfile,
+        quickReplies: []
+      });
+    }
+
     const country = cleanText(message, 80);
     return response({
       intent: "general",
@@ -542,6 +698,21 @@ function getOnboardingReply({
   }
 
   if (!nextProfile.company) {
+    if (businessIntent || isRefusalOrDeflection(message)) {
+      return response({
+        intent: "general",
+        language,
+        message: appendNextQuestion(
+          businessIntent ? getEarlyTopicAnswer(message, language) : language === "en" ? "No problem." : "No hay problema.",
+          language === "en"
+            ? "What company or type of business are you representing?"
+            : "¿Qué empresa o tipo de negocio representas?"
+        ),
+        profile: nextProfile,
+        quickReplies: []
+      });
+    }
+
     const company = cleanText(message, 120);
     return response({
       intent: "general",
@@ -671,6 +842,8 @@ async function getOpenAiGuidance({
         "If they ask about pricing, do not invent a fixed price unless published in the snippets. Explain that price depends on users, countries, prizes, integrations, and personalization.",
         "If information is unavailable, say you do not want to give an imprecise answer and offer to route the case to the team later.",
         "Return only valid JSON with this shape: {\"message\":\"string\",\"profileUpdates\":{},\"suggestedSolution\":\"PuntosPlus|OH Fulfillment|Zegendia personalizado|API/integración|Otro\",\"intentLevel\":\"low|medium|high\",\"summary\":\"short executive summary\",\"quickReplies\":[\"string\"]}.",
+        "profileUpdates must only include fields the visitor explicitly provided or that are clearly inferable. Never put a person's name, country, greeting, email, or phone as needType, objective, intent, or loyaltyTarget.",
+        "If the visitor asks a question while a profile field is missing, answer the question briefly first, then ask only the missing profile field.",
         "The message should answer or guide and then ask the next best short question. Do not ask multiple questions at once."
       ].join("\n"),
       model: process.env.OPENAI_CHATBOT_MODEL || "gpt-5.2"
@@ -746,7 +919,24 @@ export async function handler(event: NetlifyEvent) {
   const detected = detectIntent(message, fallbackLanguage);
   const language = detected.language;
   const userMessages = (payload.messages || []).filter((item) => item.role === "user").length;
-  const profile = { ...(payload.profile || {}) };
+  const profile = sanitizeProfile({ ...(payload.profile || {}) });
+
+  if (profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none")) {
+    const reply = response({
+      contactStep: "none",
+      intent: "contacto",
+      language,
+      message:
+        language === "en"
+          ? `Thanks${profile.name ? `, ${profile.name}` : ""}. I already sent your information to the Zegendia team. They will review the case and follow up soon.`
+          : `Gracias${profile.name ? `, ${profile.name}` : ""}. Ya envié tu información al equipo de Zegendia. Revisarán el caso y te darán seguimiento pronto.`,
+      profile: { ...profile, leadSubmitted: true },
+      quickReplies: []
+    });
+
+    return jsonWithChatLog({ event, message, payload, reply, sessionId });
+  }
+
   const deterministic = getOnboardingReply({ language, message, profile });
 
   if (deterministic) {
@@ -789,13 +979,13 @@ export async function handler(event: NetlifyEvent) {
       profile: enrichedProfile,
       userMessages
     });
-    const nextProfile: Partial<ZendiLeadProfile> = {
+    const nextProfile: Partial<ZendiLeadProfile> = sanitizeProfile({
       ...enrichedProfile,
       ...(guidance.profileUpdates || {}),
       intentLevel: guidance.intentLevel || enrichedProfile.intentLevel || "medium",
       suggestedSolution: guidance.suggestedSolution || enrichedProfile.suggestedSolution,
       summary: guidance.summary || enrichedProfile.summary
-    };
+    });
 
     const reply = response({
       defaultProgramType: getDefaultProgramType(detected.intent, language),

@@ -50,6 +50,10 @@ function getInputPlaceholder(language: ChatLanguage) {
   return "Respóndele a Zendi...";
 }
 
+function getClosedPlaceholder(language: ChatLanguage) {
+  return language === "en" ? "Conversation sent to Zegendia." : "Conversación enviada a Zegendia.";
+}
+
 function getSubmitFallback(language: ChatLanguage) {
   if (language === "en") {
     return "I saved the conversation in this browser, but I could not send it to Zegendia right now. Please try again in a moment.";
@@ -169,6 +173,51 @@ function formatConversationTranscript(messages: ChatMessageType[]) {
     .join("\n\n");
 }
 
+function labelHasExistingProgram(value: ZendiLeadProfile["hasExistingProgram"], language: ChatLanguage) {
+  if (value === "yes") {
+    return language === "en" ? "already has a program and wants to improve it" : "ya tiene un programa y quiere mejorarlo";
+  }
+
+  if (value === "no") {
+    return language === "en" ? "wants to create a program from scratch" : "quiere crear un programa desde cero";
+  }
+
+  return "";
+}
+
+function buildLeadSummary(profile: ZendiLeadProfile, language: ChatLanguage) {
+  const name = profile.name || (language === "en" ? "The visitor" : "La persona");
+  const business = profile.company ? ` (${profile.company})` : "";
+  const country = profile.country ? (language === "en" ? ` in ${profile.country}` : ` en ${profile.country}`) : "";
+  const need =
+    profile.needType ||
+    labelHasExistingProgram(profile.hasExistingProgram, language) ||
+    (language === "en" ? "a loyalty solution" : "una solución de lealtad");
+  const target = profile.loyaltyTarget ? (language === "en" ? ` for ${profile.loyaltyTarget}` : ` para ${profile.loyaltyTarget}`) : "";
+  const summary = [
+    language === "en"
+      ? `${name}${business} is looking for ${need}${target}${country}.`
+      : `${name}${business} busca ${need}${target}${country}.`,
+    profile.suggestedSolution
+      ? language === "en"
+        ? `Suggested solution: ${profile.suggestedSolution}.`
+        : `Solución sugerida: ${profile.suggestedSolution}.`
+      : "",
+    labelHasExistingProgram(profile.hasExistingProgram, language)
+      ? language === "en"
+        ? `Context: ${labelHasExistingProgram(profile.hasExistingProgram, language)}.`
+        : `Contexto: ${labelHasExistingProgram(profile.hasExistingProgram, language)}.`
+      : ""
+  ];
+
+  return summary.filter(Boolean).join(" ");
+}
+
+function inferWantsDemo(profile: ZendiLeadProfile): "yes" | "no" | "not_sure" {
+  const text = `${profile.needType || ""} ${profile.summary || ""}`.toLowerCase();
+  return /\bdemo\b|demostraci[oó]n|reuni[oó]n|agendar/.test(text) ? "yes" : "not_sure";
+}
+
 async function getBotReply({
   conversation,
   fallbackLanguage,
@@ -214,6 +263,8 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   const [profile, setProfile] = useState<ZendiLeadProfile>(initialState.profile);
   const [sessionId, setSessionId] = useState(initialState.sessionId);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const submittedLeadRef = useRef(Boolean(initialState.profile.leadSubmitted));
+  const isConversationClosed = Boolean(profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none"));
 
   useEffect(() => {
     window.localStorage.setItem(
@@ -249,12 +300,21 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
     setMessages([createAssistantMessage(language)]);
     setProfile({});
     setSessionId(nextSessionId);
+    submittedLeadRef.current = false;
   }
 
   async function submitLead(nextProfile: ZendiLeadProfile, nextMessages: ChatMessageType[], language: ChatLanguage) {
-    if (nextProfile.leadSubmitted || !nextProfile.email || !nextProfile.whatsapp || !nextProfile.name) {
+    if (submittedLeadRef.current || !nextProfile.email || !nextProfile.whatsapp || !nextProfile.name) {
       return;
     }
+
+    submittedLeadRef.current = true;
+    const cleanSummary = buildLeadSummary(nextProfile, language);
+    const needType =
+      nextProfile.needType ||
+      labelHasExistingProgram(nextProfile.hasExistingProgram, language) ||
+      nextProfile.suggestedSolution ||
+      "Solicitud desde Zendi";
 
     const response = await fetch("/api/contact", {
       body: JSON.stringify({
@@ -267,20 +327,20 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
         hasExistingProgram: nextProfile.hasExistingProgram,
         intentLevel: nextProfile.intentLevel,
         loyaltyTarget: nextProfile.loyaltyTarget,
-        message: nextProfile.summary || "Lead capturado desde Zendi.",
+        message: cleanSummary,
         name: nextProfile.name,
-        needType: nextProfile.needType,
-        objective: nextProfile.needType || nextProfile.suggestedSolution || "Solicitud desde Zendi",
+        needType,
+        objective: nextProfile.loyaltyTarget || needType,
         pageContext: getPageContext(sessionId),
         phone: nextProfile.whatsapp,
         preferredLanguage: language,
         sessionId,
-        size: nextProfile.estimatedUsers || "not-specified",
+        size: nextProfile.estimatedUsers || "",
         suggestedSolution: nextProfile.suggestedSolution,
-        summary: nextProfile.summary,
+        summary: cleanSummary,
         transcript: formatConversationTranscript(nextMessages),
-        triggerIntent: nextProfile.needType || "contacto",
-        wantsDemo: nextProfile.suggestedSolution ? "yes" : "not_sure",
+        triggerIntent: needType || "contacto",
+        wantsDemo: inferWantsDemo(nextProfile),
         website: ""
       }),
       headers: {
@@ -294,6 +354,8 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
       return;
     }
 
+    submittedLeadRef.current = false;
+    setProfile((current) => ({ ...current, leadSubmitted: false }));
     setMessages((current) => [
       ...current,
       createMessage("assistant", getSubmitFallback(language), language)
@@ -303,7 +365,7 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   function handleSendMessage(rawMessage: string) {
     const trimmedMessage = rawMessage.trim();
 
-    if (!trimmedMessage || isTyping) {
+    if (!trimmedMessage || isTyping || isConversationClosed) {
       return;
     }
 
@@ -326,7 +388,11 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
     })
       .then((reply) => {
         const nextLanguage = reply.language ?? conversationLanguage;
-        const nextProfile = { ...profile, ...(reply.profile ?? {}) };
+        const nextProfile = {
+          ...profile,
+          ...(reply.profile ?? {}),
+          leadSubmitted: reply.readyToSubmitLead ? true : (reply.profile?.leadSubmitted ?? profile.leadSubmitted)
+        };
         const assistantMessage = createMessage("assistant", reply.message, nextLanguage, reply.quickReplies);
         const completeMessages = [...nextMessages, assistantMessage];
 
@@ -437,16 +503,19 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
               >
                 <div className="flex items-end gap-2">
                   <textarea
-                    className="max-h-32 min-h-[52px] flex-1 resize-none bg-transparent px-3 py-2 text-sm text-[#1f2937] outline-none placeholder:text-slate-400"
+                    className="max-h-32 min-h-[52px] flex-1 resize-none bg-transparent px-3 py-2 text-sm text-[#1f2937] outline-none placeholder:text-slate-400 disabled:cursor-not-allowed disabled:text-slate-400"
+                    disabled={isConversationClosed}
                     maxLength={420}
                     onChange={(event) => setInput(event.target.value)}
-                    placeholder={getInputPlaceholder(conversationLanguage)}
+                    placeholder={
+                      isConversationClosed ? getClosedPlaceholder(conversationLanguage) : getInputPlaceholder(conversationLanguage)
+                    }
                     rows={1}
                     value={input}
                   />
                   <button
                     className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#165a6e_0%,#2aa3b9_55%,#8da020_135%)] text-white shadow-[0_12px_32px_rgba(42,163,185,0.24)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
-                    disabled={!input.trim() || isTyping}
+                    disabled={!input.trim() || isTyping || isConversationClosed}
                     type="submit"
                   >
                     <SendHorizontal className="h-4 w-4" />
