@@ -9,6 +9,29 @@ type ChatMessageProps = {
   onQuickReply?: (value: string) => void;
 };
 
+function renderContentWithLinks(content: string) {
+  const urlPattern = /(https?:\/\/[^\s]+)/g;
+  const parts = content.split(urlPattern);
+
+  return parts.map((part, index) => {
+    if (!/^https?:\/\//.test(part)) {
+      return part;
+    }
+
+    return (
+      <a
+        className="font-semibold text-[#165a6e] underline decoration-[#2aa3b9]/50 underline-offset-4"
+        href={part}
+        key={`${part}-${index}`}
+        rel="noreferrer"
+        target="_blank"
+      >
+        {part.replace(/^https?:\/\//, "")}
+      </a>
+    );
+  });
+}
+
 export function ChatMessage({ message, onQuickReply }: ChatMessageProps) {
   const isAssistant = message.role === "assistant";
 
@@ -47,7 +70,7 @@ export function ChatMessage({ message, onQuickReply }: ChatMessageProps) {
                 : "bg-[linear-gradient(135deg,#165a6e_0%,#2aa3b9_100%)] text-white"
             }`}
           >
-            <p className="whitespace-pre-line">{message.content}</p>
+            <p className="whitespace-pre-line">{renderContentWithLinks(message.content)}</p>
           </div>
 
           {isAssistant && message.quickReplies?.length && onQuickReply ? (

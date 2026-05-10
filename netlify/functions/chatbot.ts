@@ -351,17 +351,44 @@ function isGreetingOnly(message: string) {
 function hasBusinessIntent(message: string) {
   const normalized = normalizeText(message);
 
-  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|demo|oficina|oficinas|pais|país|paises|países|latam|api|integracion|integración|puntos|lealtad|loyalty|recompensas|premios|gift|fulfillment|catalogo|catálogo|stock|vendedores|distribuidores|clientes|empleados|programa|crear|mejorar|desde cero|ecommerce|shopify|crm|erp|pricing|price|cost|quote|office|countries|rewards|points|incentives|sales|customers|employees|distributors)\b/i.test(
+  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|demo|oficina|oficinas|pais|país|paises|países|latam|api|integracion|integración|puntos|puntosplus|puntos plus|lealtad|loyalty|recompensas|premios|gift|fulfillment|catalogo|catálogo|stock|vendedores|distribuidores|clientes|empleados|programa|crear|mejorar|desde cero|ecommerce|shopify|crm|erp|pricing|price|cost|quote|office|countries|rewards|points|incentives|sales|customers|employees|distributors)\b/i.test(
     normalized
   );
 }
 
 function isRefusalOrDeflection(message: string) {
-  return /\b(no importa|prefiero no|despues|después|luego|no quiero|no aplica|n\/a)\b/i.test(normalizeText(message));
+  return /\b(no soy|no es mi nombre|no importa|prefiero no|despues|después|luego|no quiero|no aplica|n\/a)\b/i.test(
+    normalizeText(message)
+  );
 }
 
 function isConfusedMessage(message: string) {
-  return /\b(no entiendo|no te entiendo|que dices|qué dices|q dices|dije|eso no|what do you mean|i do not understand|don't understand)\b/i.test(
+  const normalized = normalizeText(message);
+
+  return (
+    /^(what|what\?)$/i.test(normalized) ||
+    /\b(no entiendo|no te entiendo|que dices|qué dices|q dices|dije|eso no|what do you mean|i do not understand|don't understand)\b/i.test(
+      normalized
+    )
+  );
+}
+
+function isQuestionLike(message: string) {
+  const normalized = normalizeText(message);
+
+  return (
+    /[?¿]/.test(message) ||
+    /^(que|qué|cual|cuál|quien|quién|donde|dónde|como|cómo|cuanto|cuánto|what|who|where|how|when|which)\b/i.test(
+      normalized
+    ) ||
+    /\b(que es|qué es|what is|aqui trabaja|aquí trabaja|trabaja .* aqui|trabaja .* aquí|do you have|tienen|ustedes tienen)\b/i.test(
+      normalized
+    )
+  );
+}
+
+function isSupportOrDirectoryQuestion(message: string) {
+  return /\b(aqui trabaja|aquí trabaja|trabaja .* aqui|trabaja .* aquí|empleado|colaborador|directorio|soporte|factura|cobranza|rrhh|recursos humanos|pedro|perez|pérez|support|invoice|billing|employee|directory|human resources)\b/i.test(
     normalizeText(message)
   );
 }
@@ -437,7 +464,7 @@ function getClarifyingQuestion(profile: ZendiLeadProfile, language: ChatLanguage
 function looksLikeName(message: string) {
   const normalized = normalizeText(message);
   const wordCount = normalized.split(" ").filter(Boolean).length;
-  const businessKeywords = /\b(programa|puntos|precio|demo|lealtad|recompensas|vendedores|clientes|api|gift|catalogo|premios|quiero|necesito)\b/i.test(
+  const businessKeywords = /\b(programa|puntos|puntosplus|puntos plus|precio|demo|lealtad|recompensas|vendedores|clientes|api|gift|catalogo|premios|quiero|necesito)\b/i.test(
     normalized
   );
 
@@ -446,6 +473,7 @@ function looksLikeName(message: string) {
     wordCount <= 4 &&
     !isGreetingOnly(message) &&
     !isLowQualityAnswer(message) &&
+    !isQuestionLike(message) &&
     !/\bhola\b|\bhello\b|\bhi\b/i.test(normalized) &&
     !businessKeywords &&
     !hasBusinessIntent(message) &&
@@ -468,6 +496,7 @@ function looksLikeCompanyOrBusiness(message: string) {
   if (
     isGreetingOnly(message) ||
     isLowQualityAnswer(message) ||
+    isQuestionLike(message) ||
     isEmail(message) ||
     isWhatsapp(message) ||
     /\b(varios|varias|cualquiera|ninguna|no se|no sé|empresa|negocio)\b/i.test(normalized)
@@ -553,11 +582,26 @@ function isLikelyCountryAnswer(message: string) {
     return false;
   }
 
-  return countryKeywords.test(normalized) || (wordCount <= 4 && !hasBusinessIntent(message) && !isGreetingOnly(message));
+  return (
+    countryKeywords.test(normalized) ||
+    (wordCount <= 4 && !hasBusinessIntent(message) && !isQuestionLike(message) && !isGreetingOnly(message))
+  );
 }
 
 function getEarlyTopicAnswer(message: string, language: ChatLanguage) {
   const normalized = normalizeText(message);
+
+  if (isSupportOrDirectoryQuestion(message)) {
+    return language === "en"
+      ? "I do not have access to Zegendia’s internal staff directory or administrative support cases. For general contact, you can use https://www.zegendia.com/contact"
+      : "No tengo acceso al directorio interno del equipo de Zegendia ni a casos administrativos. Para contacto general, puedes usar https://www.zegendia.com/contact";
+  }
+
+  if (/\b(puntosplus|puntos plus)\b/i.test(normalized)) {
+    return language === "en"
+      ? "PuntosPlus is Zegendia’s faster-to-launch loyalty program layer: it helps companies create configurable points, rewards, and benefits programs without building everything from scratch."
+      : "PuntosPlus es la capa de Zegendia para lanzar programas de lealtad más rápido: permite crear programas configurables de puntos, recompensas y beneficios sin construir todo desde cero.";
+  }
 
   if (/\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|pricing|price|cost)\b/i.test(normalized)) {
     return language === "en"
@@ -751,7 +795,7 @@ function getOnboardingReply({
 
   if (!nextProfile.name) {
     if (!looksLikeName(message)) {
-      const answer = businessIntent ? getEarlyTopicAnswer(message, language) : "";
+      const answer = !isLowQualityAnswer(message) && (businessIntent || isQuestionLike(message)) ? getEarlyTopicAnswer(message, language) : "";
       const intro =
         answer ||
         (isGreetingOnly(message)
@@ -789,12 +833,16 @@ function getOnboardingReply({
   }
 
   if (!nextProfile.country) {
-    if (!isLikelyCountryAnswer(message) || businessIntent) {
+    if (!isLikelyCountryAnswer(message) || businessIntent || isQuestionLike(message)) {
       return response({
         intent: "general",
         language,
         message: appendNextQuestion(
-          businessIntent ? getEarlyTopicAnswer(message, language) : language === "en" ? "I understand." : "Entiendo.",
+          businessIntent || isQuestionLike(message)
+            ? getEarlyTopicAnswer(message, language)
+            : language === "en"
+              ? "I understand."
+              : "Entiendo.",
           language === "en" ? "What country are you writing from?" : "¿Desde qué país nos escribes?"
         ),
         profile: nextProfile,
@@ -816,12 +864,16 @@ function getOnboardingReply({
   }
 
   if (!nextProfile.company) {
-    if (businessIntent || !looksLikeCompanyOrBusiness(message)) {
+    if (businessIntent || isQuestionLike(message) || !looksLikeCompanyOrBusiness(message)) {
       return response({
         intent: "general",
         language,
         message: appendNextQuestion(
-          businessIntent ? getEarlyTopicAnswer(message, language) : language === "en" ? "I need a bit more context to route you well." : "Necesito un poco más de contexto para enrutar bien tu caso.",
+          businessIntent || isQuestionLike(message)
+            ? getEarlyTopicAnswer(message, language)
+            : language === "en"
+              ? "I need a bit more context to route you well."
+              : "Necesito un poco más de contexto para enrutar bien tu caso.",
           language === "en"
             ? "What company or type of business are you representing?"
             : "¿Qué empresa o tipo de negocio representas?"
