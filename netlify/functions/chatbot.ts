@@ -906,9 +906,9 @@ function getOnboardingReply({
   nextProfile.mode = "advisor";
 
   if (!nextProfile.name) {
-    if (!looksLikeName(message)) {
+    if (advisorStart || !looksLikeName(message)) {
       const answer =
-        !isLowQualityAnswer(message) && (businessIntent || isQuestionLike(message))
+        !advisorStart && !isLowQualityAnswer(message) && (businessIntent || isQuestionLike(message))
           ? buildPublicInfoReply(message, language, detectedIntent)
           : "";
       const intro =

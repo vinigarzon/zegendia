@@ -41,7 +41,7 @@ export function ChatMessage({ message, onQuickReply }: ChatMessageProps) {
         <div
           className={`mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl ${
             isAssistant
-              ? "overflow-hidden border border-[#b8d7df] bg-[#eaf7f3] shadow-[0_8px_18px_rgba(22,90,110,0.12)]"
+              ? "overflow-hidden border border-[#cfe3e8] bg-white shadow-[0_8px_18px_rgba(22,90,110,0.12)]"
               : "bg-[#165a6e] text-white"
           }`}
         >
@@ -66,7 +66,7 @@ export function ChatMessage({ message, onQuickReply }: ChatMessageProps) {
           <div
             className={`rounded-[22px] px-4 py-3 text-sm leading-6 shadow-sm ${
               isAssistant
-                ? "bg-[#fffdf8] text-[#1f2937] ring-1 ring-[#d8e7df]"
+                ? "bg-white text-[#1f2937] ring-1 ring-[#cfe3e8]"
                 : "bg-[linear-gradient(135deg,#165a6e_0%,#2aa3b9_100%)] text-white"
             }`}
           >
@@ -77,7 +77,7 @@ export function ChatMessage({ message, onQuickReply }: ChatMessageProps) {
             <div className="flex flex-wrap gap-2">
               {message.quickReplies.map((reply) => (
                 <button
-                  className="rounded-full border border-[#c9d9a1] bg-[#f8fbec] px-3 py-2 text-xs font-semibold text-[#165a6e] transition hover:border-[#8da020] hover:bg-[#eef5ce]"
+                  className="rounded-full border border-[#8da020]/35 bg-white px-3 py-2 text-xs font-semibold text-[#165a6e] shadow-sm transition hover:border-[#8da020] hover:bg-[#f4f8e8]"
                   key={reply}
                   onClick={() => onQuickReply(reply)}
                   type="button"
