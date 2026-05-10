@@ -148,36 +148,86 @@ function renderTranscript(transcript: string) {
   return `<pre style="white-space:pre-wrap;font-family:Inter,Arial,sans-serif;font-size:13px;line-height:1.6;background:#f7fbf2;border:1px solid #d8e7df;border-radius:14px;padding:14px;color:#1f2937;">${escapeHtml(transcript)}</pre>`;
 }
 
+function getSiteUrl() {
+  return (process.env.SITE_URL || "https://www.zegendia.com").replace(/\/$/, "");
+}
+
+function assetUrl(path: string) {
+  return `${getSiteUrl()}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
 function emailShell({
   children,
+  language,
   preview,
   title
 }: {
   children: string;
+  language: "es" | "en";
   preview: string;
   title: string;
 }) {
+  const logoUrl = assetUrl("/images/brand/zegendia-logo.png");
+  const footerLegal =
+    language === "en"
+      ? "© Zegendia. Loyalty programs, rewards fulfillment, and software for Latin America."
+      : "© Zegendia. Programas de lealtad, rewards fulfillment y software para Latinoamérica.";
+  const coverage =
+    language === "en"
+      ? "LATAM coverage - Physical and digital rewards across Latin America."
+      : "Cobertura LATAM - Premios físicos y digitales en toda Latinoamérica.";
+  const offices =
+    language === "en"
+      ? [
+          ["Panama", "Street Punta Colon, 43rd Floor · Panama City · +507 833 7327 · info@zegendia.com"],
+          ["Mexico", "Av. Cuauhtémoc 1040, CDMX · Torre Acora, 03020 · +52 55 8526 3044 · mexico@zegendia.com"],
+          ["United States", "110 North Wacker Drive · Chicago, IL 60606 · +1 312 820 4788 · us@zegendia.com"]
+        ]
+      : [
+          ["Panamá", "Street Punta Colon, 43rd Floor · Panama City · +507 833 7327 · info@zegendia.com"],
+          ["México", "Av. Cuauhtémoc 1040, CDMX · Torre Acora, 03020 · +52 55 8526 3044 · mexico@zegendia.com"],
+          ["Estados Unidos", "110 North Wacker Drive · Chicago, IL 60606 · +1 312 820 4788 · us@zegendia.com"]
+        ];
+
   return `
     <div style="display:none;max-height:0;overflow:hidden;">${escapeHtml(preview)}</div>
-    <div style="margin:0;padding:0;background:#f3f7f6;">
-      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#f3f7f6;padding:28px 12px;">
+    <div style="margin:0;padding:0;background:#eef5f4;">
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background:#eef5f4;padding:28px 12px;">
         <tr>
           <td align="center">
-            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:640px;background:#ffffff;border-radius:24px;overflow:hidden;border:1px solid #d8e8ec;font-family:Inter,Arial,sans-serif;color:#1f2937;">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width:680px;background:#ffffff;border-radius:26px;overflow:hidden;border:1px solid #d8e8ec;font-family:Inter,Arial,sans-serif;color:#1f2937;">
               <tr>
-                <td style="padding:24px 28px;background:linear-gradient(135deg,#0f4657,#165a6e 58%,#8da020);color:#ffffff;">
-                  <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;color:rgba(255,255,255,0.78);font-weight:700;">Zegendia</div>
-                  <h1 style="margin:10px 0 0;font-size:24px;line-height:1.25;font-weight:700;">${escapeHtml(title)}</h1>
+                <td style="padding:22px 28px;background:#ffffff;border-bottom:4px solid #2aa3b9;">
+                  <img src="${logoUrl}" width="170" alt="Zegendia" style="display:block;width:170px;max-width:170px;height:auto;border:0;outline:none;text-decoration:none;" />
                 </td>
               </tr>
               <tr>
-                <td style="padding:28px;">
+                <td style="padding:26px 28px;background:#165a6e;color:#ffffff;">
+                  <div style="font-size:12px;letter-spacing:0.22em;text-transform:uppercase;color:#bdeaf0;font-weight:700;">Zegendia</div>
+                  <h1 style="margin:10px 0 0;font-size:30px;line-height:1.18;font-weight:800;color:#ffffff;">${escapeHtml(title)}</h1>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:30px 28px;">
                   ${children}
                 </td>
               </tr>
               <tr>
-                <td style="padding:18px 28px;background:#fbfff4;border-top:1px solid #e0ece8;font-size:12px;line-height:1.6;color:#5b6773;">
-                  Zegendia · Loyalty, rewards and incentive programs in LATAM.
+                <td style="padding:24px 28px;background:#0f4657;border-top:4px solid #8da020;color:#dcecef;">
+                  <p style="margin:0 0 8px;font-size:13px;line-height:1.7;font-weight:700;color:#ffffff;">${escapeHtml(footerLegal)}</p>
+                  <p style="margin:0 0 18px;font-size:12px;line-height:1.6;color:#bdeaf0;">${escapeHtml(coverage)}</p>
+                  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;">
+                    ${offices
+                      .map(
+                        ([market, detail]) => `
+                          <tr>
+                            <td style="padding:7px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:12px;line-height:1.6;color:#ffffff;font-weight:700;width:120px;vertical-align:top;">${escapeHtml(market)}</td>
+                            <td style="padding:7px 0;border-top:1px solid rgba(255,255,255,0.12);font-size:12px;line-height:1.6;color:#c7d9dd;vertical-align:top;">${escapeHtml(detail)}</td>
+                          </tr>
+                        `
+                      )
+                      .join("")}
+                  </table>
                 </td>
               </tr>
             </table>
@@ -205,6 +255,7 @@ export async function handler(event: NetlifyEvent) {
   const country = String(payload.country || "").trim();
   const message = String(payload.message || "").trim();
   const companyType = String(payload.companyType || "").trim();
+  const isChatbotLead = companyType === "chatbot";
   const preferredLanguage = payload.preferredLanguage === "en" ? "en" : "es";
   const pageContext = payload.pageContext || {};
   const sessionId = String(payload.sessionId || pageContext.sessionId || "").trim();
@@ -288,11 +339,24 @@ export async function handler(event: NetlifyEvent) {
     console.error("Could not persist Zendi lead", error);
   });
 
+  const leadSourceLabel =
+    preferredLanguage === "en"
+      ? isChatbotLead
+        ? "Zendi"
+        : "the contact form"
+      : isChatbotLead
+        ? "Zendi"
+        : "el formulario de contacto";
+  const leadIntro =
+    preferredLanguage === "en"
+      ? `A new lead came from ${leadSourceLabel}. The full context is included below so you can respond with the right angle.`
+      : `Nuevo lead capturado desde ${leadSourceLabel}. El contexto principal está incluido abajo para que puedas responder con el enfoque correcto.`;
   const leadHtml = emailShell({
-    preview: `${name} from ${company} submitted a Zendi lead.`,
-    title: "Nuevo lead desde Zendi",
+    language: preferredLanguage,
+    preview: `${name} from ${company} submitted a lead through ${leadSourceLabel}.`,
+    title: isChatbotLead ? "Nuevo lead desde Zendi" : "Nuevo lead desde Contacto",
     children: `
-      <p style="margin:0 0 18px;font-size:15px;line-height:1.7;">A new lead came from Zendi. The full conversation context is included below so you can respond with the right angle.</p>
+      <p style="margin:0 0 18px;font-size:15px;line-height:1.7;">${escapeHtml(leadIntro)}</p>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:14px;line-height:1.6;">
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Name</td><td style="padding:7px 0;">${escapeHtml(name)}</td></tr>
         <tr><td style="padding:7px 0;color:#165a6e;font-weight:700;">Company</td><td style="padding:7px 0;">${escapeHtml(company)}</td></tr>
@@ -312,8 +376,11 @@ export async function handler(event: NetlifyEvent) {
       </table>
       <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Executive summary</h2>
       <p style="margin:0 0 18px;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
-      <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Zendi conversation thread</h2>
-      ${renderTranscript(transcript)}
+      ${
+        isChatbotLead
+          ? `<h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Zendi conversation thread</h2>${renderTranscript(transcript)}`
+          : ""
+      }
       <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">Technical context</h2>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:13px;line-height:1.6;">
         <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">IP</td><td style="padding:5px 0;">${escapeHtml(getIp(event))}</td></tr>
@@ -332,13 +399,18 @@ export async function handler(event: NetlifyEvent) {
     preferredLanguage === "en"
       ? {
           html: emailShell({
+            language: preferredLanguage,
             preview: "Zegendia received your request.",
             title: "We received your request",
             children: `
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Hi ${escapeHtml(name)},</p>
-              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Thanks for talking with Zendi, our loyalty agent. We received your information and the context of your request.</p>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">${
+                isChatbotLead
+                  ? "Thanks for talking with Zendi, our loyalty agent. We received your information and the context of your request."
+                  : "Thanks for contacting Zegendia through our website form. We received your information and the context of your request."
+              }</p>
               <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
-                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">Conversation summary</div>
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">${isChatbotLead ? "Conversation summary" : "Request summary"}</div>
                 <p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
               </div>
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Our team will review it and get back to you within 24 hours with the right follow-up, meeting, or demo if applicable.</p>
@@ -349,16 +421,21 @@ export async function handler(event: NetlifyEvent) {
         }
       : {
           html: emailShell({
+            language: preferredLanguage,
             preview: "Zegendia recibió tu solicitud.",
             title: "Recibimos tu solicitud",
             children: `
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Hola ${escapeHtml(name)},</p>
-              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Gracias por conversar con Zendi, nuestro agente de lealtad. Recibimos tu información y el contexto de tu solicitud.</p>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">${
+                isChatbotLead
+                  ? "Gracias por conversar con Zendi, nuestro agente de lealtad. Recibimos tu información y el contexto de tu solicitud."
+                  : "Gracias por contactar a Zegendia a través del formulario de nuestro sitio web. Recibimos tu información y el contexto de tu solicitud."
+              }</p>
               <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
-                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">Resumen de lo conversado</div>
+                <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">${isChatbotLead ? "Resumen de lo conversado" : "Resumen de tu solicitud"}</div>
                 <p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>
               </div>
-              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Nuestro equipo la revisará y te responderá en menos de 24 horas con el seguimiento correcto, una reunión o un demo si aplica.</p>
+              <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Nuestro equipo revisará tu solicitud y te responderá en menos de 24 horas con el seguimiento correcto, una reunión o un demo si aplica.</p>
               <p style="margin:24px 0 0;font-size:15px;line-height:1.8;">Saludos,<br /><strong>Zegendia</strong></p>
             `
           }),
@@ -368,7 +445,7 @@ export async function handler(event: NetlifyEvent) {
   await Promise.all([
     sendResendEmail({
       html: leadHtml,
-      subject: `Nuevo lead desde Zendi - ${country} - ${needType || "Solicitud comercial"}`,
+      subject: `${isChatbotLead ? "Nuevo lead desde Zendi" : "Nuevo lead desde Contacto"} - ${country} - ${needType || "Solicitud comercial"}`,
       to: process.env.ZEGENDIA_SALES_EMAIL || "info@zegendia.com"
     }),
     sendResendEmail({
