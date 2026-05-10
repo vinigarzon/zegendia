@@ -29,7 +29,25 @@ const INTENT_KEYWORDS: Record<ChatIntent, string[]> = {
   api: ["api", "integracion", "integration", "webhook", "crm", "erp", "sdk"],
   ecommerce: ["ecommerce", "shopify", "woocommerce", "magento", "tienda online", "checkout"],
   demo: ["demo", "quiero una demo", "request a demo", "book a demo", "i want a demo", "agendar demo"],
-  precio: ["precio", "pricing", "cost", "costo", "cotizar", "quote", "budget", "cuanto cuesta", "tarifas", "planes"],
+  precio: [
+    "precio",
+    "precios",
+    "pricing",
+    "price",
+    "cost",
+    "costo",
+    "costos",
+    "cotizar",
+    "quote",
+    "budget",
+    "cuanto",
+    "cuanto cuesta",
+    "cuánto cuesta",
+    "cuesta",
+    "tarifa",
+    "tarifas",
+    "planes"
+  ],
   stock: ["stock", "inventario", "inventory", "warehouse", "bodega", "comprar premios"],
   paises: ["paises", "countries", "latam", "mexico", "colombia", "ecuador", "peru", "chile", "coverage"],
   contacto: ["contacto", "contact", "hablar con alguien", "contact me", "call me", "whatsapp", "telefono"]
@@ -127,6 +145,15 @@ export function detectIntent(message: string, fallbackLanguage: ChatLanguage = "
   let bestScore = 0;
   let matchedKeywords: string[] = [];
 
+  const priorityIntentPatterns: Array<[ChatIntent, RegExp]> = [
+    ["precio", /\b(precio|precios|pricing|price|cost|costo|costos|cuanto|cuesta|cotizar|quote|tarifa|tarifas|planes)\b/i],
+    ["contacto", /\b(contacto|contactar|contact|talk to someone|hablar con alguien|humano|asesor|whatsapp|telefono|teléfono)\b/i],
+    ["api", /\b(api|integracion|integración|webhook|crm|erp|ecommerce|shopify|woocommerce)\b/i],
+    ["paises", /\b(paises|países|pais|país|latam|cobertura|coverage|office|offices|oficina|oficinas)\b/i]
+  ];
+
+  const priorityMatch = priorityIntentPatterns.find(([, pattern]) => pattern.test(normalizedMessage));
+
   for (const [intent, keywords] of Object.entries(INTENT_KEYWORDS) as [ChatIntent, string[]][]) {
     const hits = keywords.filter((keyword) => normalizedMessage.includes(normalizeText(keyword)));
 
@@ -135,6 +162,12 @@ export function detectIntent(message: string, fallbackLanguage: ChatLanguage = "
       bestScore = hits.length;
       matchedKeywords = hits;
     }
+  }
+
+  if (priorityMatch) {
+    bestIntent = priorityMatch[0];
+    matchedKeywords = INTENT_KEYWORDS[bestIntent].filter((keyword) => normalizedMessage.includes(normalizeText(keyword)));
+    bestScore = Math.max(bestScore, matchedKeywords.length || 1);
   }
 
   const shouldCaptureLead = LEAD_TRIGGER_PHRASES.some((phrase) =>

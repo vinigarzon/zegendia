@@ -431,9 +431,9 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   return (
     <div className="fixed bottom-3 right-3 z-50 flex flex-col items-end sm:bottom-6 sm:right-6">
       {isOpen ? (
-        <div className="mb-3 w-[min(390px,calc(100vw-1.5rem))] overflow-hidden rounded-[28px] border border-[#cfe3e8] bg-white shadow-[0_24px_70px_rgba(22,90,110,0.24)]">
-          <div className="relative overflow-hidden bg-[linear-gradient(135deg,#165a6e_0%,#1d7486_62%,#2aa3b9_130%)] px-4 py-3 text-white">
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(42,163,185,0.32),transparent_30%),radial-gradient(circle_at_bottom_left,rgba(141,160,32,0.28),transparent_36%)]" />
+        <div className="mb-3 w-[min(390px,calc(100vw-1.5rem))] overflow-hidden rounded-[28px] border border-[#b9d8df] bg-white shadow-[0_24px_70px_rgba(22,90,110,0.24)]">
+          <div className="relative overflow-hidden border-b-[3px] border-[#8da020] bg-[linear-gradient(135deg,#165a6e_0%,#1a7485_52%,#2aa3b9_86%,#8da020_150%)] px-4 py-3 text-white">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.16),transparent_26%),radial-gradient(circle_at_bottom_left,rgba(141,160,32,0.42),transparent_38%)]" />
             <div className="relative flex items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="h-12 w-12 shrink-0 overflow-hidden rounded-2xl border border-white/25 bg-[#e8f6f4] shadow-[0_12px_28px_rgba(0,0,0,0.16)]">
@@ -481,7 +481,7 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
             </div>
           </div>
 
-          <div className="flex h-[min(66vh,520px)] flex-col bg-[linear-gradient(180deg,#ffffff_0%,#f2fbfd_48%,#edf7f2_100%)]">
+          <div className="flex h-[min(66vh,520px)] flex-col bg-[linear-gradient(180deg,#fbfff4_0%,#eef9fb_44%,#eaf6f1_100%)]">
             <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {messages.map((message) => (
                 <ChatMessage key={message.id} message={message} onQuickReply={handleSendMessage} />
@@ -502,9 +502,9 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
               <div ref={endRef} />
             </div>
 
-            <div className="border-t border-[#cfe3e8] bg-white/95 p-3">
+            <div className="border-t border-[#b9d8df] bg-[#fbfff4]/95 p-3">
               <form
-                className="rounded-[26px] border border-[#cfe3e8] bg-white p-2 shadow-[0_10px_30px_rgba(22,90,110,0.08)]"
+                className="rounded-[26px] border border-[#b9d8df] bg-white p-2 shadow-[0_10px_30px_rgba(22,90,110,0.08)]"
                 onSubmit={(event) => {
                   event.preventDefault();
                   handleSendMessage(input);
@@ -529,7 +529,7 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
                     value={input}
                   />
                   <button
-                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#165a6e_0%,#2aa3b9_100%)] text-white shadow-[0_12px_32px_rgba(42,163,185,0.26)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
+                    className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[linear-gradient(135deg,#165a6e_0%,#2aa3b9_72%,#8da020_145%)] text-white shadow-[0_12px_32px_rgba(42,163,185,0.26)] transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-50"
                     disabled={!input.trim() || isTyping || isConversationClosed}
                     type="submit"
                   >

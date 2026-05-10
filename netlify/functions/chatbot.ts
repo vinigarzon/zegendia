@@ -73,6 +73,19 @@ const INFO_QUICK_REPLIES: Record<ChatLanguage, string[]> = {
   es: ["¿Qué es PuntosPlus?", "Fulfillment de premios", "Orientar mi caso", "Contacto"]
 };
 
+const RESERVED_CHAT_ACTIONS = [
+  "contact",
+  "contacto",
+  "fulfillment de premios",
+  "guide my case",
+  "orientar mi caso",
+  "que es puntosplus",
+  "que es zegendia",
+  "rewards fulfillment",
+  "what is puntosplus",
+  "what is zegendia"
+];
+
 const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
 const RATE_LIMIT_MAX_REQUESTS = 40;
 const MESSAGE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -356,8 +369,23 @@ function isGreetingOnly(message: string) {
 function hasBusinessIntent(message: string) {
   const normalized = normalizeText(message);
 
-  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|demo|oficina|oficinas|pais|país|paises|países|latam|api|integracion|integración|puntos|puntosplus|puntos plus|lealtad|loyalty|recompensas|premios|gift|fulfillment|catalogo|catálogo|stock|vendedores|distribuidores|clientes|empleados|programa|crear|mejorar|desde cero|ecommerce|shopify|crm|erp|pricing|price|cost|quote|office|countries|rewards|points|incentives|sales|customers|employees|distributors)\b/i.test(
+  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|contacto|contactar|demo|oficina|oficinas|pais|país|paises|países|latam|api|integracion|integración|puntos|puntosplus|puntos plus|lealtad|loyalty|recompensas|premios|gift|fulfillment|catalogo|catálogo|stock|vendedores|distribuidores|clientes|empleados|programa|crear|mejorar|desde cero|ecommerce|shopify|crm|erp|pricing|price|cost|quote|contact|office|countries|rewards|points|incentives|sales|customers|employees|distributors)\b/i.test(
     normalized
+  );
+}
+
+function isReservedChatAction(message: string) {
+  const normalized = normalizeText(message);
+  return RESERVED_CHAT_ACTIONS.includes(normalized);
+}
+
+function isContactAction(message: string) {
+  return /^(contacto|contact)$/i.test(normalizeText(message));
+}
+
+function hasPriceIntent(message: string) {
+  return /\b(precio|precios|cuanto|cuánto|cuesta|costo|costos|cotizar|pricing|price|cost|quote|tarifa|tarifas|planes)\b/i.test(
+    normalizeText(message)
   );
 }
 
@@ -489,7 +517,7 @@ function getClarifyingQuestion(profile: ZendiLeadProfile, language: ChatLanguage
 function looksLikeName(message: string) {
   const normalized = normalizeText(message);
   const wordCount = normalized.split(" ").filter(Boolean).length;
-  const businessKeywords = /\b(programa|puntos|puntosplus|puntos plus|precio|demo|lealtad|recompensas|vendedores|clientes|api|gift|catalogo|premios|quiero|necesito)\b/i.test(
+  const businessKeywords = /\b(programa|puntos|puntosplus|puntos plus|precio|precios|contacto|demo|lealtad|recompensas|vendedores|clientes|api|gift|catalogo|premios|quiero|necesito)\b/i.test(
     normalized
   );
 
@@ -498,6 +526,8 @@ function looksLikeName(message: string) {
     wordCount <= 4 &&
     !isGreetingOnly(message) &&
     !isLowQualityAnswer(message) &&
+    !isReservedChatAction(message) &&
+    !wantsContactPath(message) &&
     !isQuestionLike(message) &&
     !/\bhola\b|\bhello\b|\bhi\b/i.test(normalized) &&
     !businessKeywords &&
@@ -657,14 +687,47 @@ function getEarlyTopicAnswer(message: string, language: ChatLanguage) {
     : "Puedo ayudarte con eso y mantener la conversación enfocada en lealtad, recompensas, incentivos, APIs y fulfillment.";
 }
 
+function getPriorityPublicAnswer(message: string, language: ChatLanguage, intent: ChatIntent) {
+  if (hasPriceIntent(message) || intent === "precio") {
+    return language === "en"
+      ? "The price depends on the type of program, number of users, countries, rewards, integrations, and level of customization. I do not want to invent a fixed number. If you need something quick, we can review whether PuntosPlus fits; if it is corporate or regional, the Zegendia team should review the case to give you the right proposal."
+      : "El precio depende del tipo de programa, número de usuarios, países, premios, integraciones y nivel de personalización. No quiero inventarte un valor fijo. Si buscas algo rápido, podemos revisar si PuntosPlus encaja; si es corporativo o regional, conviene que el equipo de Zegendia revise el caso para darte una propuesta correcta.";
+  }
+
+  if (intent === "contacto" || isContactAction(message)) {
+    return getContactInfoReply(language);
+  }
+
+  if (intent === "paises") {
+    return language === "en"
+      ? "Zegendia has offices in Panama, Mexico, and the United States, and works with loyalty, rewards, and fulfillment operations across Latin America depending on the scope."
+      : "Zegendia tiene oficinas en Panamá, México y Estados Unidos, y trabaja con operación de lealtad, recompensas y fulfillment en Latinoamérica según el alcance.";
+  }
+
+  if (intent === "api" || intent === "ecommerce") {
+    return language === "en"
+      ? "Yes. Zegendia can support API integrations to connect external systems, e-commerce, CRM, points platforms, catalogs, and rewards/order workflows."
+      : "Sí. Zegendia puede trabajar con integraciones vía API para conectar sistemas externos, e-commerce, CRM, plataformas de puntos, catálogos y procesos de órdenes o premios.";
+  }
+
+  return "";
+}
+
 function buildPublicInfoReply(message: string, language: ChatLanguage, intent: ChatIntent) {
-  const match = searchKnowledgeBase(message, { intent, language, limit: 1 })[0];
+  const priorityAnswer = getPriorityPublicAnswer(message, language, intent);
+  const match = priorityAnswer ? null : searchKnowledgeBase(message, { intent, language, limit: 1 })[0];
   const answer =
-    match && match.score >= 12
+    priorityAnswer ||
+    (match && match.score >= 12
       ? language === "en"
         ? match.entry.answer_en
         : match.entry.answer_es
-      : getEarlyTopicAnswer(message, language);
+      : getEarlyTopicAnswer(message, language));
+
+  if (intent === "contacto" || isContactAction(message)) {
+    return answer;
+  }
+
   const cta =
     language === "en"
       ? "Do you want me to help you see whether this fits your company?"
@@ -848,6 +911,17 @@ function getOnboardingReply({
     });
   }
 
+  if (isContactAction(message)) {
+    return response({
+      intent: "contacto",
+      language,
+      message: getContactInfoReply(language),
+      profile: { ...nextProfile, mode: "info" },
+      quickReplies:
+        language === "en" ? ["Guide my case", "What is PuntosPlus?"] : ["Orientar mi caso", "¿Qué es PuntosPlus?"]
+    });
+  }
+
   if (!advisorMode) {
     if (wantsContactPath(message) || isSupportOrDirectoryQuestion(message)) {
       return response({
@@ -907,8 +981,12 @@ function getOnboardingReply({
 
   if (!nextProfile.name) {
     if (advisorStart || !looksLikeName(message)) {
+      const shouldAnswerBeforeCapture =
+        !isLowQualityAnswer(message) &&
+        !isReservedChatAction(message) &&
+        (hasPriceIntent(message) || isQuestionLike(message) || businessIntent);
       const answer =
-        !advisorStart && !isLowQualityAnswer(message) && (businessIntent || isQuestionLike(message))
+        shouldAnswerBeforeCapture
           ? buildPublicInfoReply(message, language, detectedIntent)
           : "";
       const intro =
