@@ -33,11 +33,15 @@ type LanguageSwitcherProps = {
 
 export function LanguageSwitcher({ locale, label }: LanguageSwitcherProps) {
   const pathname = usePathname() || "/";
+  const targetLocale = locale === "es" ? "en" : "es";
 
   return (
     <Link
       className="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-slate-200 hover:bg-white/10"
-      href={getAlternatePath(pathname, locale === "es" ? "en" : "es") as Route}
+      href={getAlternatePath(pathname, targetLocale) as Route}
+      onClick={() => {
+        document.cookie = `zegendia_locale=${targetLocale}; path=/; max-age=31536000; SameSite=Lax`;
+      }}
     >
       {label}
     </Link>

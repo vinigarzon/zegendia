@@ -13,7 +13,7 @@ import type {
   ZendiLeadProfile
 } from "types/chat";
 
-const STORAGE_KEY = "zegendia:zendi:conversation:v2";
+const LEGACY_STORAGE_KEY = "zegendia:zendi:conversation:v2";
 const SESSION_KEY = "zegendia:zendi:session-id";
 const MAX_LOCAL_MESSAGES = 24;
 const INACTIVITY_WARNING_MS = 5 * 60 * 1000;
@@ -44,6 +44,10 @@ function normalizeQuickReply(value: string) {
 
 function getInitialLanguage(locale: Locale): ChatLanguage {
   return locale === "en" ? "en" : "es";
+}
+
+function getStorageKey(language: ChatLanguage) {
+  return `${LEGACY_STORAGE_KEY}:${language}`;
 }
 
 function getGreeting(language: ChatLanguage) {
@@ -143,19 +147,10 @@ function getInitialState(locale: Locale): StoredConversation {
     };
   }
 
-  try {
-    const stored = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || "null") as StoredConversation | null;
+  const stored = readStoredConversation(language, sessionId);
 
-    if (stored?.messages?.length && stored.sessionId) {
-      return {
-        language: stored.language ?? language,
-        messages: stored.messages.slice(-MAX_LOCAL_MESSAGES),
-        profile: stored.profile ?? {},
-        sessionId: stored.sessionId
-      };
-    }
-  } catch {
-    // Ignore invalid local state and start a clean conversation.
+  if (stored) {
+    return stored;
   }
 
   return {
@@ -164,6 +159,33 @@ function getInitialState(locale: Locale): StoredConversation {
     profile: {},
     sessionId
   };
+}
+
+function readStoredConversation(language: ChatLanguage, sessionId: string): StoredConversation | null {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  const storageKeys = [getStorageKey(language), LEGACY_STORAGE_KEY];
+
+  for (const key of storageKeys) {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(key) || "null") as StoredConversation | null;
+
+      if (stored?.messages?.length && stored.sessionId && (stored.language ?? language) === language) {
+        return {
+          language,
+          messages: stored.messages.slice(-MAX_LOCAL_MESSAGES),
+          profile: stored.profile ?? {},
+          sessionId: stored.sessionId || sessionId
+        };
+      }
+    } catch {
+      // Ignore invalid local state and try the next key.
+    }
+  }
+
+  return null;
 }
 
 function getPageContext(sessionId: string) {
@@ -287,6 +309,7 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   const [isSessionExpired, setIsSessionExpired] = useState(false);
   const [lastUserActivityAt, setLastUserActivityAt] = useState(() => Date.now());
   const endRef = useRef<HTMLDivElement | null>(null);
+  const previousLocaleRef = useRef(locale);
   const submittedLeadRef = useRef(Boolean(initialState.profile.leadSubmitted));
   const isConversationClosed = Boolean(
     isSessionExpired || profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none")
@@ -302,16 +325,48 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   );
 
   useEffect(() => {
-    window.localStorage.setItem(
-      STORAGE_KEY,
-      JSON.stringify({
-        language: conversationLanguage,
-        messages: messages.slice(-MAX_LOCAL_MESSAGES),
-        profile,
-        sessionId
-      } satisfies StoredConversation)
-    );
+    const storedConversation = JSON.stringify({
+      language: conversationLanguage,
+      messages: messages.slice(-MAX_LOCAL_MESSAGES),
+      profile,
+      sessionId
+    } satisfies StoredConversation);
+
+    window.localStorage.setItem(getStorageKey(conversationLanguage), storedConversation);
+    window.localStorage.removeItem(LEGACY_STORAGE_KEY);
   }, [conversationLanguage, messages, profile, sessionId]);
+
+  useEffect(() => {
+    const nextLanguage = getInitialLanguage(locale);
+
+    if (previousLocaleRef.current === locale) {
+      return;
+    }
+
+    previousLocaleRef.current = locale;
+
+    const nextSessionId = getStoredSessionId();
+    const storedConversation = readStoredConversation(nextLanguage, nextSessionId);
+    const nextConversation =
+      storedConversation ??
+      ({
+        language: nextLanguage,
+        messages: [createAssistantMessage(nextLanguage)],
+        profile: {},
+        sessionId: nextSessionId
+      } satisfies StoredConversation);
+
+    setConversationLanguage(nextLanguage);
+    setInput("");
+    setIsTyping(false);
+    setHasInactivityWarning(false);
+    setIsSessionExpired(false);
+    setLastUserActivityAt(Date.now());
+    setMessages(nextConversation.messages);
+    setProfile(nextConversation.profile);
+    setSessionId(nextConversation.sessionId);
+    submittedLeadRef.current = Boolean(nextConversation.profile.leadSubmitted);
+  }, [locale]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -371,7 +426,8 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
     const nextSessionId = createSessionId();
 
     window.localStorage.setItem(SESSION_KEY, nextSessionId);
-    window.localStorage.removeItem(STORAGE_KEY);
+    window.localStorage.removeItem(getStorageKey(language));
+    window.localStorage.removeItem(LEGACY_STORAGE_KEY);
     document.cookie = `${SESSION_KEY}=${nextSessionId}; path=/; max-age=31536000; SameSite=Lax`;
 
     setConversationLanguage(language);
