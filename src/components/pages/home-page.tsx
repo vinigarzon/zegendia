@@ -88,7 +88,7 @@ export async function HomePage({ locale }: { locale: Locale }) {
           {
             question: "Is launching a loyalty program expensive?",
             answer:
-              "Not necessarily. In the past, a loyalty program could require costly development, inventory, providers, logistics, and months of work. With PuntosPlus, the idea is that a business can start from an accessible plan, beginning around US$29 per month, and grow over time according to its needs."
+              "Not necessarily. In the past, a loyalty program could require costly development, inventory, providers, logistics, and months of work. With PuntosPlus, the idea is that a business can start from an accessible plan, beginning around US$49 per month, and grow over time according to its needs."
           },
           {
             question: "How long does it take to launch a customized platform?",
@@ -140,7 +140,7 @@ export async function HomePage({ locale }: { locale: Locale }) {
           {
             question: "¿Es muy caro lanzar un programa de lealtad?",
             answer:
-              "No necesariamente. Antes, un programa de lealtad podía requerir desarrollo costoso, inventario, proveedores, logística y meses de trabajo. Con PuntosPlus, la idea es que una empresa pueda comenzar desde un plan accesible, desde aproximadamente US$29 al mes, y crecer según sus necesidades."
+              "No necesariamente. Antes, un programa de lealtad podía requerir desarrollo costoso, inventario, proveedores, logística y meses de trabajo. Con PuntosPlus, la idea es que una empresa pueda comenzar desde un plan accesible, desde aproximadamente US$49 al mes, y crecer según sus necesidades."
           },
           {
             question: "¿Cuánto tiempo toma lanzar una plataforma personalizada?",

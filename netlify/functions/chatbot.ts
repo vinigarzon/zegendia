@@ -734,8 +734,8 @@ function getPriorityPublicAnswer(message: string, language: ChatLanguage, intent
 
   if (hasPriceIntent(message) || intent === "precio") {
     return language === "en"
-      ? "Launching a loyalty program is not necessarily expensive. With PuntosPlus, a business can start from an accessible plan, beginning around US$29 per month, and grow over time according to its needs. For custom or regional solutions, pricing depends on scope, countries, integrations, operations, and expected volume, so the team should review the case before quoting."
-      : "No necesariamente es caro lanzar un programa de lealtad. Con PuntosPlus, una empresa puede comenzar desde un plan accesible, desde aproximadamente US$29 al mes, y crecer según sus necesidades. Para soluciones personalizadas o regionales, el precio depende del alcance, países, integraciones, operación y volumen esperado, por eso conviene revisar el caso antes de cotizar.";
+      ? "Launching a loyalty program is not necessarily expensive. With PuntosPlus, a business can start from an accessible plan, beginning around US$49 per month, and grow over time according to its needs. For custom or regional solutions, pricing depends on scope, countries, integrations, operations, and expected volume, so the team should review the case before quoting."
+      : "No necesariamente es caro lanzar un programa de lealtad. Con PuntosPlus, una empresa puede comenzar desde un plan accesible, desde aproximadamente US$49 al mes, y crecer según sus necesidades. Para soluciones personalizadas o regionales, el precio depende del alcance, países, integraciones, operación y volumen esperado, por eso conviene revisar el caso antes de cotizar.";
   }
 
   if (intent === "contacto" || isContactAction(message)) {

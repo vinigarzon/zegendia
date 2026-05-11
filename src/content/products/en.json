@@ -38,7 +38,7 @@
         "name": "PuntosPlus",
         "status": "Loyalty software",
         "headline": "The loyalty operating system for LATAM",
-        "description": "A multi-tenant SaaS layer to launch loyalty, incentive, and engagement programs in under 30 minutes, starting at around US$29/month.",
+        "description": "A multi-tenant SaaS layer to launch loyalty, incentive, and engagement programs in under 30 minutes, starting at around US$49/month.",
         "bullets": [
           "Made for SMEs and growth-stage companies",
           "Universal participant model",
@@ -135,7 +135,7 @@
       "text": "PuntosPlus is the loyalty operating system for LATAM: a configurable engine to launch points, incentives, rewards, gamification, and engagement programs in less than 30 minutes."
     },
     "highlights": [
-      "From US$29/month",
+      "From US$49/month",
       "Launch in 30 minutes",
       "No-code setup",
       "Universal participant",
@@ -161,7 +161,7 @@
     "plans": [
       {
         "name": "Starter",
-        "price": "From US$29/month",
+        "price": "From US$49/month",
         "items": ["1 active template", "1 currency", "Base portal", "Initial digital marketplace"]
       },
       {
