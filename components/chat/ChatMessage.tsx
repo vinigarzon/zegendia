@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { User2 } from "lucide-react";
 
 import type { ChatMessage as ChatMessageType } from "types/chat";
@@ -8,6 +9,30 @@ type ChatMessageProps = {
   message: ChatMessageType;
   onQuickReply?: (value: string) => void;
 };
+
+const TRAILING_PUNCTUATION = /[.,;:!?…"'”’»)\]]/;
+
+function countChar(value: string, char: string) {
+  return value.split(char).length - 1;
+}
+
+// "https://www.zegendia.com/contact." -> link "https://www.zegendia.com/contact" + plain "."
+// Closing ) or ] are kept when they belong to the URL itself (balanced), e.g. wiki-style links.
+export function splitTrailingPunctuation(url: string) {
+  let end = url.length;
+
+  while (end > 0 && TRAILING_PUNCTUATION.test(url[end - 1])) {
+    const char = url[end - 1];
+    const head = url.slice(0, end);
+
+    if (char === ")" && countChar(head, "(") >= countChar(head, ")")) break;
+    if (char === "]" && countChar(head, "[") >= countChar(head, "]")) break;
+
+    end -= 1;
+  }
+
+  return { href: url.slice(0, end), trailing: url.slice(end) };
+}
 
 function renderContentWithLinks(content: string) {
   const urlPattern = /(https?:\/\/[^\s]+)/g;
@@ -18,16 +43,24 @@ function renderContentWithLinks(content: string) {
       return part;
     }
 
+    const { href, trailing } = splitTrailingPunctuation(part);
+
+    if (!/^https?:\/\/[^/?#]+/.test(href)) {
+      return part;
+    }
+
     return (
-      <a
-        className="font-semibold text-[#165a6e] underline decoration-[#2aa3b9]/50 underline-offset-4"
-        href={part}
-        key={`${part}-${index}`}
-        rel="noreferrer"
-        target="_blank"
-      >
-        {part.replace(/^https?:\/\//, "")}
-      </a>
+      <Fragment key={`${part}-${index}`}>
+        <a
+          className="font-semibold text-[#165a6e] underline decoration-[#2aa3b9]/50 underline-offset-4"
+          href={href}
+          rel="noreferrer"
+          target="_blank"
+        >
+          {href.replace(/^https?:\/\//, "")}
+        </a>
+        {trailing}
+      </Fragment>
     );
   });
 }
