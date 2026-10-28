@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { MessageCircleMore, RefreshCcw, SendHorizontal, X } from "lucide-react";
 
 import type { Locale } from "@/lib/types";
+import { TURNSTILE_SITE_KEY, TurnstileWidget } from "@/components/security/turnstile-widget";
 import { ChatMessage } from "components/chat/ChatMessage";
 import type {
   ChatbotApiMessage,
@@ -311,6 +312,30 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
   const endRef = useRef<HTMLDivElement | null>(null);
   const previousLocaleRef = useRef(locale);
   const submittedLeadRef = useRef(Boolean(initialState.profile.leadSubmitted));
+  const turnstileTokenRef = useRef("");
+  const turnstileWaitersRef = useRef<Array<(token: string) => void>>([]);
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
+
+  function handleTurnstileToken(token: string) {
+    turnstileTokenRef.current = token;
+
+    if (token) {
+      const waiters = turnstileWaitersRef.current;
+      turnstileWaitersRef.current = [];
+      waiters.forEach((resolve) => resolve(token));
+    }
+  }
+
+  function waitForTurnstileToken(timeoutMs = 20000) {
+    if (!TURNSTILE_SITE_KEY || turnstileTokenRef.current) {
+      return Promise.resolve(turnstileTokenRef.current);
+    }
+
+    return new Promise<string>((resolve) => {
+      turnstileWaitersRef.current.push(resolve);
+      window.setTimeout(() => resolve(turnstileTokenRef.current), timeoutMs);
+    });
+  }
   const isConversationClosed = Boolean(
     isSessionExpired || profile.leadSubmitted || (profile.email && profile.whatsapp && profile.contactStep === "none")
   );
@@ -455,6 +480,8 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
       nextProfile.suggestedSolution ||
       "Solicitud desde Zendi";
 
+    const turnstileToken = await waitForTurnstileToken();
+
     const response = await fetch("/api/contact", {
       body: JSON.stringify({
         company: nextProfile.company || "No especificada",
@@ -479,6 +506,7 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
         summary: cleanSummary,
         transcript: formatConversationTranscript(nextMessages),
         triggerIntent: needType || "contacto",
+        turnstileToken,
         wantsDemo: inferWantsDemo(nextProfile),
         website: ""
       }),
@@ -487,6 +515,12 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
       },
       method: "POST"
     }).catch(() => null);
+
+    if (TURNSTILE_SITE_KEY) {
+      // Tokens are single-use: request a fresh one for any later submission.
+      turnstileTokenRef.current = "";
+      setTurnstileResetKey((current) => current + 1);
+    }
 
     if (response?.ok) {
       setProfile((current) => ({ ...current, leadSubmitted: true }));
@@ -654,6 +688,13 @@ export function ZegendiaChatbot({ locale }: { locale: Locale }) {
             </div>
 
             <div className="border-t border-[#b9d8df] bg-[#fbfff4]/95 p-3">
+              <TurnstileWidget
+                appearance="interaction-only"
+                className="empty:hidden"
+                language={conversationLanguage}
+                onToken={handleTurnstileToken}
+                resetKey={turnstileResetKey}
+              />
               <form
                 className="rounded-[26px] border border-[#b9d8df] bg-white p-2 shadow-[0_10px_30px_rgba(22,90,110,0.08)]"
                 onSubmit={(event) => {

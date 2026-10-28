@@ -6,6 +6,7 @@ import { ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { TURNSTILE_SITE_KEY, TurnstileWidget } from "@/components/security/turnstile-widget";
 import type { Locale, SiteContent } from "@/lib/types";
 
 type LeadFormProps = {
@@ -141,13 +142,25 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
   const [form, setForm] = useState<FormState>(initialState(locale));
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [message, setMessage] = useState("");
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setStatus("loading");
 
+    if (TURNSTILE_SITE_KEY && !turnstileToken) {
+      setStatus("error");
+      setMessage(
+        locale === "en"
+          ? "Please wait for the security check to finish (or complete it) and try again."
+          : "Espera a que termine la verificación de seguridad (o complétala) e intenta de nuevo."
+      );
+      return;
+    }
+
     const expectedAnswer = Number(form.securityA) + Number(form.securityB);
-    if (Number(form.securityAnswer) !== expectedAnswer) {
+    if (!TURNSTILE_SITE_KEY && Number(form.securityAnswer) !== expectedAnswer) {
       setStatus("error");
       setMessage(
         locale === "en"
@@ -160,14 +173,29 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
     await submitNetlifyFormCopy(event.currentTarget).catch(() => null);
 
     const response = await fetch("/api/contact", {
-      body: JSON.stringify({ ...form, pageContext: getPageContext() }),
+      body: JSON.stringify({
+        ...form,
+        pageContext: getPageContext(),
+        // With Turnstile on, the old math check is hidden; answer it automatically so the server's
+        // legacy fallback (used only until TURNSTILE_SECRET_KEY is configured) keeps accepting leads.
+        securityAnswer: TURNSTILE_SITE_KEY
+          ? String(Number(form.securityA) + Number(form.securityB))
+          : form.securityAnswer,
+        turnstileToken
+      }),
       headers: {
         "Content-Type": "application/json"
       },
       method: "POST"
     });
 
-    const data = (await response.json()) as { message?: string };
+    const data = (await response.json().catch(() => ({}))) as { message?: string };
+
+    if (TURNSTILE_SITE_KEY) {
+      // Turnstile tokens are single-use: get a fresh one for any retry.
+      setTurnstileResetKey((current) => current + 1);
+    }
+
     if (!response.ok) {
       setStatus("error");
       setMessage(data.message ?? formContent.errorMessage);
@@ -376,6 +404,19 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
         value={form.website}
       />
 
+      {TURNSTILE_SITE_KEY ? (
+        <div className="rounded-[28px] border border-[#d9e7e4] bg-white p-4 text-[#1f2937]">
+          <div className="mb-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#165a6e]">
+            {locale === "en" ? "Security check" : "Verificación de seguridad"}
+          </div>
+          <TurnstileWidget
+            className="min-h-[65px]"
+            language={locale === "en" ? "en" : "es"}
+            onToken={setTurnstileToken}
+            resetKey={turnstileResetKey}
+          />
+        </div>
+      ) : (
       <div className="rounded-[28px] border border-[#d9e7e4] bg-white p-4 text-[#1f2937]">
         <div className="grid gap-3 sm:grid-cols-[1fr_220px] sm:items-center">
           <div>
@@ -399,6 +440,7 @@ export function LeadForm({ locale, formContent }: LeadFormProps) {
           />
         </div>
       </div>
+      )}
 
       <div className="flex flex-col gap-4 rounded-[28px] border border-white/10 bg-[#071020]/58 p-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm leading-6 text-slate-400">

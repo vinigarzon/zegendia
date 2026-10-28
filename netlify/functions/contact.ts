@@ -41,6 +41,7 @@ type ContactPayload = {
   summary?: string;
   transcript?: string;
   triggerIntent?: string;
+  turnstileToken?: string;
   wantsDemo?: "yes" | "no" | "not_sure";
   website?: string;
 };
@@ -227,6 +228,36 @@ function renderDetailTable(rows: { label: string; value: string }[]) {
         .join("")}
     </table>
   `;
+}
+
+async function verifyTurnstile(token: string, ip: string) {
+  const secret = process.env.TURNSTILE_SECRET_KEY;
+
+  if (!token) {
+    return false;
+  }
+
+  try {
+    const body = new URLSearchParams({ response: token, secret: secret || "" });
+    if (ip && ip !== "unknown") {
+      body.set("remoteip", ip);
+    }
+
+    const response = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      body,
+      method: "POST"
+    });
+    const result = (await response.json()) as { success?: boolean; "error-codes"?: string[] };
+
+    if (!result.success) {
+      console.warn("Turnstile verification failed", { errors: result["error-codes"], ip });
+    }
+
+    return result.success === true;
+  } catch (error) {
+    console.error("Turnstile verification error", error);
+    return false;
+  }
 }
 
 function getIp(event: NetlifyEvent) {
@@ -461,7 +492,20 @@ export async function handler(event: NetlifyEvent) {
     });
   }
 
-  if (companyType !== "chatbot") {
+  if (process.env.TURNSTILE_SECRET_KEY) {
+    // Real bot protection (Cloudflare Turnstile) for both the contact form and Zendi.
+    const isHuman = await verifyTurnstile(cleanLine(payload.turnstileToken, 2048), ip);
+
+    if (!isHuman) {
+      return json(400, {
+        message:
+          preferredLanguage === "en"
+            ? "We could not verify that you are human. Please refresh the page and try again."
+            : "No pudimos verificar que eres una persona. Recarga la página e intenta de nuevo."
+      });
+    }
+  } else if (companyType !== "chatbot") {
+    // Legacy fallback while Turnstile is not configured (does not stop scripts).
     const expectedSecurityAnswer = Number(payload.securityA) + Number(payload.securityB);
     const providedSecurityAnswer = Number(payload.securityAnswer);
 
