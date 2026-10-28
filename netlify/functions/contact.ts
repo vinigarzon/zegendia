@@ -47,6 +47,13 @@ type ContactPayload = {
 
 const CONTACT_RATE_LIMIT_WINDOW_MS = 15 * 60 * 1000;
 const CONTACT_RATE_LIMIT_MAX = 10;
+const CONTACT_EMAIL_RATE_LIMIT_MAX = 3;
+
+// Real leads never contain HTML, and short fields (name, company, country...) never need links.
+// Rejecting them stops the form from being used to inject markup or phishing links into emails
+// that are sent from our domain.
+const HTML_TAG_PATTERN = /<\s*\/?\s*[a-z!?][^>]*>/i;
+const LINK_PATTERN = /(https?:\/\/|www\.|javascript:)/i;
 const contactRateLimitStore = new Map<string, { count: number; resetAt: number }>();
 
 function json(statusCode: number, body: unknown) {
@@ -55,6 +62,21 @@ function json(statusCode: number, body: unknown) {
     headers: { "Content-Type": "application/json" },
     statusCode
   };
+}
+
+function cleanLine(value: unknown, max = 160) {
+  return String(value ?? "")
+    .replace(/[\u0000-\u001F\u007F]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, max);
+}
+
+function cleanBlock(value: unknown, max: number) {
+  return String(value ?? "")
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
+    .trim()
+    .slice(0, max);
 }
 
 function escapeHtml(value: string) {
@@ -209,14 +231,14 @@ function renderDetailTable(rows: { label: string; value: string }[]) {
 
 function getIp(event: NetlifyEvent) {
   return (
-    event.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
     event.headers["x-nf-client-connection-ip"] ||
+    event.headers["x-forwarded-for"]?.split(",")[0]?.trim() ||
     event.headers["cf-connecting-ip"] ||
     "unknown"
   );
 }
 
-function isRateLimited(key: string) {
+function isRateLimited(key: string, max = CONTACT_RATE_LIMIT_MAX) {
   const now = Date.now();
   const current = contactRateLimitStore.get(key);
 
@@ -226,7 +248,7 @@ function isRateLimited(key: string) {
   }
 
   current.count += 1;
-  return current.count > CONTACT_RATE_LIMIT_MAX;
+  return current.count > max;
 }
 
 function createId() {
@@ -335,32 +357,52 @@ export async function handler(event: NetlifyEvent) {
     return json(405, { message: "Method not allowed." });
   }
 
-  const payload = JSON.parse(event.body || "{}") as ContactPayload;
+  let payload: ContactPayload;
+  try {
+    const parsed = JSON.parse(event.body || "{}");
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return json(400, { message: "Invalid request." });
+    }
+    payload = parsed as ContactPayload;
+  } catch {
+    return json(400, { message: "Invalid request." });
+  }
 
   if (payload.website) {
     return json(400, { message: "Spam detected." });
   }
 
-  const name = String(payload.name || "").trim();
-  const company = String(payload.company || "").trim();
-  const email = String(payload.email || "").trim();
-  const country = String(payload.country || "").trim();
-  const message = String(payload.message || "").trim();
-  const companyType = String(payload.companyType || "").trim();
+  const name = cleanLine(payload.name, 100);
+  const company = cleanLine(payload.company, 150);
+  const email = cleanLine(payload.email, 254);
+  const country = cleanLine(payload.country, 80);
+  const message = cleanBlock(payload.message, 4000);
+  const companyType = cleanLine(payload.companyType, 80);
   const isChatbotLead = companyType === "chatbot";
   const preferredLanguage = payload.preferredLanguage === "en" ? "en" : "es";
-  const pageContext = payload.pageContext || {};
-  const sessionId = String(payload.sessionId || pageContext.sessionId || "").trim();
-  const transcript = String(payload.transcript || "").trim();
-  const triggerIntent = String(payload.triggerIntent || "contacto").trim();
+  const pageContext: NonNullable<ContactPayload["pageContext"]> =
+    payload.pageContext && typeof payload.pageContext === "object" ? payload.pageContext : {};
+  const sessionId = cleanLine(payload.sessionId || pageContext.sessionId, 120);
+  const transcript = cleanBlock(payload.transcript, 20000);
+  const triggerIntent = cleanLine(payload.triggerIntent || "contacto", 60);
   const demoPreference = demoPreferenceLabel(payload.wantsDemo, preferredLanguage);
-  const summary = String(payload.summary || message).trim();
-  const objectiveRaw = String(payload.objective || payload.needType || "").trim();
-  const needType = String(payload.needType || payload.objective || "").trim();
-  const suggestedSolution = String(payload.suggestedSolution || "").trim();
-  const intentLevel = String(payload.intentLevel || "medium").trim();
-  const loyaltyTarget = String(payload.loyaltyTarget || "").trim();
-  const estimatedUsersRaw = String(payload.estimatedUsers || payload.size || "").trim();
+  const summary = cleanBlock(payload.summary || message, 4000);
+  const objectiveRaw = cleanLine(payload.objective || payload.needType);
+  const needType = cleanLine(payload.needType || payload.objective);
+  const suggestedSolution = cleanLine(payload.suggestedSolution);
+  const intentLevel = cleanLine(payload.intentLevel || "medium", 40);
+  const loyaltyTarget = cleanLine(payload.loyaltyTarget);
+  const estimatedUsersRaw = cleanLine(payload.estimatedUsers || payload.size, 80);
+  const phone = cleanLine(payload.phone, 40);
+  const hasExistingProgram = cleanLine(payload.hasExistingProgram);
+  const countriesNeeded = cleanLine(payload.countriesNeeded, 300);
+  const wantsDemo = cleanLine(payload.wantsDemo, 20);
+  const pageUrl = cleanLine(pageContext.pageUrl, 500);
+  const referrer = cleanLine(pageContext.referrer || event.headers.referer, 500);
+  const userAgent = cleanLine(pageContext.userAgent || event.headers["user-agent"], 300);
+  const utmSource = cleanLine(pageContext.utmSource, 120);
+  const utmMedium = cleanLine(pageContext.utmMedium, 120);
+  const utmCampaign = cleanLine(pageContext.utmCampaign, 120);
   const objectiveDisplay = optionLabel(objectiveRaw, OBJECTIVE_LABELS, preferredLanguage);
   const sizeDisplay = optionLabel(estimatedUsersRaw, SIZE_LABELS, preferredLanguage);
   const companyTypeDisplay = displayValue(companyType, preferredLanguage);
@@ -378,6 +420,45 @@ export async function handler(event: NetlifyEvent) {
 
   if (name.length < 2 || company.length < 2 || country.length < 2 || !isEmail(email) || message.length < 10) {
     return json(400, { message: "Please complete all required fields." });
+  }
+
+  const shortFields = [
+    name,
+    company,
+    email,
+    country,
+    companyType,
+    objectiveRaw,
+    needType,
+    suggestedSolution,
+    intentLevel,
+    loyaltyTarget,
+    estimatedUsersRaw,
+    phone,
+    hasExistingProgram,
+    countriesNeeded,
+    triggerIntent
+  ];
+  const hasMarkup = [...shortFields, message, summary].some((value) => HTML_TAG_PATTERN.test(value));
+  const hasLinkInShortField = shortFields.some((value) => LINK_PATTERN.test(value));
+
+  if (hasMarkup || hasLinkInShortField) {
+    console.warn("Rejected contact submission with markup or links", { ip, userAgent });
+    return json(400, {
+      message:
+        preferredLanguage === "en"
+          ? "Please review your details: links and HTML are not allowed in these fields."
+          : "Revisa tus datos: no se permiten enlaces ni código HTML en estos campos."
+    });
+  }
+
+  if (isRateLimited(`email:${email.toLowerCase()}`, CONTACT_EMAIL_RATE_LIMIT_MAX)) {
+    return json(429, {
+      message:
+        preferredLanguage === "en"
+          ? "Too many requests. Please wait a moment and try again."
+          : "Demasiadas solicitudes. Espera un momento e intenta de nuevo."
+    });
   }
 
   if (companyType !== "chatbot") {
@@ -404,11 +485,11 @@ export async function handler(event: NetlifyEvent) {
     company,
     companyType: companyType || "chatbot",
     country,
-    countriesNeeded: String(payload.countriesNeeded || "").trim(),
+    countriesNeeded,
     createdAt,
     email,
-    estimatedUsers: String(payload.estimatedUsers || payload.size || "").trim(),
-    hasExistingProgram: String(payload.hasExistingProgram || "").trim(),
+    estimatedUsers: estimatedUsersRaw,
+    hasExistingProgram,
     id: createId(),
     intentLevel,
     ip,
@@ -416,22 +497,22 @@ export async function handler(event: NetlifyEvent) {
     message,
     name,
     needType,
-    objective: String(payload.objective || needType || suggestedSolution || "Solicitud desde Zendi").trim(),
-    pageUrl: String(pageContext.pageUrl || "").trim(),
-    phone: String(payload.phone || "").trim(),
+    objective: objectiveRaw || suggestedSolution || "Solicitud desde Zendi",
+    pageUrl,
+    phone,
     preferredLanguage,
-    referrer: String(pageContext.referrer || event.headers.referer || "").trim(),
+    referrer,
     sessionId,
-    size: String(payload.size || payload.estimatedUsers || "not-specified").trim(),
+    size: estimatedUsersRaw || "not-specified",
     suggestedSolution,
     summary,
     transcript,
     triggerIntent,
-    userAgent: String(pageContext.userAgent || event.headers["user-agent"] || "").trim(),
-    utmCampaign: String(pageContext.utmCampaign || "").trim(),
-    utmMedium: String(pageContext.utmMedium || "").trim(),
-    utmSource: String(pageContext.utmSource || "").trim(),
-    wantsDemo: String(payload.wantsDemo || "").trim()
+    userAgent,
+    utmCampaign,
+    utmMedium,
+    utmSource,
+    wantsDemo
   }).catch((error) => {
     console.error("Could not persist Zendi lead", error);
   });
@@ -513,8 +594,7 @@ export async function handler(event: NetlifyEvent) {
     { label: labels.country, value: displayValue(country, preferredLanguage) },
     ...(isChatbotLead ? [] : [{ label: labels.companyType, value: companyTypeDisplay }]),
     { label: labels.whatToFidelize, value: objectiveDisplay },
-    { label: labels.estimatedSize, value: sizeDisplay },
-    { label: labels.message, value: displayValue(message, preferredLanguage) }
+    { label: labels.estimatedSize, value: sizeDisplay }
   ];
   const internalLeadRows = [
     { label: labels.source, value: isChatbotLead ? "Zendi" : preferredLanguage === "en" ? "Contact form" : "Formulario de contacto" },
@@ -522,7 +602,7 @@ export async function handler(event: NetlifyEvent) {
     companyRow,
     { label: labels.email, value: displayValue(email, preferredLanguage) },
     { label: labels.country, value: displayValue(country, preferredLanguage) },
-    { label: labels.phone, value: displayValue(String(payload.phone || ""), preferredLanguage) },
+    { label: labels.phone, value: displayValue(phone, preferredLanguage) },
     ...(isChatbotLead ? [] : [{ label: labels.companyType, value: companyTypeDisplay }]),
     { label: labels.whatToFidelize, value: objectiveDisplay },
     { label: labels.estimatedSize, value: sizeDisplay },
@@ -533,8 +613,8 @@ export async function handler(event: NetlifyEvent) {
     { label: labels.intent, value: displayValue(triggerIntent, preferredLanguage) },
     { label: labels.intentLevel, value: displayValue(intentLevel, preferredLanguage) },
     { label: labels.demo, value: demoPreference },
-    { label: labels.existingProgram, value: displayValue(String(payload.hasExistingProgram || ""), preferredLanguage) },
-    { label: labels.countriesNeeded, value: displayValue(String(payload.countriesNeeded || ""), preferredLanguage) },
+    { label: labels.existingProgram, value: displayValue(hasExistingProgram, preferredLanguage) },
+    { label: labels.countriesNeeded, value: displayValue(countriesNeeded, preferredLanguage) },
     { label: labels.language, value: preferredLanguage }
   ];
   const shouldRenderExecutiveSummary = isChatbotLead || summary !== message;
@@ -559,14 +639,14 @@ export async function handler(event: NetlifyEvent) {
       }
       <h2 style="margin:24px 0 8px;font-size:16px;color:#165a6e;">${escapeHtml(labels.technicalContext)}</h2>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border-collapse:collapse;font-size:13px;line-height:1.6;">
-        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">IP</td><td style="padding:5px 0;">${escapeHtml(getIp(event))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">IP</td><td style="padding:5px 0;">${escapeHtml(ip)}</td></tr>
         <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Session ID</td><td style="padding:5px 0;">${escapeHtml(sessionId)}</td></tr>
-        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">User agent</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.userAgent || event.headers["user-agent"] || ""))}</td></tr>
-        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Referrer</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.referrer || event.headers.referer || ""))}</td></tr>
-        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Page URL</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.pageUrl || ""))}</td></tr>
-        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM source</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.utmSource || ""))}</td></tr>
-        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM medium</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.utmMedium || ""))}</td></tr>
-        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM campaign</td><td style="padding:5px 0;">${escapeHtml(String(pageContext.utmCampaign || ""))}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">User agent</td><td style="padding:5px 0;">${escapeHtml(userAgent)}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Referrer</td><td style="padding:5px 0;">${escapeHtml(referrer)}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Page URL</td><td style="padding:5px 0;">${escapeHtml(pageUrl)}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM source</td><td style="padding:5px 0;">${escapeHtml(utmSource)}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM medium</td><td style="padding:5px 0;">${escapeHtml(utmMedium)}</td></tr>
+        <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">UTM campaign</td><td style="padding:5px 0;">${escapeHtml(utmCampaign)}</td></tr>
         <tr><td style="padding:5px 0;color:#165a6e;font-weight:700;">Date/time</td><td style="padding:5px 0;">${createdAt}</td></tr>
       </table>
     `
@@ -587,11 +667,7 @@ export async function handler(event: NetlifyEvent) {
               }</p>
               <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
                 <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">${isChatbotLead ? "Conversation summary" : "Request details"}</div>
-                ${
-                  isChatbotLead
-                    ? `<p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>`
-                    : renderDetailTable(contactConfirmationRows)
-                }
+                ${renderDetailTable(contactConfirmationRows)}
               </div>
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Our team will review it and get back to you within 24 hours with the right follow-up, meeting, or demo if applicable.</p>
               <p style="margin:24px 0 0;font-size:15px;line-height:1.8;">Best,<br /><strong>Zegendia</strong></p>
@@ -613,11 +689,7 @@ export async function handler(event: NetlifyEvent) {
               }</p>
               <div style="margin:20px 0;padding:16px;border-radius:16px;background:#f7fbf2;border:1px solid #d8e7df;">
                 <div style="font-size:12px;text-transform:uppercase;letter-spacing:0.16em;color:#165a6e;font-weight:700;">${isChatbotLead ? "Resumen de lo conversado" : "Resumen de tu solicitud"}</div>
-                ${
-                  isChatbotLead
-                    ? `<p style="margin:8px 0 0;font-size:14px;line-height:1.7;">${escapeHtml(summary)}</p>`
-                    : renderDetailTable(contactConfirmationRows)
-                }
+                ${renderDetailTable(contactConfirmationRows)}
               </div>
               <p style="margin:0 0 16px;font-size:15px;line-height:1.8;">Nuestro equipo revisará tu solicitud y te responderá en menos de 24 horas con el seguimiento correcto, una reunión o un demo si aplica.</p>
               <p style="margin:24px 0 0;font-size:15px;line-height:1.8;">Saludos,<br /><strong>Zegendia</strong></p>
