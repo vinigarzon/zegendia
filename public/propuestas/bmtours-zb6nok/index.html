@@ -80,6 +80,7 @@ p { margin: 0; }
 .btn-ghost { background: var(--panel); border-color: var(--line); color: var(--text); }
 .btn-ghost:hover { background: var(--panel2); }
 .btn[disabled] { opacity: .5; cursor: wait; transform: none; }
+.btn[hidden] { display: none !important; }
 .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 20px; padding: 24px; backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
 
@@ -383,31 +384,44 @@ p { margin: 0; }
 .talk-ok { display: none; padding: 16px 20px; border-radius: 14px; background: rgba(132, 209, 74, .12); border: 1px solid rgba(132, 209, 74, .4); color: var(--text); }
 .talk-ok.show { display: block; }
 
-/* ---------- 16. Questions ---------- */
-.qform { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; }
-.q { padding: 18px 20px; display: grid; gap: 10px; align-content: start; }
-.q.full { grid-column: 1 / -1; }
-.q legend, .q .ql { font-family: var(--display); font-weight: 600; font-size: 17px; padding: 0; line-height: 1.3; }
-.q legend span, .q .ql span { color: var(--coral); margin-right: 6px; }
-.q .help { font-size: 13.5px; color: var(--dim); margin-top: -4px; }
-fieldset.q { border: 1px solid var(--line); margin: 0; min-width: 0; }
-.opts { display: flex; flex-wrap: wrap; gap: 8px; }
+/* ---------- 16. Questions (one per screen) ---------- */
+.quiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
+.qcount { font-family: var(--display); font-size: 15px; color: var(--soft); font-variant-numeric: tabular-nums; }
+.qbar { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; }
+.qbar i { height: 5px; border-radius: 3px; background: var(--line); transition: background .4s; }
+.qbar i.done { background: var(--green); }
+.qbar i.on { background: var(--coral); }
+.wizard { display: grid; gap: 22px; }
+.step { display: none; border: 0; margin: 0; padding: 0; min-width: 0; }
+.step.on { display: block; animation: stepIn .55s var(--ease) both; }
+.step > * + * { margin-top: 24px; }
+.step legend { display: block; margin-bottom: 26px; }
+.step legend + * { margin-top: 0; }
+.step > .help { margin-top: -14px; margin-bottom: 0; }
+@keyframes stepIn { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+.qtitle { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(28px, 3.3vw, 50px); line-height: 1.1; letter-spacing: -0.02em; padding: 0; text-wrap: balance; max-width: 26ch; }
+.opt-tag { font-size: .38em; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); vertical-align: middle; margin-left: 8px; }
+.help { font-size: 16px; color: var(--dim); }
+.opts { display: flex; flex-wrap: wrap; gap: 12px; }
 .opt { position: relative; }
 .opt input { position: absolute; opacity: 0; pointer-events: none; }
-.opt span { display: inline-flex; align-items: center; gap: 8px; padding: 9px 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font-size: 14.5px; color: var(--soft); transition: all .2s; }
-.opt input:checked + span { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 700; }
+.opt span { display: inline-flex; align-items: center; gap: 10px; padding: 16px 24px; border-radius: 18px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font-size: clamp(16px, 1.35vw, 20px); font-weight: 600; color: var(--soft); transition: all .2s; }
+.opt span:hover { border-color: rgba(255, 255, 255, .35); color: var(--text); }
+.opt input:checked + span { background: var(--text); color: var(--bg); border-color: var(--text); }
 .opt input:focus-visible + span { outline: 3px solid var(--coral); outline-offset: 2px; }
-.opt .rec { font-size: 10.5px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--green); }
+.opt .rec { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--green); }
 .opt input:checked + span .rec { color: #3b7a14; }
-.q textarea, .q input[type=text] { width: 100%; font: inherit; font-size: 15px; color: var(--text); background: rgba(0, 0, 0, .25); border: 1px solid var(--line); border-radius: 12px; padding: 11px 14px; resize: vertical; min-height: 46px; }
-.q textarea:focus, .q input[type=text]:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgba(255, 93, 85, .2); }
-.qsend { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 14px; align-items: center; justify-content: space-between; padding-top: 4px; }
-.qmsg { font-size: 14.5px; color: var(--soft); }
+.wizard textarea, .wizard input[type=text] { width: 100%; max-width: 900px; font: inherit; font-size: clamp(17px, 1.4vw, 21px); color: var(--text); background: rgba(0, 0, 0, .28); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; resize: vertical; }
+.wizard textarea { min-height: 120px; }
+.wizard textarea:focus, .wizard input[type=text]:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgba(255, 93, 85, .2); }
+.qnav { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding-top: 8px; }
+.qnav .qmsg { flex: 1; min-width: 200px; }
+.qmsg { font-size: 15px; color: var(--soft); }
 .qmsg.err { color: #ff8f88; }
-.thanks { display: none; text-align: center; padding: 40px 28px; gap: 14px; justify-items: center; }
+.thanks { display: none; text-align: center; padding: 48px 28px; gap: 16px; justify-items: center; }
 .thanks.show { display: grid; }
-.thanks .done-ring { width: 110px; height: 110px; }
-.thanks .done-ring svg { width: 52px; height: 52px; stroke-dashoffset: 0; }
+.thanks .done-ring { width: 120px; height: 120px; }
+.thanks .done-ring svg { width: 56px; height: 56px; stroke-dashoffset: 0; }
 
 footer.contact { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; font-size: 14px; color: var(--dim); border-top: 1px solid var(--line); padding-top: 16px; }
 footer.contact a { color: var(--soft); }
@@ -422,7 +436,7 @@ footer.contact a { color: var(--soft); }
 @media (max-width: 860px) {
   body { font-size: 16px; }
   .slide { padding: 78px 18px 100px; justify-content: flex-start; }
-  .split, .cov, .demo, .sim, .qform, .model, .path, .metrics, .compare, .promises { grid-template-columns: minmax(0, 1fr); }
+  .split, .cov, .demo, .sim, .model, .path, .metrics, .compare, .promises { grid-template-columns: minmax(0, 1fr); }
   .stat { grid-template-columns: 1fr; gap: 6px; }
   .photo { aspect-ratio: 16 / 10; }
   .role-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -434,7 +448,6 @@ footer.contact a { color: var(--soft); }
   .timeline { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 14px; }
   .checks { margin-left: 0; margin-top: 24px; }
   .sc .row-flex { flex-direction: column; }
-  .q.full, .qsend { grid-column: auto; }
   .groups { grid-template-columns: 1fr; }
   .hint { display: none; }
   .top .conf { display: none; }
@@ -877,53 +890,52 @@ footer.contact a { color: var(--soft); }
   <!-- 15 -->
   <section class="slide" data-title="Siguiente paso" aria-label="Siguiente paso">
     <div class="inner">
-      <div style="display:grid;gap:14px;max-width:960px">
+      <div style="display:grid;gap:14px;max-width:980px">
         <p class="eyebrow" data-a style="--i:0">Siguiente paso</p>
-        <h2 class="title" data-a style="--i:1;font-size:clamp(36px,5vw,70px)">¿Le interesa? <span class="grad">Armemos su propuesta.</span></h2>
-        <p class="lead" data-a style="--i:2">Con unas pocas respuestas preparamos su propuesta económica a la medida: alcance, volumen mínimo, plazos y el margen para bmtours.</p>
+        <h2 class="title" data-a style="--i:1;font-size:clamp(36px,5vw,72px)">Denos esta información y <span class="grad">le tenemos lista su propuesta.</span></h2>
+        <p class="lead" data-a style="--i:2">Ocho preguntas, unos cinco minutos. Con sus respuestas armamos la propuesta económica a la medida de bmtours: alcance, volumen mínimo, plazos y su margen.</p>
       </div>
       <div class="path">
-        <div class="card" data-a style="--i:3;--c:var(--violet)"><b>Usted nos cuenta</b><span>Responde unas pocas preguntas en la siguiente pantalla.</span></div>
-        <div class="card" data-a style="--i:4;--c:var(--teal)"><b>Diseñamos su orquestador</b><span>Sobre su flujo actual, sus bancos y sus sistemas.</span></div>
-        <div class="card" data-a style="--i:5;--c:var(--green)"><b>Propuesta económica</b><span>Modelo de alianza, volumen mínimo y plazos.</span></div>
-        <div class="card" data-a style="--i:6;--c:var(--coral)"><b>Demo y primer banco</b><span>Lo vemos en vivo y planificamos el lanzamiento.</span></div>
+        <div class="card" data-a style="--i:3;--c:var(--violet)"><b>Usted nos envía la información</b><span>Responde las preguntas en la siguiente pantalla.</span></div>
+        <div class="card" data-a style="--i:4;--c:var(--teal)"><b>Diseñamos su orquestador</b><span>Sobre su operación, sus bancos y sus sistemas.</span></div>
+        <div class="card" data-a style="--i:5;--c:var(--green)"><b>Le enviamos la propuesta</b><span>Modelo de alianza, volumen mínimo, plazos y margen.</span></div>
+        <div class="card" data-a style="--i:6;--c:var(--coral)"><b>Arrancamos con el primer banco</b><span>Implementación y lanzamiento.</span></div>
       </div>
       <div class="row" data-a style="--i:7">
-        <button class="btn btn-primary" type="button" data-go="next">Sí, me interesa: responder las preguntas</button>
-        <button class="btn btn-ghost" type="button" id="talk-btn">Prefiero conversarlo primero</button>
-        <a class="btn btn-ghost" href="https://viniciogarzon.com/book" target="_blank" rel="noopener">Agendar una reunión</a>
+        <button class="btn btn-primary" type="button" data-go="next">Responder las preguntas
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
       </div>
-      <p class="talk-ok" id="talk-ok" role="status"></p>
     </div>
   </section>
 
   <!-- 16 -->
-  <section class="slide" data-title="Preguntas para su propuesta" aria-label="Preguntas para su propuesta económica">
+  <section class="slide s-quiz" data-title="Información para su propuesta" aria-label="Información para su propuesta económica" data-scene="quiz">
     <div class="inner">
-      <div style="display:grid;gap:12px;max-width:960px">
-        <p class="eyebrow green" data-a style="--i:0">Para su propuesta económica</p>
-        <h2 class="title mid" data-a style="--i:1">Ocho preguntas y le enviamos su propuesta.</h2>
-        <p class="soft" data-a style="--i:2">Responda lo que sepa hoy; lo demás lo vemos juntos.</p>
+      <div class="quiz-head" data-a style="--i:0">
+        <p class="eyebrow green">Información para su propuesta</p>
+        <p class="qcount" id="qcount" aria-live="polite">Pregunta 1 de 9</p>
       </div>
-      <form class="qform" id="qform" novalidate data-a style="--i:3">
-        <fieldset class="q card full">
-          <legend><span>1</span>¿Qué alcance imagina para el orquestador?</legend>
+      <div class="qbar" id="qbar" aria-hidden="true"></div>
+      <form class="wizard" id="qform" novalidate data-a style="--i:1">
+        <fieldset class="step on" data-step>
+          <legend class="qtitle">¿Qué alcance imagina para el orquestador?</legend>
           <div class="opts">
             <label class="opt"><input type="radio" name="scope" value="unico"><span>Uno solo para viajes, productos y otros premios, con una sola marca <em class="rec">Recomendado</em></span></label>
             <label class="opt"><input type="radio" name="scope" value="solo-productos"><span>Solo productos; los viajes siguen aparte</span></label>
-            <label class="opt"><input type="radio" name="scope" value="conversar"><span>Prefiero conversarlo</span></label>
+            <label class="opt"><input type="radio" name="scope" value="conversar"><span>Aún no lo hemos definido</span></label>
           </div>
         </fieldset>
-        <div class="q card">
-          <label class="ql" for="q-banks"><span>2</span>¿Con qué bancos empezaríamos y cuántos clientes activos tiene cada programa?</label>
-          <textarea id="q-banks" name="banks" rows="2" placeholder="Ej.: Banco A, unos 80,000 clientes activos"></textarea>
+        <div class="step" data-step>
+          <label class="qtitle" for="q-banks">¿Con qué bancos empezaríamos y cuántos clientes activos tiene cada programa?</label>
+          <textarea id="q-banks" name="banks" rows="3" placeholder="Ej.: Banco A, unos 80,000 clientes activos"></textarea>
         </div>
-        <div class="q card">
-          <label class="ql" for="q-volume"><span>3</span>¿Cuántos canjes al mes procesan hoy y qué parte cree que iría a productos?</label>
-          <textarea id="q-volume" name="volume" rows="2" placeholder="Ej.: 900 canjes al mes; un 40 % podría ser productos"></textarea>
+        <div class="step" data-step>
+          <label class="qtitle" for="q-volume">¿Cuántos canjes al mes procesan hoy y qué parte cree que iría a productos?</label>
+          <textarea id="q-volume" name="volume" rows="3" placeholder="Ej.: 900 canjes al mes; un 40 % podría ser productos"></textarea>
         </div>
-        <fieldset class="q card">
-          <legend><span>4</span>¿Cómo se conecta hoy bmtours con cada banco para consultar saldos y debitar millas?</legend>
+        <fieldset class="step" data-step>
+          <legend class="qtitle">¿Cómo se conecta hoy bmtours con cada banco para consultar saldos y debitar millas?</legend>
           <div class="opts">
             <label class="opt"><input type="radio" name="bankConnection" value="api"><span>API en tiempo real</span></label>
             <label class="opt"><input type="radio" name="bankConnection" value="archivos"><span>Archivos periódicos</span></label>
@@ -932,8 +944,8 @@ footer.contact a { color: var(--soft); }
           </div>
           <input type="text" name="bankConnectionDetail" aria-label="Detalle de la conexión con el banco" placeholder="Detalle opcional">
         </fieldset>
-        <fieldset class="q card">
-          <legend><span>5</span>¿Su plataforma de viajes tiene API?</legend>
+        <fieldset class="step" data-step>
+          <legend class="qtitle">¿Su plataforma de viajes tiene API?</legend>
           <div class="opts">
             <label class="opt"><input type="radio" name="travelApi" value="propia"><span>Sí, propia</span></label>
             <label class="opt"><input type="radio" name="travelApi" value="proveedor"><span>Sí, de un proveedor</span></label>
@@ -942,8 +954,8 @@ footer.contact a { color: var(--soft); }
           </div>
           <input type="text" name="travelSystem" aria-label="Sistema de viajes que usan" placeholder="¿Qué sistema usan? (opcional)">
         </fieldset>
-        <fieldset class="q card">
-          <legend><span>6</span>¿Qué exigen los bancos en seguridad y datos?</legend>
+        <fieldset class="step" data-step>
+          <legend class="qtitle">¿Qué exigen los bancos en seguridad y datos?</legend>
           <p class="help">Puede elegir varias.</p>
           <div class="opts">
             <label class="opt"><input type="checkbox" name="security" value="certificaciones"><span>Certificaciones (ISO 27001, SOC 2)</span></label>
@@ -954,8 +966,8 @@ footer.contact a { color: var(--soft); }
           </div>
           <input type="text" name="securityDetail" aria-label="Detalle de requisitos de seguridad" placeholder="Detalle opcional">
         </fieldset>
-        <fieldset class="q card">
-          <legend><span>7</span>¿Para cuándo quisieran lanzar con el primer banco?</legend>
+        <fieldset class="step" data-step>
+          <legend class="qtitle">¿Para cuándo quisieran lanzar con el primer banco?</legend>
           <div class="opts">
             <label class="opt"><input type="radio" name="launch" value="menos-3"><span>Menos de 3 meses</span></label>
             <label class="opt"><input type="radio" name="launch" value="3-6"><span>3 a 6 meses</span></label>
@@ -963,31 +975,32 @@ footer.contact a { color: var(--soft); }
             <label class="opt"><input type="radio" name="launch" value="por-definir"><span>Por definir</span></label>
           </div>
         </fieldset>
-        <fieldset class="q card full">
-          <legend><span>8</span>¿Les interesa una alianza de largo plazo con exclusividad en premios físicos, a cambio del orquestador sin costo de licencia?</legend>
+        <fieldset class="step" data-step>
+          <legend class="qtitle">¿Les interesa una alianza de largo plazo con exclusividad en premios físicos, a cambio del orquestador sin costo de licencia?</legend>
           <div class="opts">
             <label class="opt"><input type="radio" name="model" value="si"><span>Sí, me interesa</span></label>
-            <label class="opt"><input type="radio" name="model" value="detalles"><span>Quiero conocer los detalles</span></label>
+            <label class="opt"><input type="radio" name="model" value="detalles"><span>Quiero ver los detalles en la propuesta</span></label>
             <label class="opt"><input type="radio" name="model" value="no-ahora"><span>No por ahora</span></label>
           </div>
         </fieldset>
-        <div class="q card full">
-          <label class="ql" for="q-comments">¿Algo más que debamos saber?</label>
-          <textarea id="q-comments" name="comments" rows="2" placeholder="Opcional"></textarea>
+        <div class="step" data-step>
+          <label class="qtitle" for="q-comments">¿Algo más que debamos considerar para su propuesta? <span class="opt-tag">Opcional</span></label>
+          <textarea id="q-comments" name="comments" rows="3" placeholder="Escriba aquí"></textarea>
         </div>
-        <div class="qsend">
-          <p class="qmsg" id="qmsg" role="status">Le enviaremos una copia de sus respuestas a su correo.</p>
-          <button class="btn btn-primary" type="submit" id="qsend">Enviar y solicitar mi propuesta económica</button>
+        <div class="qnav">
+          <button class="btn btn-ghost" type="button" id="q-prev">Anterior</button>
+          <p class="qmsg" id="qmsg" role="status">Responda lo que sepa hoy; puede dejar preguntas en blanco.</p>
+          <button class="btn btn-primary" type="button" id="q-next">Siguiente</button>
+          <button class="btn btn-primary" type="submit" id="qsend" hidden>Enviar información</button>
         </div>
       </form>
       <div class="thanks card" id="thanks" role="status">
         <div class="done-ring"><svg viewBox="0 0 24 24" fill="none" stroke="#84d14a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-        <h2 class="title mid">Gracias. Ya estamos en ello.</h2>
-        <p class="lead" id="thanks-text" style="text-align:center">Recibimos sus respuestas. Preparamos su propuesta económica y se la enviamos muy pronto.</p>
-        <a class="btn btn-ghost" href="https://viniciogarzon.com/book" target="_blank" rel="noopener">Agendar la demo en vivo</a>
+        <h2 class="title mid">Gracias. Ya estamos armando su propuesta.</h2>
+        <p class="lead" id="thanks-text" style="text-align:center">Recibimos su información. Con ella preparamos su propuesta económica y se la enviamos a su correo.</p>
       </div>
-      <footer class="contact" data-a style="--i:4">
-        <span>Marco Garzón · Zegendia · <a href="https://www.zegendia.com" target="_blank" rel="noopener">www.zegendia.com</a> · <a href="https://viniciogarzon.com/book" target="_blank" rel="noopener">viniciogarzon.com/book</a></span>
+      <footer class="contact" data-a style="--i:2">
+        <span>Marco Garzón · Zegendia · <a href="https://www.zegendia.com" target="_blank" rel="noopener">www.zegendia.com</a> · info@zegendia.com</span>
         <span id="nda-stamp">Documento confidencial. El código de acceso es personal.</span>
       </footer>
     </div>
@@ -1117,7 +1130,15 @@ footer.contact a { color: var(--soft); }
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { closeIndex(); return; }
     if (typing(e) || e.metaKey || e.ctrlKey || e.altKey) return;
-    if (e.key === "ArrowRight" || e.key === "PageDown" || (e.key === " " && !e.target.closest("button, a"))) { e.preventDefault(); go(cur + 1); }
+    var quiz = slides[cur] && slides[cur].classList.contains("s-quiz") ? $("#qform") : null;
+    if (quiz && quiz.style.display !== "none" && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
+      e.preventDefault();
+      var st = quiz._step();
+      if (e.key === "ArrowRight") { if (st < quiz._count - 1) quiz._show(st + 1); }
+      else if (st > 0) quiz._show(st - 1); else go(cur - 1);
+      return;
+    }
+    if (e.key === "ArrowRight" || e.key === "PageDown" || (e.key === " " && !e.target.closest("button, a, label"))) { e.preventDefault(); go(cur + 1); }
     else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
     else if (e.key === "Home") go(0);
     else if (e.key === "End") go(tot - 1);
@@ -1373,43 +1394,63 @@ footer.contact a { color: var(--soft); }
   })();
 
   /* ---------- Interest and questionnaire ---------- */
-  function post(payload) {
-    return fetch(location.pathname, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify(payload) })
-      .then(function (r) { return r.json().catch(function () { return { ok: false }; }).then(function (d) { d.status = r.status; return d; }); });
-  }
-  $("#talk-btn").addEventListener("click", function () {
-    var b = this, out = $("#talk-ok");
-    b.disabled = true;
-    post({ action: "answers", interest: "talk", answers: {} }).then(function (d) {
-      b.disabled = false;
-      out.classList.add("show");
-      out.textContent = d.ok
-        ? "Gracias. Le escribiremos para coordinar una conversación." + (d.copyTo ? " Le enviamos una confirmación a " + d.copyTo + "." : "") + " También puede elegir un horario con el botón Agendar una reunión."
-        : (d.error || "No pudimos enviar su mensaje. Puede agendar una reunión con el botón de al lado.");
-    }).catch(function () { b.disabled = false; out.classList.add("show"); out.textContent = "Hubo un problema de conexión. Puede agendar una reunión con el botón de al lado."; });
-  });
-  $("#qform").addEventListener("submit", function (e) {
-    e.preventDefault();
-    var f = e.target, msg = $("#qmsg"), btn = $("#qsend");
-    var val = function (n) { var el = f.querySelector('[name="' + n + '"]:checked') || f.querySelector('[name="' + n + '"]:not([type=radio]):not([type=checkbox])'); return el ? el.value.trim() : ""; };
-    var answers = {
-      scope: val("scope"), banks: val("banks"), volume: val("volume"),
-      bankConnection: val("bankConnection"), bankConnectionDetail: val("bankConnectionDetail"),
-      travelApi: val("travelApi"), travelSystem: val("travelSystem"),
-      security: $$('[name="security"]:checked', f).map(function (x) { return x.value; }), securityDetail: val("securityDetail"),
-      launch: val("launch"), model: val("model"), comments: val("comments")
-    };
-    var any = Object.keys(answers).some(function (k) { var v = answers[k]; return Array.isArray(v) ? v.length : v; });
-    if (!any) { msg.className = "qmsg err"; msg.textContent = "Responda al menos una pregunta antes de enviar."; return; }
-    btn.disabled = true; msg.className = "qmsg"; msg.textContent = "Enviando…";
-    post({ action: "answers", interest: "yes", answers: answers }).then(function (d) {
-      btn.disabled = false;
-      if (!d.ok) { msg.className = "qmsg err"; msg.textContent = d.error || "No pudimos enviar sus respuestas. Intente de nuevo."; return; }
-      f.style.display = "none";
-      $("#thanks").classList.add("show");
-      $("#thanks-text").textContent = "Recibimos sus respuestas. Preparamos su propuesta económica y se la enviamos muy pronto." + (d.copyTo ? " Le enviamos una copia a " + d.copyTo + "." : "");
-    }).catch(function () { btn.disabled = false; msg.className = "qmsg err"; msg.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
-  });
+  (function () {
+    var form = $("#qform"), steps = $$("[data-step]", form), k = 0;
+    var bar = $("#qbar"), count = $("#qcount"), prevB = $("#q-prev"), nextB = $("#q-next"), sendB = $("#qsend"), msg = $("#qmsg");
+    steps.forEach(function () { bar.appendChild(document.createElement("i")); });
+    var marks = $$("i", bar);
+    function show(i) {
+      k = Math.max(0, Math.min(steps.length - 1, i));
+      steps.forEach(function (s, j) { s.classList.toggle("on", j === k); });
+      marks.forEach(function (m, j) { m.className = j < k ? "done" : (j === k ? "on" : ""); });
+      count.textContent = "Pregunta " + (k + 1) + " de " + steps.length;
+      prevB.style.visibility = k === 0 ? "hidden" : "visible";
+      var last = k === steps.length - 1;
+      nextB.hidden = last; sendB.hidden = !last;
+      msg.className = "qmsg";
+      msg.textContent = last ? "Al enviar, le llega una copia de sus respuestas a su correo." : "Responda lo que sepa hoy; puede dejar preguntas en blanco.";
+      var first = steps[k].querySelector("textarea, input[type=text]");
+      if (first && first.tagName === "TEXTAREA") setTimeout(function () { try { first.focus({ preventScroll: true }); } catch (e) {} }, 350);
+    }
+    form._show = show;
+    form._step = function () { return k; };
+    form._count = steps.length;
+    prevB.addEventListener("click", function () { show(k - 1); });
+    nextB.addEventListener("click", function () { show(k + 1); });
+    $$("input[type=radio]", form).forEach(function (r) {
+      r.addEventListener("change", function () {
+        var hasText = r.closest("[data-step]").querySelector("input[type=text]");
+        if (!hasText) setTimeout(function () { if (k < steps.length - 1) show(k + 1); }, 380);
+      });
+    });
+    hooks.quiz = { enter: function () {}, leave: function () {} };
+    show(0);
+
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var val = function (n) { var el = form.querySelector('[name="' + n + '"]:checked') || form.querySelector('[name="' + n + '"]:not([type=radio]):not([type=checkbox])'); return el ? el.value.trim() : ""; };
+      var answers = {
+        scope: val("scope"), banks: val("banks"), volume: val("volume"),
+        bankConnection: val("bankConnection"), bankConnectionDetail: val("bankConnectionDetail"),
+        travelApi: val("travelApi"), travelSystem: val("travelSystem"),
+        security: $$('[name="security"]:checked', form).map(function (x) { return x.value; }), securityDetail: val("securityDetail"),
+        launch: val("launch"), model: val("model"), comments: val("comments")
+      };
+      var any = Object.keys(answers).some(function (n) { var v = answers[n]; return Array.isArray(v) ? v.length : v; });
+      if (!any) { msg.className = "qmsg err"; msg.textContent = "Responda al menos una pregunta antes de enviar."; return; }
+      sendB.disabled = true; msg.className = "qmsg"; msg.textContent = "Enviando…";
+      fetch(location.pathname, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ action: "answers", interest: "yes", answers: answers }) })
+        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
+        .then(function (d) {
+          sendB.disabled = false;
+          if (!d.ok) { msg.className = "qmsg err"; msg.textContent = d.error || "No pudimos enviar su información. Intente de nuevo."; return; }
+          form.style.display = "none"; bar.style.display = "none"; count.textContent = "Enviado";
+          $("#thanks").classList.add("show");
+          $("#thanks-text").textContent = "Recibimos su información. Con ella preparamos su propuesta económica y se la enviamos a su correo." + (d.copyTo ? " Ya le llegó una copia de sus respuestas a " + d.copyTo + "." : "");
+        })
+        .catch(function () { sendB.disabled = false; msg.className = "qmsg err"; msg.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
+    });
+  })();
 
   /* ---------- Start ---------- */
   var start = 0, h = location.hash.match(/^#s(\d+)$/);

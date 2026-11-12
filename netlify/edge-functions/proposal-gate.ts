@@ -410,7 +410,7 @@ const ANSWER_OPTIONS: Record<string, Record<string, string>> = {
   scope: {
     unico: "Un solo orquestador para viajes, productos y otros premios, con una sola marca",
     "solo-productos": "Solo productos; los viajes siguen en su plataforma actual",
-    conversar: "Prefiere conversarlo"
+    conversar: "Aún no lo ha definido"
   },
   bankConnection: {
     api: "API en tiempo real",
@@ -439,7 +439,7 @@ const ANSWER_OPTIONS: Record<string, Record<string, string>> = {
   },
   model: {
     si: "Sí, le interesa",
-    detalles: "Quiere conocer los detalles",
+    detalles: "Quiere ver los detalles en la propuesta",
     "no-ahora": "No por ahora"
   }
 };
