@@ -404,6 +404,185 @@ form { display:grid; gap:16px; }
 </html>`;
 }
 
+// ---------- Questionnaire answers and interest (requires a valid access cookie) ----------
+
+const ANSWER_OPTIONS: Record<string, Record<string, string>> = {
+  scope: {
+    unico: "Un solo orquestador para viajes, productos y otros premios, con una sola marca",
+    "solo-productos": "Solo productos; los viajes siguen en su plataforma actual",
+    conversar: "Prefiere conversarlo"
+  },
+  bankConnection: {
+    api: "API en tiempo real",
+    archivos: "Archivos periódicos",
+    manual: "Proceso manual",
+    "no-se": "No está seguro"
+  },
+  travelApi: {
+    propia: "Sí, plataforma propia con API",
+    proveedor: "Sí, de un proveedor",
+    no: "No tiene API",
+    "no-se": "No está seguro"
+  },
+  security: {
+    certificaciones: "Certificaciones (ISO 27001, SOC 2)",
+    "datos-ecuador": "Datos alojados en Ecuador",
+    auditorias: "Auditorías o pruebas de seguridad",
+    nda: "Acuerdos de confidencialidad",
+    "no-se": "Aún no lo sabe"
+  },
+  launch: {
+    "menos-3": "En menos de 3 meses",
+    "3-6": "Entre 3 y 6 meses",
+    "mas-6": "En más de 6 meses",
+    "por-definir": "Por definir"
+  },
+  model: {
+    si: "Sí, le interesa",
+    detalles: "Quiere conocer los detalles",
+    "no-ahora": "No por ahora"
+  }
+};
+
+const ANSWER_LABELS: Array<[string, string]> = [
+  ["interest", "Interés"],
+  ["scope", "Alcance del orquestador"],
+  ["banks", "Bancos y participantes"],
+  ["volume", "Volumen de canjes"],
+  ["bankConnection", "Conexión con el banco"],
+  ["bankConnectionDetail", "Detalle de la conexión"],
+  ["travelApi", "Plataforma de viajes"],
+  ["travelSystem", "Sistema de viajes"],
+  ["security", "Exigencias de seguridad"],
+  ["securityDetail", "Detalle de seguridad"],
+  ["launch", "Plazo para el primer banco"],
+  ["model", "Acuerdo de largo plazo con exclusividad"],
+  ["comments", "Comentarios"]
+];
+
+function cleanBlock(value: unknown, max: number) {
+  return String(value ?? "")
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g, "")
+    .trim()
+    .slice(0, max);
+}
+
+function pick(group: string, value: unknown) {
+  const key = String(value ?? "");
+  return ANSWER_OPTIONS[group]?.[key] ?? "";
+}
+
+function readAnswers(raw: unknown) {
+  const a = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
+  const security = Array.isArray(a.security)
+    ? a.security.map((v) => pick("security", v)).filter(Boolean).slice(0, 5).join(", ")
+    : "";
+
+  return {
+    bankConnection: pick("bankConnection", a.bankConnection),
+    bankConnectionDetail: cleanBlock(a.bankConnectionDetail, 400),
+    banks: cleanBlock(a.banks, 600),
+    comments: cleanBlock(a.comments, 1200),
+    launch: pick("launch", a.launch),
+    model: pick("model", a.model),
+    scope: pick("scope", a.scope),
+    security,
+    securityDetail: cleanBlock(a.securityDetail, 400),
+    travelApi: pick("travelApi", a.travelApi),
+    travelSystem: cleanBlock(a.travelSystem, 300),
+    volume: cleanBlock(a.volume, 600)
+  } as Record<string, string>;
+}
+
+function answersTable(values: Record<string, string>) {
+  return `<table style="border-collapse:collapse;font-size:14px;width:100%;">${ANSWER_LABELS.filter(([key]) => values[key])
+    .map(
+      ([key, label]) =>
+        `<tr><td style="padding:8px 14px 8px 0;color:#432851;font-weight:700;vertical-align:top;width:38%;border-bottom:1px solid #eee;">${escapeHtml(label)}</td><td style="padding:8px 0;border-bottom:1px solid #eee;white-space:pre-wrap;">${escapeHtml(values[key])}</td></tr>`
+    )
+    .join("")}</table>`;
+}
+
+async function handleAnswers(request: Request, body: Record<string, unknown>, ip: string, slug: string, proposal: Proposal) {
+  const cookieCode = getCookie(request, cookieNames(slug).access);
+  const access = cookieCode ? await findAccess(slug, proposal, cookieCode) : null;
+
+  if (!access) {
+    return jsonResponse(401, { error: "Su sesión venció. Recargue la página e ingrese su código.", ok: false });
+  }
+
+  const interest = body.interest === "talk" ? "talk" : "yes";
+  const values = readAnswers(body.answers);
+  values.interest = interest === "talk" ? "Le interesa y prefiere conversarlo antes" : "Le interesa y solicita la propuesta económica";
+
+  const answeredCount = ANSWER_LABELS.filter(([key]) => key !== "interest" && values[key]).length;
+  if (interest === "yes" && answeredCount === 0) {
+    return jsonResponse(400, { error: "Responda al menos una pregunta antes de enviar.", ok: false });
+  }
+
+  const info = (() => {
+    try {
+      return JSON.parse(getCookie(request, cookieNames(slug).info) || "{}") as Record<string, string>;
+    } catch {
+      return {} as Record<string, string>;
+    }
+  })();
+
+  const isInternal = access.role === "internal";
+  const who = isInternal ? "Equipo Zegendia (prueba interna)" : cleanLine(info.name || access.name || access.label, 120);
+  const sentAt = formatEcuadorTime(new Date());
+  const proposalUrl = `${(env("SITE_URL") || "https://www.zegendia.com").replace(/\/$/, "")}/propuestas/${slug}/`;
+  const prefix = isInternal ? "[Prueba interna] " : "";
+  const subject =
+    interest === "talk"
+      ? `${prefix}${proposal.client}: le interesa y prefiere conversar`
+      : `${prefix}${proposal.client} respondió las preguntas para la propuesta económica`;
+
+  const noticeHtml = emailShell(`
+    <h2 style="color:#432851;margin:0 0 8px;">${escapeHtml(interest === "talk" ? "Interés en la propuesta" : "Respuestas para la propuesta económica")}</h2>
+    <table style="border-collapse:collapse;font-size:14px;margin:0 0 16px;">
+      ${row("Propuesta", proposalUrl)}${row("Enviado por", who)}${row("Código de", access.label)}${row("Fecha", sentAt)}${row("IP", ip)}
+    </table>
+    ${answersTable(values)}
+  `);
+
+  const sends: Array<Promise<boolean>> = [
+    sendEmail(env("ZEGENDIA_SALES_EMAIL") || "info@zegendia.com", subject, noticeHtml)
+  ];
+
+  const copyTo = !isInternal ? access.email || "" : "";
+  if (copyTo) {
+    const firstName = who.split(" ")[0] || who;
+    const copyHtml = emailShell(`
+      <p style="margin:0 0 14px;line-height:1.6;">Hola ${escapeHtml(firstName)},</p>
+      <p style="margin:0 0 14px;line-height:1.6;">${
+        interest === "talk"
+          ? "Gracias por su interés. Le escribiremos para coordinar una conversación y resolver sus dudas antes de preparar la propuesta económica."
+          : "Gracias por sus respuestas. Con ellas preparamos su propuesta económica y se la enviaremos muy pronto."
+      }</p>
+      ${answeredCount ? `<p style="margin:0 0 10px;font-weight:700;color:#432851;">Esto es lo que nos contó:</p>${answersTable(values)}` : ""}
+      <p style="margin:18px 0 14px;line-height:1.6;">Puede volver a la presentación cuando quiera:<br /><a href="${escapeHtml(proposalUrl)}" style="color:#e44c47;font-weight:700;">${escapeHtml(proposalUrl)}</a></p>
+      <p style="margin:20px 0 0;line-height:1.6;">Saludos cordiales,<br /><strong>Zegendia</strong></p>
+    `);
+    sends.push(sendEmail(copyTo, interest === "talk" ? "Gracias por su interés · Zegendia" : "Recibimos sus respuestas · Zegendia", copyHtml));
+  }
+
+  const results = await Promise.allSettled(sends);
+  results.forEach((r) => {
+    if (r.status === "rejected") console.error("Proposal answers email failed", String(r.reason));
+  });
+
+  const noticeSent = results[0].status === "fulfilled" && results[0].value === true;
+  const copySent = results.length > 1 && results[1].status === "fulfilled" && results[1].value === true;
+  console.log("Proposal answers", JSON.stringify({ access: access.label, answeredCount, copySent, interest, ip, noticeSent, slug }));
+
+  if (!noticeSent && env("RESEND_API_KEY")) {
+    return jsonResponse(502, { error: "No pudimos enviar sus respuestas. Intente de nuevo en un momento.", ok: false });
+  }
+
+  return jsonResponse(200, { copySent, copyTo: copySent ? copyTo : "", ok: true });
+}
+
 async function handlePost(request: Request, context: EdgeContext, slug: string, proposal: Proposal) {
   const ip = context.ip || request.headers.get("x-nf-client-connection-ip") || "unknown";
 
@@ -416,6 +595,10 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
     body = (await request.json()) as Record<string, unknown>;
   } catch {
     return jsonResponse(400, { error: "Solicitud no válida.", ok: false });
+  }
+
+  if (body.action === "answers") {
+    return handleAnswers(request, body, ip, slug, proposal);
   }
 
   const access = await findAccess(slug, proposal, body.code);
