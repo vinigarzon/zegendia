@@ -312,7 +312,7 @@ footer .btn-primary { background: var(--coral); }
         <input id="nda-company" name="company" type="text" autocomplete="organization" value="bmtours" required>
       </div>
       <div class="field full">
-        <label for="nda-email">Correo electrónico</label>
+        <label for="nda-email">Correo electrónico <span style="font-weight:500;color:var(--ink-soft)">(ahí recibirá la copia del acuerdo)</span></label>
         <input id="nda-email" name="email" type="email" autocomplete="email" required>
       </div>
     </div>
@@ -325,7 +325,7 @@ footer .btn-primary { background: var(--coral); }
     <p class="form-error" id="nda-error" role="alert"></p>
 
     <div class="gate-foot">
-      <small>Al aceptar, su nombre, correo, fecha y hora quedan como constancia al pie del documento.</small>
+      <small>Al aceptar, le enviaremos a su correo una copia de este acuerdo con su nombre, la fecha y la hora, como respaldo.</small>
       <button class="btn btn-primary" id="nda-submit" type="submit" disabled>Aceptar y ver la propuesta</button>
     </div>
   </form>
@@ -896,7 +896,7 @@ footer .btn-primary { background: var(--coral); }
   function refresh() { btn.disabled = !valid(); if (valid()) err.textContent = ""; }
   function unlock(rec, focus) {
     document.body.classList.add("unlocked");
-    stamp.textContent = "Acuerdo de confidencialidad aceptado por " + rec.name + " (" + rec.company + ", " + rec.email + ") el " + fmt(rec.acceptedAt).replace(/\.$/, "") + ".";
+    stamp.textContent = "Acuerdo de confidencialidad aceptado por " + rec.name + " (" + rec.company + ", " + rec.email + ") el " + fmt(rec.acceptedAt).replace(/\.$/, "") + "." + (rec.copySent ? " Le enviamos una copia a " + rec.email + "." : "");
     if (focus) { window.scrollTo(0, 0); document.getElementById("main").focus({ preventScroll: true }); }
   }
 
@@ -919,15 +919,17 @@ footer .btn-primary { background: var(--coral); }
       version: "NDA-bmtours-2026-11"
     };
     save(rec);
+    unlock(rec, true);
     try {
       fetch("/api/nda", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: rec.name, company: rec.company, email: rec.email, acceptedAt: rec.acceptedAt, version: rec.version, page: location.pathname }),
         keepalive: true
+      }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+        if (d && d.copySent) { rec.copySent = true; save(rec); unlock(rec, false); }
       }).catch(function () {});
     } catch (e2) { /* the record still shows on the page */ }
-    unlock(rec, true);
   });
 
   var saved = readSaved();
