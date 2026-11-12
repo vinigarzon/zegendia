@@ -9,6 +9,10 @@
   node_bundler = "esbuild"
 
 [[edge_functions]]
+  path = "/propuestas/*"
+  function = "proposal-gate"
+
+[[edge_functions]]
   path = "/*"
   function = "locale-router"
 
@@ -21,12 +25,6 @@
 [[redirects]]
   from = "/api/contact"
   to = "/.netlify/functions/contact"
-  status = 200
-  force = true
-
-[[redirects]]
-  from = "/api/nda"
-  to = "/.netlify/functions/nda"
   status = 200
   force = true
 
