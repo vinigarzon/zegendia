@@ -93,6 +93,20 @@ function isEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+// Every email the site sends, above all the ones clients receive, must come from the
+// zegendia.com domain verified in Resend. A RESEND_FROM on any other domain is ignored.
+const DEFAULT_FROM = "Zegendia <info@zegendia.com>";
+
+function resolveFrom() {
+  const configured = (process.env.RESEND_FROM || "").trim();
+
+  if (!/@zegendia\.com>?$/i.test(configured)) {
+    return DEFAULT_FROM;
+  }
+
+  return configured.includes("<") ? configured : `Zegendia <${configured}>`;
+}
+
 async function sendResendEmail({
   html,
   subject,
@@ -106,8 +120,7 @@ async function sendResendEmail({
     return;
   }
 
-  const configuredFrom = process.env.RESEND_FROM || "zegendia@gurumba.com";
-  const from = configuredFrom.includes("<") ? configuredFrom : `Zegendia Contact <${configuredFrom}>`;
+  const from = resolveFrom();
 
   const response = await fetch("https://api.resend.com/emails", {
     body: JSON.stringify({

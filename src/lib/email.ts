@@ -24,6 +24,20 @@ function confirmationCopy(locale: Locale, name: string) {
   };
 }
 
+// Every email the site sends, above all the ones clients receive, must come from the
+// zegendia.com domain verified in Resend. A RESEND_FROM on any other domain is ignored.
+const DEFAULT_FROM = "Zegendia <info@zegendia.com>";
+
+function resolveFrom() {
+  const configured = (process.env.RESEND_FROM || "").trim();
+
+  if (!/@zegendia\.com>?$/i.test(configured)) {
+    return DEFAULT_FROM;
+  }
+
+  return configured.includes("<") ? configured : `Zegendia <${configured}>`;
+}
+
 export async function sendLeadEmails(lead: LeadRecord) {
   const client = getResendClient();
   if (!client) {
@@ -31,8 +45,7 @@ export async function sendLeadEmails(lead: LeadRecord) {
   }
 
   const salesEmail = process.env.ZEGENDIA_SALES_EMAIL ?? "info@zegendia.com";
-  const configuredFrom = process.env.RESEND_FROM ?? "zegendia@gurumba.com";
-  const from = configuredFrom.includes("<") ? configuredFrom : `Zegendia Contact <${configuredFrom}>`;
+  const from = resolveFrom();
   const confirmation = confirmationCopy(lead.preferredLanguage, lead.name);
 
   await Promise.all([

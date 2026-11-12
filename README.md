@@ -98,7 +98,8 @@ ADMIN_EMAIL=admin@zegendia.com
 ADMIN_PASSWORD=change-me
 ADMIN_SESSION_SECRET=change-me-super-secret
 RESEND_API_KEY=
-RESEND_FROM=hello@zegendia.com
+# Must be an address on zegendia.com (domain verified in Resend); other domains are ignored.
+RESEND_FROM=info@zegendia.com
 ZEGENDIA_SALES_EMAIL=info@zegendia.com
 NETLIFY_DATABASE_MODE=local
 ```

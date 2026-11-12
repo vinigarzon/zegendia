@@ -73,13 +73,26 @@ function isRateLimited(key: string) {
   return entry.count > RATE_LIMIT_MAX;
 }
 
+// Every email the site sends, above all the ones clients receive, must come from the
+// zegendia.com domain verified in Resend. A RESEND_FROM on any other domain is ignored.
+const DEFAULT_FROM = "Zegendia <info@zegendia.com>";
+
+function resolveFrom() {
+  const configured = (process.env.RESEND_FROM || "").trim();
+
+  if (!/@zegendia\.com>?$/i.test(configured)) {
+    return DEFAULT_FROM;
+  }
+
+  return configured.includes("<") ? configured : `Zegendia <${configured}>`;
+}
+
 async function sendResendEmail({ html, subject, to }: { html: string; subject: string; to: string }) {
   if (!process.env.RESEND_API_KEY) {
     return;
   }
 
-  const configuredFrom = process.env.RESEND_FROM || "zegendia@gurumba.com";
-  const from = configuredFrom.includes("<") ? configuredFrom : `Zegendia Propuestas <${configuredFrom}>`;
+  const from = resolveFrom();
 
   const response = await fetch("https://api.resend.com/emails", {
     body: JSON.stringify({ from, html, subject, to }),
