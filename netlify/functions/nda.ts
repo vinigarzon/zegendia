@@ -78,7 +78,7 @@ async function sendResendEmail({ html, subject, to }: { html: string; subject: s
     return;
   }
 
-  const configuredFrom = process.env.RESEND_FROM || "hello@zegendia.com";
+  const configuredFrom = process.env.RESEND_FROM || "zegendia@gurumba.com";
   const from = configuredFrom.includes("<") ? configuredFrom : `Zegendia Propuestas <${configuredFrom}>`;
 
   const response = await fetch("https://api.resend.com/emails", {
