@@ -37,7 +37,7 @@ const PROPOSALS: Record<string, Proposal> = {
     title: "Propuesta de Zegendia para bmtours",
     client: "bmtours",
     ndaVersion: "NDA-bmtours-2026-11",
-    loiVersion: "LOI-bmtours-2026-11-v2",
+    loiVersion: "LOI-bmtours-2026-11-v3",
     accesses: [
       {
         role: "client",
@@ -112,7 +112,7 @@ const LOI_CLAUSES: Array<[string, string]> = [
   ["Fee de plataforma.", "Desde la entrega de la plataforma, bmtours pagará un fee mensual según los canjes de productos entregados en el mes, sumando todos los bancos: menos de 30 canjes, USD 390; de 30 a 59, USD 250; de 60 a 99, USD 120; 100 o más, USD 0. Los valores son en dólares de los Estados Unidos, más los impuestos que correspondan."],
   ["Premios.", "Zegendia proveerá el catálogo de premios físicos y merch con precio garantizado por 6 meses, comprará el inventario, entregará en todo Ecuador con seguro, guía y seguimiento, y gestionará las incidencias de cada entrega. bmtours podrá sumar su propio margen sobre el valor de cada premio."],
   ["Exclusividad.", "Desde la firma del contrato definitivo y hasta 36 meses después del lanzamiento del primer programa con el orquestador, bmtours contratará exclusivamente con Zegendia los premios físicos, el merch y su logística para todos los programas de puntos, millas o premios que opere, administre o comercialice, con cualquier banco o empresa, en Ecuador y en cualquier otro país donde use el Orquestador bmtours."],
-  ["Plazos.", "Zegendia conectará por API cada banco y Travel Compositor en cuanto entreguen sus accesos y API, y el piloto con Banco Atlántida se lanzará apenas su conexión esté certificada. Las partes lanzarán el programa con Banco Internacional a más tardar el 30 de septiembre de 2027. Las demoras de los bancos o de Travel Compositor no cambian la fecha de entrega de la plataforma ni el inicio del fee."],
+  ["Plazos.", "Zegendia conectará por API cada banco y Travel Compositor en cuanto entreguen sus accesos y API, y el piloto con Banco Atlántida se lanzará apenas su conexión esté certificada. bmtours se compromete a vincular al orquestador el programa de Banco Internacional. Las demoras de los bancos o de Travel Compositor no cambian la fecha de entrega de la plataforma ni el inicio del fee."],
   ["Facturación y pago.", "Cada mes cierra el día 30. Zegendia emitirá la factura por los premios entregados y el fee de plataforma del mes, y bmtours la pagará en un máximo de 5 días calendario desde su emisión, todos los meses. Si una factura vence sin pago, Zegendia podrá pausar los nuevos pedidos hasta que se regularice."],
   ["Todo por API.", "Todas las conexiones serán por API, sin procesos manuales: saldos, débito y reverso de puntos o millas con cada banco; vuelos y paquetes con Travel Compositor; catálogo, pedidos y estados de entrega con Zegendia. Zegendia mantendrá las integraciones funcionando durante toda la alianza, con monitoreo, corrección de fallas y actualizaciones cuando cambien los sistemas de los bancos o de Travel Compositor."],
   ["Seguridad.", "Zegendia entregará la documentación de arquitectura, infraestructura, base de datos, API y canales, y el diagrama de integración, y atenderá las auditorías de seguridad que pida cada banco."],
