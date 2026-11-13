@@ -928,11 +928,11 @@ footer.contact a { color: var(--soft); }
         </fieldset>
         <div class="step" data-step>
           <label class="qtitle" for="q-banks">¿Con qué bancos empezaríamos y cuántos clientes activos tiene cada programa?</label>
-          <textarea id="q-banks" name="banks" rows="3" placeholder="Ej.: Banco A, unos 80,000 clientes activos"></textarea>
+          <textarea id="q-banks" name="banks" rows="3" maxlength="1500" placeholder="Ej.: Banco A, unos 80,000 clientes activos"></textarea>
         </div>
         <div class="step" data-step>
           <label class="qtitle" for="q-volume">¿Cuántos canjes al mes procesan hoy y qué parte cree que iría a productos?</label>
-          <textarea id="q-volume" name="volume" rows="3" placeholder="Ej.: 900 canjes al mes; un 40 % podría ser productos"></textarea>
+          <textarea id="q-volume" name="volume" rows="3" maxlength="1500" placeholder="Ej.: 900 canjes al mes; un 40 % podría ser productos"></textarea>
         </div>
         <fieldset class="step" data-step>
           <legend class="qtitle">¿Cómo se conecta hoy bmtours con cada banco para consultar saldos y debitar millas?</legend>
@@ -942,7 +942,7 @@ footer.contact a { color: var(--soft); }
             <label class="opt"><input type="radio" name="bankConnection" value="manual"><span>Proceso manual</span></label>
             <label class="opt"><input type="radio" name="bankConnection" value="no-se"><span>No estoy seguro</span></label>
           </div>
-          <input type="text" name="bankConnectionDetail" aria-label="Detalle de la conexión con el banco" placeholder="Detalle opcional">
+          <input type="text" name="bankConnectionDetail" maxlength="2000" aria-label="Detalle de la conexión con el banco" placeholder="Detalle opcional">
         </fieldset>
         <fieldset class="step" data-step>
           <legend class="qtitle">¿Su plataforma de viajes tiene API?</legend>
@@ -952,7 +952,7 @@ footer.contact a { color: var(--soft); }
             <label class="opt"><input type="radio" name="travelApi" value="no"><span>No</span></label>
             <label class="opt"><input type="radio" name="travelApi" value="no-se"><span>No estoy seguro</span></label>
           </div>
-          <input type="text" name="travelSystem" aria-label="Sistema de viajes que usan" placeholder="¿Qué sistema usan? (opcional)">
+          <input type="text" name="travelSystem" maxlength="600" aria-label="Sistema de viajes que usan" placeholder="¿Qué sistema usan? (opcional)">
         </fieldset>
         <fieldset class="step" data-step>
           <legend class="qtitle">¿Qué exigen los bancos en seguridad y datos?</legend>
@@ -964,7 +964,7 @@ footer.contact a { color: var(--soft); }
             <label class="opt"><input type="checkbox" name="security" value="nda"><span>Acuerdos de confidencialidad</span></label>
             <label class="opt"><input type="checkbox" name="security" value="no-se"><span>Aún no lo sé</span></label>
           </div>
-          <input type="text" name="securityDetail" aria-label="Detalle de requisitos de seguridad" placeholder="Detalle opcional">
+          <input type="text" name="securityDetail" maxlength="2000" aria-label="Detalle de requisitos de seguridad" placeholder="Detalle opcional">
         </fieldset>
         <fieldset class="step" data-step>
           <legend class="qtitle">¿Para cuándo quisieran lanzar con el primer banco?</legend>
@@ -985,7 +985,7 @@ footer.contact a { color: var(--soft); }
         </fieldset>
         <div class="step" data-step>
           <label class="qtitle" for="q-comments">¿Algo más que debamos considerar para su propuesta? <span class="opt-tag">Opcional</span></label>
-          <textarea id="q-comments" name="comments" rows="3" placeholder="Escriba aquí"></textarea>
+          <textarea id="q-comments" name="comments" rows="3" maxlength="3000" placeholder="Escriba aquí"></textarea>
         </div>
         <div class="qnav">
           <button class="btn btn-ghost" type="button" id="q-prev">Anterior</button>

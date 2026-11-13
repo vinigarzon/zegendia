@@ -235,6 +235,12 @@ function formatEcuadorTime(date: Date) {
   }
 }
 
+// Links in emails must always be absolute and valid, whatever SITE_URL holds.
+function siteBase() {
+  const configured = (env("SITE_URL") || "").trim().replace(/\/$/, "");
+  return /^https:\/\/[a-z0-9.-]+$/i.test(configured) ? configured : "https://www.zegendia.com";
+}
+
 function resolveFrom() {
   const configured = (env("RESEND_FROM") || "").trim();
   if (!/@zegendia\.com>?$/i.test(configured)) return DEFAULT_FROM;
@@ -480,17 +486,17 @@ function readAnswers(raw: unknown) {
 
   return {
     bankConnection: pick("bankConnection", a.bankConnection),
-    bankConnectionDetail: cleanBlock(a.bankConnectionDetail, 400),
-    banks: cleanBlock(a.banks, 600),
-    comments: cleanBlock(a.comments, 1200),
+    bankConnectionDetail: cleanBlock(a.bankConnectionDetail, 2000),
+    banks: cleanBlock(a.banks, 1500),
+    comments: cleanBlock(a.comments, 3000),
     launch: pick("launch", a.launch),
     model: pick("model", a.model),
     scope: pick("scope", a.scope),
     security,
-    securityDetail: cleanBlock(a.securityDetail, 400),
+    securityDetail: cleanBlock(a.securityDetail, 2000),
     travelApi: pick("travelApi", a.travelApi),
-    travelSystem: cleanBlock(a.travelSystem, 300),
-    volume: cleanBlock(a.volume, 600)
+    travelSystem: cleanBlock(a.travelSystem, 600),
+    volume: cleanBlock(a.volume, 1500)
   } as Record<string, string>;
 }
 
@@ -531,7 +537,7 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
   const isInternal = access.role === "internal";
   const who = isInternal ? "Equipo Zegendia (prueba interna)" : cleanLine(info.name || access.name || access.label, 120);
   const sentAt = formatEcuadorTime(new Date());
-  const proposalUrl = `${(env("SITE_URL") || "https://www.zegendia.com").replace(/\/$/, "")}/propuestas/${slug}/`;
+  const proposalUrl = `${siteBase()}/propuestas/${slug}/`;
   const prefix = isInternal ? "[Prueba interna] " : "";
   const subject =
     interest === "talk"
@@ -625,7 +631,7 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
 
   const now = new Date();
   const acceptedAt = formatEcuadorTime(now);
-  const proposalUrl = `${(env("SITE_URL") || "https://www.zegendia.com").replace(/\/$/, "")}/propuestas/${slug}/`;
+  const proposalUrl = `${siteBase()}/propuestas/${slug}/`;
   const userAgent = cleanLine(request.headers.get("user-agent"), 300);
   const copyTo = access.email || "";
 
