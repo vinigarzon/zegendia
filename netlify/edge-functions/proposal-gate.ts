@@ -27,6 +27,7 @@ type Access = {
 type Proposal = {
   accesses: Access[];
   client: string;
+  loiVersion: string;
   ndaVersion: string;
   title: string;
 };
@@ -36,6 +37,7 @@ const PROPOSALS: Record<string, Proposal> = {
     title: "Propuesta de Zegendia para bmtours",
     client: "bmtours",
     ndaVersion: "NDA-bmtours-2026-11",
+    loiVersion: "LOI-bmtours-2026-11",
     accesses: [
       {
         role: "client",
@@ -95,6 +97,29 @@ const NDA_CLAUSES: Array<[string, string]> = [
     "Estas obligaciones rigen por dos (2) años desde la aceptación. Zegendia puede revocar los accesos en cualquier momento y, al terminar la evaluación, el Receptor dejará de usarlos."
   ]
 ];
+
+// Letter of intent (carta de intención) shown at the end of the bmtours deck.
+// Keep identical to public/propuestas/bmtours-zb6nok/index.html: both are generated from the same text.
+// LOI:BEGIN
+const LOI_TITLE = "Carta de intención precontractual";
+const LOI_ZEGENDIA = "GADAMAX LLC, que opera la marca Zegendia";
+const LOI_INTRO =
+  "GADAMAX LLC, que opera la marca Zegendia (en adelante, Zegendia), y la empresa cuyos datos constan en esta carta (en adelante, bmtours) dejan constancia de las condiciones iniciales de su alianza para el Orquestador bmtours:";
+const LOI_CLAUSES: Array<[string, string]> = [
+  ["Objeto.", "Zegendia desarrollará e implementará el Orquestador bmtours: una sola plataforma, con una sola marca, para administrar y canjear todos los premios de los programas de puntos y millas que opera bmtours, incluidos sus viajes, los productos y el merch de Zegendia y otros premios."],
+  ["Desarrollo y licencia.", "Zegendia desarrollará, alojará y mantendrá el orquestador, con la marca que defina bmtours, sin costo de desarrollo ni de licencia para bmtours."],
+  ["Anticipo.", "bmtours pagará a Zegendia un anticipo de USD 1,900 al firmar el contrato definitivo, y Zegendia iniciará el desarrollo al recibirlo. El anticipo vuelve a bmtours como crédito: se descontará completo de las primeras facturas mensuales, hasta agotarse."],
+  ["Fee de plataforma.", "Desde el mes de lanzamiento del piloto, el fee mensual dependerá de los canjes de productos entregados en el mes, sumando todos los bancos: menos de 30 canjes, USD 390; de 30 a 59, USD 250; de 60 a 99, USD 120; 100 o más, USD 0. Los valores son en dólares de los Estados Unidos, más los impuestos que correspondan."],
+  ["Premios.", "Zegendia proveerá el catálogo de premios físicos y merch con precio garantizado por 6 meses, comprará el inventario, entregará en todo Ecuador con seguro, guía y seguimiento, y gestionará las incidencias de cada entrega. bmtours podrá sumar su propio margen sobre el valor de cada premio."],
+  ["Exclusividad.", "Durante 36 meses desde el lanzamiento del piloto, bmtours contratará exclusivamente con Zegendia los premios físicos, el merch y su logística para todos los programas de puntos, millas o premios que opere, administre o comercialice, con cualquier banco o empresa, en Ecuador y en cualquier otro país donde use el Orquestador bmtours."],
+  ["Plazos.", "El piloto con Banco Atlántida se lanzará en la semana 16 contada desde la firma del contrato definitivo y el pago del anticipo. Las partes lanzarán el programa con Banco Internacional a más tardar el 30 de septiembre de 2027. Si un banco o Travel Compositor se retrasa en entregar los accesos o las API, las fechas se moverán en el mismo tiempo."],
+  ["Facturación y pago.", "Cada mes cierra el día 30. Zegendia emitirá la factura por los premios entregados y el fee de plataforma del mes, y bmtours la pagará en un máximo de 5 días calendario desde su emisión, todos los meses. Si una factura vence sin pago, Zegendia podrá pausar los nuevos pedidos hasta que se regularice."],
+  ["Todo por API.", "Todas las conexiones serán por API, sin procesos manuales: saldos, débito y reverso de puntos o millas con cada banco; vuelos y paquetes con Travel Compositor; catálogo, pedidos y estados de entrega con Zegendia. Zegendia mantendrá las integraciones funcionando durante toda la alianza, con monitoreo, corrección de fallas y actualizaciones cuando cambien los sistemas de los bancos o de Travel Compositor."],
+  ["Seguridad.", "Zegendia entregará la documentación de arquitectura, infraestructura, base de datos, API y canales, y el diagrama de integración, y atenderá las auditorías de seguridad que pida cada banco."],
+  ["Compromisos de bmtours.", "bmtours facilitará los accesos, las API de prueba y producción, la documentación técnica y los contactos de cada banco y de Travel Compositor, y coordinará las aprobaciones de cada banco para cumplir los plazos."],
+  ["Naturaleza de esta carta.", "Con esta carta, las partes aceptan las condiciones iniciales de la alianza y se comprometen a firmar el contrato definitivo con estas condiciones dentro de los 15 días siguientes a su aceptación. El contrato definirá el detalle operativo, la ley aplicable y la jurisdicción. La confidencialidad se rige por el acuerdo ya aceptado."]
+];
+// LOI:END
 
 const verifiedCache = new Map<string, Access>();
 const attempts = new Map<string, { count: number; resetAt: number }>();
@@ -192,13 +217,25 @@ function cookieNames(slug: string) {
   return { access: base, info: `${base}_info` };
 }
 
+function cookieAttrs(slug: string) {
+  return `Path=/propuestas/${slug}; Max-Age=${COOKIE_MAX_AGE}; Secure; SameSite=Lax`;
+}
+
+function infoCookie(slug: string, info: Record<string, unknown>) {
+  return `${cookieNames(slug).info}=${encodeURIComponent(JSON.stringify(info))}; ${cookieAttrs(slug)}`;
+}
+
+function readInfo(request: Request, slug: string) {
+  try {
+    const parsed = JSON.parse(getCookie(request, cookieNames(slug).info) || "{}");
+    return (parsed && typeof parsed === "object" ? parsed : {}) as Record<string, unknown>;
+  } catch {
+    return {} as Record<string, unknown>;
+  }
+}
+
 function accessCookies(slug: string, code: string, info: Record<string, unknown>) {
-  const names = cookieNames(slug);
-  const attrs = `Path=/propuestas/${slug}; Max-Age=${COOKIE_MAX_AGE}; Secure; SameSite=Lax`;
-  return [
-    `${names.access}=${encodeURIComponent(code)}; ${attrs}; HttpOnly`,
-    `${names.info}=${encodeURIComponent(JSON.stringify(info))}; ${attrs}`
-  ];
+  return [`${cookieNames(slug).access}=${encodeURIComponent(code)}; ${cookieAttrs(slug)}; HttpOnly`, infoCookie(slug, info)];
 }
 
 function isRateLimited(key: string) {
@@ -247,7 +284,7 @@ function resolveFrom() {
   return configured.includes("<") ? configured : `Zegendia <${configured}>`;
 }
 
-async function sendEmail(to: string, subject: string, html: string) {
+async function sendEmail(to: string | string[], subject: string, html: string) {
   const apiKey = env("RESEND_API_KEY");
   if (!apiKey) return false;
 
@@ -262,7 +299,7 @@ async function sendEmail(to: string, subject: string, html: string) {
 }
 
 function row(label: string, value: string) {
-  return `<tr><td style="padding:6px 16px 6px 0;color:#432851;font-weight:700;vertical-align:top;white-space:nowrap;">${escapeHtml(label)}</td><td style="padding:6px 0;">${escapeHtml(value)}</td></tr>`;
+  return `<tr><td style="padding:6px 16px 6px 0;color:#432851;font-weight:700;vertical-align:top;white-space:nowrap;">${escapeHtml(label)}</td><td style="padding:6px 0;overflow-wrap:anywhere;word-break:break-word;">${escapeHtml(value)}</td></tr>`;
 }
 
 function agreementHtml() {
@@ -526,13 +563,7 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
     return jsonResponse(400, { error: "Responda al menos una pregunta antes de enviar.", ok: false });
   }
 
-  const info = (() => {
-    try {
-      return JSON.parse(getCookie(request, cookieNames(slug).info) || "{}") as Record<string, string>;
-    } catch {
-      return {} as Record<string, string>;
-    }
-  })();
+  const info = readInfo(request, slug) as Record<string, string>;
 
   const isInternal = access.role === "internal";
   const who = isInternal ? "Equipo Zegendia (prueba interna)" : cleanLine(info.name || access.name || access.label, 120);
@@ -589,6 +620,145 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
   return jsonResponse(200, { copySent, copyTo: copySent ? copyTo : "", ok: true });
 }
 
+// ---------- Letter of intent acceptance (requires a valid access cookie) ----------
+
+const EMAIL_PATTERN = /^[^\s@<>"',;]+@[^\s@<>"',;]+\.[a-z]{2,}$/i;
+
+const LOI_FIELDS: Array<{ key: string; label: string; max: number; min: number; pattern?: RegExp }> = [
+  { key: "razonSocial", label: "Razón social", max: 160, min: 2 },
+  { key: "ruc", label: "RUC", max: 30, min: 5, pattern: /^[0-9A-Za-z.\- ]{5,30}$/ },
+  { key: "direccion", label: "Dirección", max: 200, min: 5 },
+  { key: "ciudad", label: "Ciudad", max: 80, min: 2 },
+  { key: "pais", label: "País", max: 60, min: 2 },
+  { key: "firmante", label: "Firmante", max: 120, min: 3 },
+  { key: "cargo", label: "Cargo", max: 100, min: 2 },
+  { key: "correo", label: "Correo", max: 160, min: 6, pattern: EMAIL_PATTERN },
+  { key: "telefono", label: "Teléfono", max: 40, min: 6, pattern: /^[0-9+().\- ]{6,40}$/ }
+];
+
+function loiText() {
+  return [LOI_INTRO, ...LOI_CLAUSES.map(([t, d]) => `${t} ${d}`)].join("\n");
+}
+
+async function sha256Hex(text: string) {
+  return bytesToHex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
+}
+
+function loiHtml() {
+  const items = LOI_CLAUSES.map(
+    ([title, text]) => `<li style="margin:0 0 10px;"><strong style="color:#432851;">${escapeHtml(title)}</strong> ${escapeHtml(text)}</li>`
+  ).join("");
+  return `<div style="margin:20px 0;padding:18px 20px;border:1px solid #e3dde9;border-radius:12px;background:#f6f4f8;"><div style="font-size:16px;font-weight:700;color:#432851;margin:0 0 8px;">${escapeHtml(LOI_TITLE)}</div><p style="margin:0 0 10px;line-height:1.6;">${escapeHtml(LOI_INTRO)}</p><ol style="margin:0;padding-left:20px;line-height:1.6;">${items}</ol></div>`;
+}
+
+function partiesHtml(v: Record<string, string>) {
+  const cell = "padding:8px 14px 8px 0;vertical-align:top;border-bottom:1px solid #eee;";
+  return `<table style="border-collapse:collapse;font-size:14px;width:100%;margin:0 0 6px;">
+    <tr><td style="${cell}color:#432851;font-weight:700;width:34%;">Zegendia</td><td style="${cell}">${escapeHtml(LOI_ZEGENDIA)}</td></tr>
+    <tr><td style="${cell}color:#432851;font-weight:700;">bmtours</td><td style="${cell}">${escapeHtml(v.razonSocial)}<br />RUC ${escapeHtml(v.ruc)}<br />${escapeHtml(v.direccion)}, ${escapeHtml(v.ciudad)}, ${escapeHtml(v.pais)}</td></tr>
+    <tr><td style="${cell}color:#432851;font-weight:700;">Acepta por bmtours</td><td style="${cell}">${escapeHtml(v.firmante)}, ${escapeHtml(v.cargo)}<br />${escapeHtml(v.correo)} · ${escapeHtml(v.telefono)}</td></tr>
+  </table>`;
+}
+
+async function handleLoi(request: Request, body: Record<string, unknown>, ip: string, slug: string, proposal: Proposal) {
+  const cookieCode = getCookie(request, cookieNames(slug).access);
+  const access = cookieCode ? await findAccess(slug, proposal, cookieCode) : null;
+
+  if (!access) {
+    return jsonResponse(401, { error: "Su sesión venció. Recargue la página e ingrese su código.", ok: false });
+  }
+
+  const raw = (body.company && typeof body.company === "object" ? body.company : {}) as Record<string, unknown>;
+  const values: Record<string, string> = {};
+  for (const field of LOI_FIELDS) {
+    const value = cleanLine(raw[field.key], field.max);
+    const unsafe = HTML_TAG_PATTERN.test(value) || (field.key !== "correo" && LINK_PATTERN.test(value));
+    if (value.length < field.min || unsafe || (field.pattern && !field.pattern.test(value))) {
+      return jsonResponse(400, { error: `Revise el campo «${field.label}».`, field: field.key, ok: false });
+    }
+    values[field.key] = value;
+  }
+
+  if (body.accept !== true || body.authority !== true) {
+    return jsonResponse(400, { error: "Para aceptar, marque las dos casillas.", ok: false });
+  }
+
+  const isInternal = access.role === "internal";
+  const now = new Date();
+  const acceptedAt = formatEcuadorTime(now);
+  const proposalUrl = `${siteBase()}/propuestas/${slug}/`;
+  const userAgent = cleanLine(request.headers.get("user-agent"), 300);
+  const fingerprint = await sha256Hex(loiText());
+  const prefix = isInternal ? "[Prueba interna] " : "";
+
+  const recipients: string[] = [];
+  for (const address of [isInternal ? "" : access.email || "", values.correo]) {
+    if (address && !recipients.some((r) => r.toLowerCase() === address.toLowerCase())) recipients.push(address);
+  }
+
+  const record = `
+    <table style="border-collapse:collapse;font-size:14px;">
+      ${row("Versión", proposal.loiVersion)}${row("Fecha de aceptación", acceptedAt)}${row("Huella del texto (SHA-256)", fingerprint)}
+    </table>`;
+
+  const copyHtml = emailShell(`
+    <p style="margin:0 0 14px;line-height:1.6;">Hola ${escapeHtml(values.firmante.split(" ")[0] || values.firmante)},</p>
+    <p style="margin:0 0 14px;line-height:1.6;">Gracias por aceptar la carta de intención. Como respaldo, le enviamos una copia con los datos de su empresa, la fecha y la hora.</p>
+    ${partiesHtml(values)}
+    ${loiHtml()}
+    ${record}
+    <p style="margin:18px 0 14px;line-height:1.6;">El siguiente paso es el contrato definitivo con estas condiciones. Se lo enviaremos para firma.</p>
+    <p style="margin:0 0 14px;line-height:1.6;">La propuesta sigue disponible en este enlace, con el mismo código de acceso:<br /><a href="${escapeHtml(proposalUrl)}" style="color:#e44c47;font-weight:700;">${escapeHtml(proposalUrl)}</a></p>
+    <p style="margin:20px 0 0;line-height:1.6;">Saludos cordiales,<br /><strong>Zegendia</strong></p>
+  `);
+
+  const noticeHtml = emailShell(`
+    <h2 style="color:#432851;margin:0 0 8px;">Carta de intención aceptada</h2>
+    <p style="margin:0 0 16px;line-height:1.6;">${isInternal ? "Prueba con el código interno." : "Se aceptó la carta de intención con un código de cliente."}</p>
+    ${partiesHtml(values)}
+    <table style="border-collapse:collapse;font-size:14px;margin:12px 0 0;">
+      ${row("Código de", access.label)}${row("Copia enviada a", recipients.join(", ") || "Sin correo")}${row("Propuesta", proposalUrl)}${row("IP", ip)}${row("Navegador", userAgent || "No especificado")}
+    </table>
+    ${record}
+    ${loiHtml()}
+  `);
+
+  // The notice to the sales inbox is the record of the acceptance: send it first, and only send the
+  // client's copy once it went out, so a retry after a failure never leaves duplicate copies.
+  let noticeSent = false;
+  try {
+    noticeSent = await sendEmail(
+      env("ZEGENDIA_SALES_EMAIL") || "info@zegendia.com",
+      `${prefix}${proposal.client} aceptó la carta de intención: ${values.razonSocial}`,
+      noticeHtml
+    );
+  } catch (error) {
+    console.error("Proposal LOI notice failed", String(error));
+  }
+
+  if (!noticeSent && env("RESEND_API_KEY")) {
+    return jsonResponse(502, { error: "No pudimos registrar su aceptación. Intente de nuevo en un momento.", ok: false });
+  }
+
+  let copySent = false;
+  if (recipients.length) {
+    try {
+      copySent = await sendEmail(recipients, `${prefix}Copia de su carta de intención con Zegendia`, copyHtml);
+    } catch (error) {
+      console.error("Proposal LOI copy failed", String(error));
+    }
+  }
+
+  console.log("Proposal LOI accepted", JSON.stringify({ access: access.label, company: values.razonSocial, copySent, ip, noticeSent, slug }));
+
+  const info = { ...readInfo(request, slug), loiAt: now.toISOString(), loiCompany: values.razonSocial, loiSigner: values.firmante };
+  return jsonResponse(
+    200,
+    { acceptedAt: now.toISOString(), copySent, copyTo: copySent ? recipients.join(", ") : "", ok: true },
+    [infoCookie(slug, info)]
+  );
+}
+
 async function handlePost(request: Request, context: EdgeContext, slug: string, proposal: Proposal) {
   const ip = context.ip || request.headers.get("x-nf-client-connection-ip") || "unknown";
 
@@ -605,6 +775,10 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
 
   if (body.action === "answers") {
     return handleAnswers(request, body, ip, slug, proposal);
+  }
+
+  if (body.action === "loi") {
+    return handleLoi(request, body, ip, slug, proposal);
   }
 
   const access = await findAccess(slug, proposal, body.code);

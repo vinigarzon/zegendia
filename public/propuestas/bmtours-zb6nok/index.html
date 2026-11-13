@@ -375,53 +375,125 @@ p { margin: 0; }
 .yrs div { border-radius: 10px 10px 4px 4px; background: linear-gradient(0deg, rgba(132, 209, 74, .35), var(--green)); position: relative; transition: height .8s var(--ease); }
 .yrs div span { position: absolute; bottom: -22px; left: 0; right: 0; text-align: center; font-size: 12px; color: var(--soft); }
 
-/* ---------- 15. Next ---------- */
-.path { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; counter-reset: p; }
-.path .card { display: grid; gap: 8px; align-content: start; position: relative; }
-.path .card::before { counter-increment: p; content: "0" counter(p); font-family: var(--display); font-size: 38px; font-weight: 700; color: var(--c); line-height: 1; }
-.path .card b { font-family: var(--display); font-size: 19px; }
-.path .card span { color: var(--soft); font-size: 14.5px; }
-.talk-ok { display: none; padding: 16px 20px; border-radius: 14px; background: rgba(132, 209, 74, .12); border: 1px solid rgba(132, 209, 74, .4); color: var(--text); }
-.talk-ok.show { display: block; }
+/* ---------- 15. Recap of answers ---------- */
+.recap { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+.rc { padding: 18px 20px; display: grid; gap: 6px; align-content: start; border-top: 3px solid var(--c); }
+.rc .k, .of .k, .mile .k { font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--c); }
+.rc b { font-family: var(--display); font-size: 19px; line-height: 1.2; }
+.rc b s { color: var(--dim); text-decoration-thickness: 2px; }
+.rc > span:last-child { font-size: 14px; color: var(--soft); line-height: 1.45; }
 
-/* ---------- 16. Questions (one per screen) ---------- */
-.quiz-head { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; }
-.qcount { font-family: var(--display); font-size: 15px; color: var(--soft); font-variant-numeric: tabular-nums; }
-.qbar { display: grid; grid-template-columns: repeat(9, 1fr); gap: 6px; }
-.qbar i { height: 5px; border-radius: 3px; background: var(--line); transition: background .4s; }
-.qbar i.done { background: var(--green); }
-.qbar i.on { background: var(--coral); }
-.wizard { display: grid; gap: 22px; }
-.step { display: none; border: 0; margin: 0; padding: 0; min-width: 0; }
-.step.on { display: block; animation: stepIn .55s var(--ease) both; }
-.step > * + * { margin-top: 24px; }
-.step legend { display: block; margin-bottom: 26px; }
-.step legend + * { margin-top: 0; }
-.step > .help { margin-top: -14px; margin-bottom: 0; }
-@keyframes stepIn { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
-.qtitle { display: block; font-family: var(--display); font-weight: 700; font-size: clamp(28px, 3.3vw, 50px); line-height: 1.1; letter-spacing: -0.02em; padding: 0; text-wrap: balance; max-width: 26ch; }
-.opt-tag { font-size: .38em; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--dim); vertical-align: middle; margin-left: 8px; }
-.help { font-size: 16px; color: var(--dim); }
-.opts { display: flex; flex-wrap: wrap; gap: 12px; }
-.opt { position: relative; }
-.opt input { position: absolute; opacity: 0; pointer-events: none; }
-.opt span { display: inline-flex; align-items: center; gap: 10px; padding: 16px 24px; border-radius: 18px; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font-size: clamp(16px, 1.35vw, 20px); font-weight: 600; color: var(--soft); transition: all .2s; }
-.opt span:hover { border-color: rgba(255, 255, 255, .35); color: var(--text); }
-.opt input:checked + span { background: var(--text); color: var(--bg); border-color: var(--text); }
-.opt input:focus-visible + span { outline: 3px solid var(--coral); outline-offset: 2px; }
-.opt .rec { font-style: normal; font-size: 11px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: var(--green); }
-.opt input:checked + span .rec { color: #3b7a14; }
-.wizard textarea, .wizard input[type=text] { width: 100%; max-width: 900px; font: inherit; font-size: clamp(17px, 1.4vw, 21px); color: var(--text); background: rgba(0, 0, 0, .28); border: 1px solid var(--line); border-radius: 16px; padding: 16px 18px; resize: vertical; }
-.wizard textarea { min-height: 120px; }
-.wizard textarea:focus, .wizard input[type=text]:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgba(255, 93, 85, .2); }
-.qnav { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding-top: 8px; }
-.qnav .qmsg { flex: 1; min-width: 200px; }
-.qmsg { font-size: 15px; color: var(--soft); }
+/* ---------- 16. Offer ---------- */
+.offer { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.of { padding: 28px 26px; display: grid; gap: 10px; align-content: start; position: relative; overflow: hidden; }
+.of .num { font-family: var(--display); font-weight: 700; white-space: nowrap; font-size: clamp(50px, 5.6vw, 86px); line-height: 1; font-variant-numeric: tabular-nums; color: var(--c); }
+.of .num small { font-size: .42em; margin-left: .2em; }
+.of strong { font-family: var(--display); font-size: 20px; }
+.of > span { font-size: 15px; color: var(--soft); line-height: 1.5; }
+.of::after { content: ""; position: absolute; right: -50px; top: -50px; width: 170px; height: 170px; border-radius: 50%; background: var(--c); opacity: .1; filter: blur(14px); }
+
+/* ---------- 17. Fee ---------- */
+.fee { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 20px; align-items: stretch; }
+.stairs-card { display: grid; gap: 18px; padding: 26px 26px 20px; }
+.stairs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; align-items: end; height: clamp(210px, 32vh, 300px); }
+.st { height: 100%; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; border: 0; background: none; padding: 0; cursor: pointer; text-align: center; color: inherit; }
+.st .val { font-family: var(--display); font-weight: 700; font-size: clamp(22px, 2.2vw, 32px); font-variant-numeric: tabular-nums; color: var(--soft); transition: color .3s; }
+.st .sbar { height: var(--h); min-height: 8px; border-radius: 14px 14px 6px 6px; background: rgba(255, 255, 255, .12); transform-origin: bottom; transform: scaleY(0); transition: transform 1s var(--ease), background .35s, box-shadow .35s; transition-delay: calc(var(--i, 0) * 120ms + 300ms), 0s, 0s; }
+.slide.active .st .sbar { transform: scaleY(1); }
+.st .rng { font-size: 13.5px; font-weight: 600; color: var(--dim); }
+.st.on .val { color: var(--text); }
+.st.on .sbar { background: linear-gradient(0deg, rgba(255, 93, 85, .35), var(--coral)); box-shadow: 0 0 40px rgba(255, 93, 85, .35); }
+.st.zero.on .sbar { background: var(--green); box-shadow: 0 0 40px rgba(132, 209, 74, .55); }
+.st.zero.on .val { color: var(--green); }
+.st.on .rng { color: var(--text); }
+.feecalc { padding: 28px; display: grid; gap: 20px; align-content: center; background: linear-gradient(160deg, rgba(255, 93, 85, .12), rgba(167, 123, 217, .08)); border-color: rgba(255, 93, 85, .35); }
+.feecalc.is-zero { background: linear-gradient(160deg, rgba(132, 209, 74, .16), rgba(63, 198, 211, .08)); border-color: rgba(132, 209, 74, .45); }
+.feecalc .lab { font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--coral); font-weight: 700; }
+.feecalc.is-zero .lab, .feecalc.is-zero .big { color: var(--green); }
+.feecalc .big { font-family: var(--display); font-weight: 700; font-size: clamp(50px, 6vw, 88px); line-height: 1; font-variant-numeric: tabular-nums; transition: color .3s; }
+
+/* ---------- 18. Billing cycle ---------- */
+.cycle { position: relative; padding: 30px 26px 26px; }
+.cline { position: absolute; left: calc(26px + (100% - 100px) / 8); right: calc(26px + (100% - 100px) / 8); top: 41px; height: 2px; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .28) 0 6px, transparent 6px 12px); }
+.cline i { position: absolute; top: 50%; left: 0; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 20px #fff, 0 0 44px var(--teal); }
+.slide.active .cline i { animation: ctravel 8s linear infinite; }
+@keyframes ctravel { 0% { left: 0; } 75% { left: 100%; } 100% { left: 100%; } }
+.csteps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; position: relative; }
+.csteps li { display: grid; gap: 6px; justify-items: center; align-content: start; text-align: center; }
+.cdot { width: 24px; height: 24px; border-radius: 50%; background: var(--bg2); border: 3px solid var(--c); box-shadow: 0 0 16px var(--c); margin-bottom: 8px; }
+.slide.active .cdot { animation: cglow 8s ease-out infinite; animation-delay: var(--d); }
+@keyframes cglow { 0% { transform: scale(1.5); background: var(--c); } 14% { transform: scale(1); background: var(--bg2); } 100% { transform: scale(1); background: var(--bg2); } }
+.csteps .k { font-family: var(--display); font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--c); }
+.csteps b { font-family: var(--display); font-size: clamp(20px, 1.9vw, 26px); line-height: 1.15; }
+.csteps li > span:last-child { font-size: 14.5px; color: var(--soft); max-width: 24ch; }
+.promises.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+/* ---------- 19. Plan ---------- */
+.gantt { padding: 22px 24px; display: grid; gap: 12px; }
+.g-row { display: grid; grid-template-columns: minmax(200px, 300px) minmax(0, 1fr); gap: 18px; align-items: center; }
+.g-lab { display: grid; gap: 2px; }
+.g-lab b { font-family: var(--display); font-size: 16px; }
+.g-lab small { font-size: 13px; color: var(--soft); line-height: 1.35; }
+.g-track { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); height: 28px; align-items: center; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px calc(100% / 16)); border-radius: 8px; }
+.g-track i { grid-column: var(--s) / var(--e); height: 22px; border-radius: 999px; background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 55%, transparent)); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 40%, transparent); transform-origin: left; transform: scaleX(0); transition: transform 1.1s var(--ease); transition-delay: calc(var(--i, 0) * 160ms + 450ms); }
+.slide.active .g-track i { transform: scaleX(1); }
+.g-head .g-lab { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
+.g-head .g-track { background: none; height: auto; }
+.g-head .g-track span { text-align: center; font-size: 12px; font-weight: 700; color: var(--dim); font-variant-numeric: tabular-nums; }
+.g-head .g-track span.mark { color: var(--coral); }
+.miles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.mile { padding: 18px 20px; display: grid; gap: 4px; border-left: 4px solid var(--c); }
+.mile b { font-family: var(--display); font-size: 20px; }
+.mile > span:last-child { font-size: 14px; color: var(--soft); }
+
+/* ---------- 20. Commitments ---------- */
+.commit { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.commit .win li::before { content: "✓"; }
+.apiband { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px 24px; padding: 22px 26px; background: linear-gradient(100deg, rgba(63, 198, 211, .14), rgba(167, 123, 217, .1) 60%, rgba(255, 93, 85, .1)); border-color: rgba(63, 198, 211, .4); }
+.apiband > b { font-family: var(--display); font-size: clamp(24px, 2.6vw, 36px); line-height: 1.1; }
+
+/* ---------- 21. Letter of intent ---------- */
+.loi { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 18px; align-items: stretch; }
+.loi-text { position: relative; padding: 0; min-height: 340px; overflow: hidden; }
+.loi-scroll { position: absolute; inset: 0; overflow-y: auto; padding: 22px 24px 70px; scrollbar-width: thin; }
+.loi-expand { position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 24px 16px; border: 0; text-align: left; background: linear-gradient(0deg, #1d1129 50%, rgba(29, 17, 41, 0)); color: var(--coral); font-family: var(--display); font-weight: 700; font-size: 14.5px; cursor: pointer; }
+.loi-expand:hover { color: #ff8a84; }
+.loi-doc { font-size: 14.5px; line-height: 1.6; color: var(--soft); }
+.loi-doc h3, .loi-form h3, .loi-done h3 { font-family: var(--display); font-size: 20px; color: var(--text); }
+.loi-doc .ver { font-size: 12.5px; color: var(--dim); margin: 2px 0 14px; }
+.parties { margin: 0 0 14px; display: grid; grid-template-columns: max-content 1fr; gap: 6px 14px; padding: 12px 14px; border-radius: 12px; background: rgba(0, 0, 0, .22); }
+.parties dt { font-weight: 700; color: var(--text); }
+.parties dd { margin: 0; }
+.loi-doc ol { margin: 12px 0 0; padding-left: 22px; display: grid; gap: 10px; }
+.loi-doc strong { color: var(--text); }
+.loi-dialog { position: fixed; inset: 0; z-index: 10; display: none; overflow-y: auto; padding: 80px clamp(20px, 6vw, 96px) 48px; background: rgba(10, 5, 16, .94); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); }
+.loi-dialog.open { display: block; }
+.loi-dialog .close { position: fixed; top: 24px; right: 24px; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel); cursor: pointer; font-size: 22px; line-height: 1; }
+.loi-dialog .loi-doc ol { gap: 12px; padding-left: 26px; }
+.loi-dialog .loi-doc { max-width: 820px; margin: 0 auto 28px; font-size: 17px; line-height: 1.7; }
+.loi-dialog .loi-doc h3 { font-size: 28px; }
+.loi-dialog .row { max-width: 820px; margin: 0 auto; }
+.loi-form { display: grid; gap: 12px; padding: 20px 22px; }
+.loi-form .row { gap: 12px 16px; }
+.loi-form .row .qmsg { flex: 1; min-width: 180px; }
+.loi-form[hidden] { display: none; }
+.fgrid { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px 12px; }
+.fgrid .f { grid-column: span 2; }
+.fgrid .w3 { grid-column: span 3; }
+.fgrid .w4 { grid-column: span 4; }
+.fgrid .full { grid-column: 1 / -1; }
+.f label { display: block; font-size: 13px; font-weight: 700; color: var(--soft); margin-bottom: 4px; }
+.f input { width: 100%; font: inherit; font-size: 15.5px; color: var(--text); background: rgba(0, 0, 0, .28); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; }
+.f input:focus { outline: none; border-color: var(--coral); box-shadow: 0 0 0 3px rgba(255, 93, 85, .2); }
+.f input[aria-invalid="true"] { border-color: #ff8f88; }
+.check { display: flex; gap: 12px; align-items: flex-start; font-size: 14.5px; color: var(--text); cursor: pointer; }
+.check input { width: 20px; height: 20px; margin-top: 2px; accent-color: var(--coral); flex: none; }
+.qmsg { font-size: 14px; color: var(--soft); }
 .qmsg.err { color: #ff8f88; }
-.thanks { display: none; text-align: center; padding: 48px 28px; gap: 16px; justify-items: center; }
-.thanks.show { display: grid; }
-.thanks .done-ring { width: 120px; height: 120px; }
-.thanks .done-ring svg { width: 56px; height: 56px; stroke-dashoffset: 0; }
+.loi-done { display: grid; gap: 14px; justify-items: start; padding: 28px; border-color: rgba(132, 209, 74, .45); background: linear-gradient(160deg, rgba(132, 209, 74, .14), rgba(63, 198, 211, .06)); }
+.loi-done[hidden] { display: none; }
+.loi-done .done-ring { width: 96px; height: 96px; }
+.loi-done .done-ring svg { width: 46px; height: 46px; stroke-dashoffset: 0; }
 
 footer.contact { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; font-size: 14px; color: var(--dim); border-top: 1px solid var(--line); padding-top: 16px; }
 footer.contact a { color: var(--soft); }
@@ -432,6 +504,8 @@ footer.contact a { color: var(--soft); }
   .roles { grid-template-columns: 1fr; }
   .role-tabs { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .role-tabs button { font-size: 15px; padding: 14px; }
+  .recap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g-row { grid-template-columns: minmax(170px, 230px) minmax(0, 1fr); }
 }
 @media (max-width: 860px) {
   body { font-size: 16px; }
@@ -452,16 +526,29 @@ footer.contact a { color: var(--soft); }
   .hint { display: none; }
   .top .conf { display: none; }
   .deal { grid-template-columns: 1fr; }
+  .offer, .fee, .commit, .loi, .miles, .promises.three { grid-template-columns: minmax(0, 1fr); }
+  .cline { display: none; }
+  .csteps { grid-template-columns: minmax(0, 1fr); gap: 18px; }
+  .csteps li { grid-template-columns: 24px 1fr; justify-items: start; text-align: left; column-gap: 14px; row-gap: 2px; }
+  .csteps li .cdot { grid-row: 1 / span 3; margin: 2px 0 0; }
+  .g-row { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .g-head .g-lab { display: none; }
+  .loi-text { min-height: 0; height: 52vh; }
+  .apiband { flex-direction: column; align-items: flex-start; }
 }
 @media (max-width: 560px) {
   .pieces { grid-template-columns: minmax(0, 1fr); }
   .access dl { grid-template-columns: 1fr; }
   .hud .count { min-width: 52px; }
+  .recap, .fgrid { grid-template-columns: minmax(0, 1fr); }
+  .fgrid .f { grid-column: 1 / -1; }
+  .stairs { gap: 8px; }
+  .st .rng { font-size: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   [data-a] { opacity: 1 !important; transform: none !important; }
-  .chart .bar { transform: none !important; }
+  .chart .bar, .st .sbar, .g-track i { transform: none !important; }
   .ec-map .route { stroke-dashoffset: 0 !important; }
 }
 </style>
@@ -489,6 +576,7 @@ footer.contact a { color: var(--soft); }
         <button class="btn btn-primary" type="button" data-go="next">Comenzar
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
+        <button class="btn btn-ghost" type="button" data-goto="propuesta">Ver la propuesta económica</button>
         <span class="scroll-cue"><i></i>Use las flechas del teclado o deslice</span>
       </div>
     </div>
@@ -853,13 +941,13 @@ footer.contact a { color: var(--soft); }
         <p class="eyebrow" data-a style="--i:0">Modelo de alianza</p>
         <h2 class="title mid" data-a style="--i:1">Un modelo donde <span class="grad">todos ganan.</span></h2>
       </div>
-      <div class="deal card" data-a style="--i:2"><span class="seal" aria-hidden="true"></span><p>Le entregamos el <em>Orquestador bmtours sin costo de licencia</em>, a cambio de una alianza de largo plazo con exclusividad en premios físicos y un volumen mínimo garantizado.</p></div>
+      <div class="deal card" data-a style="--i:2"><span class="seal" aria-hidden="true"></span><p>Le entregamos el <em>Orquestador bmtours sin costo de licencia</em>, a cambio de una alianza de largo plazo con exclusividad en premios físicos.</p></div>
       <div class="model">
         <div class="win card" data-a style="--i:3;--c:var(--teal)"><h3>El banco</h3><ul><li>Más clientes canjeando, también los de saldos bajos</li><li>Más opciones sin invertir en tecnología</li><li>Reportes y conciliación claros cada mes</li></ul></div>
         <div class="win card" data-a style="--i:4;--c:var(--green)"><h3>bmtours</h3><ul><li>Un orquestador completo, con su marca, sin costo de licencia</li><li>Su propio margen sobre cada premio, además de los viajes</li><li>Una nueva línea de ingresos con cada banco que sume</li></ul></div>
-        <div class="win card" data-a style="--i:5;--c:var(--coral)"><h3>Zegendia</h3><ul><li>Exclusividad en premios físicos y merch</li><li>Contrato de largo plazo con volumen mínimo</li><li>Nuestro margen en cada premio entregado</li></ul></div>
+        <div class="win card" data-a style="--i:5;--c:var(--coral)"><h3>Zegendia</h3><ul><li>Exclusividad en premios físicos y merch</li><li>Contrato de largo plazo</li><li>Nuestro margen en cada premio entregado</li></ul></div>
       </div>
-      <p class="small" data-a style="--i:6">Los valores, el volumen mínimo y los plazos se definen en la propuesta económica.</p>
+      <p class="small" data-a style="--i:6">Los valores y los plazos están en la propuesta económica, a continuación.</p>
     </div>
   </section>
 
@@ -888,118 +976,208 @@ footer.contact a { color: var(--soft); }
   </section>
 
   <!-- 15 -->
-  <section class="slide" data-title="Siguiente paso" aria-label="Siguiente paso">
+  <section class="slide" id="propuesta" data-title="Lo que nos respondió" aria-label="Lo que nos respondió">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:980px">
-        <p class="eyebrow" data-a style="--i:0">Siguiente paso</p>
-        <h2 class="title" data-a style="--i:1;font-size:clamp(36px,5vw,72px)">Denos esta información y <span class="grad">le tenemos lista su propuesta.</span></h2>
-        <p class="lead" data-a style="--i:2">Ocho preguntas, unos cinco minutos. Con sus respuestas armamos la propuesta económica a la medida de bmtours: alcance, volumen mínimo, plazos y su margen.</p>
+        <p class="eyebrow teal" data-a style="--i:0">Propuesta económica · Lo que nos respondió</p>
+        <h2 class="title mid" data-a style="--i:1">Con sus respuestas, <span class="grad">esta es nuestra propuesta.</span></h2>
       </div>
-      <div class="path">
-        <div class="card" data-a style="--i:3;--c:var(--violet)"><b>Usted nos envía la información</b><span>Responde las preguntas en la siguiente pantalla.</span></div>
-        <div class="card" data-a style="--i:4;--c:var(--teal)"><b>Diseñamos su orquestador</b><span>Sobre su operación, sus bancos y sus sistemas.</span></div>
-        <div class="card" data-a style="--i:5;--c:var(--green)"><b>Le enviamos la propuesta</b><span>Modelo de alianza, volumen mínimo, plazos y margen.</span></div>
-        <div class="card" data-a style="--i:6;--c:var(--coral)"><b>Arrancamos con el primer banco</b><span>Implementación y lanzamiento.</span></div>
-      </div>
-      <div class="row" data-a style="--i:7">
-        <button class="btn btn-primary" type="button" data-go="next">Responder las preguntas
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
+      <div class="recap">
+        <div class="rc card" data-a style="--i:2;--c:var(--coral)"><span class="k">Alcance</span><b>Un solo orquestador, una sola marca</b><span>Viajes, productos y otros premios en la misma herramienta.</span></div>
+        <div class="rc card" data-a style="--i:3;--c:var(--green)"><span class="k">Piloto</span><b>Banco Atlántida</b><span>Unos 5,000 clientes para lanzar y ajustar.</span></div>
+        <div class="rc card" data-a style="--i:4;--c:var(--teal)"><span class="k">Escala</span><b>Banco Internacional</b><span>Unos 160,000 clientes y cerca de 450 canjes al mes.</span></div>
+        <div class="rc card" data-a style="--i:5;--c:var(--violet)"><span class="k">Viajes</span><b>Travel Compositor</b><span>Vuelos y paquetes enlazados con los productos.</span></div>
+        <div class="rc card" data-a style="--i:6;--c:var(--coral)"><span class="k">Conexión con el banco</span><b><s>Manual</s> → todo por API</b><span>Saldos y débitos en tiempo real, sin procesos a mano.</span></div>
+        <div class="rc card" data-a style="--i:7;--c:var(--green)"><span class="k">Seguridad</span><b>Auditorías y documentación</b><span>Arquitectura, infraestructura, base de datos, API, canales y diagrama de integración.</span></div>
+        <div class="rc card" data-a style="--i:8;--c:var(--teal)"><span class="k">Plazo</span><b>3 a 6 meses</b><span>Para lanzar con el primer banco.</span></div>
+        <div class="rc card" data-a style="--i:9;--c:var(--violet)"><span class="k">Alianza</span><b>Largo plazo, con exclusividad</b><span>A cambio del orquestador sin costo de licencia.</span></div>
       </div>
     </div>
   </section>
 
   <!-- 16 -->
-  <section class="slide s-quiz" data-title="Información para su propuesta" aria-label="Información para su propuesta económica" data-scene="quiz">
+  <section class="slide" data-title="Propuesta económica" aria-label="Propuesta económica">
     <div class="inner">
-      <div class="quiz-head" data-a style="--i:0">
-        <p class="eyebrow green">Información para su propuesta</p>
-        <p class="qcount" id="qcount" aria-live="polite">Pregunta 1 de 9</p>
+      <div style="display:grid;gap:14px;max-width:980px">
+        <p class="eyebrow" data-a style="--i:0">Propuesta económica</p>
+        <h2 class="title mid" data-a style="--i:1">Usted no invierte en tecnología. <span class="grad">Nosotros la construimos.</span></h2>
       </div>
-      <div class="qbar" id="qbar" aria-hidden="true"></div>
-      <form class="wizard" id="qform" novalidate data-a style="--i:1">
-        <fieldset class="step on" data-step>
-          <legend class="qtitle">¿Qué alcance imagina para el orquestador?</legend>
-          <div class="opts">
-            <label class="opt"><input type="radio" name="scope" value="unico"><span>Uno solo para viajes, productos y otros premios, con una sola marca <em class="rec">Recomendado</em></span></label>
-            <label class="opt"><input type="radio" name="scope" value="solo-productos"><span>Solo productos; los viajes siguen aparte</span></label>
-            <label class="opt"><input type="radio" name="scope" value="conversar"><span>Aún no lo hemos definido</span></label>
-          </div>
-        </fieldset>
-        <div class="step" data-step>
-          <label class="qtitle" for="q-banks">¿Con qué bancos empezaríamos y cuántos clientes activos tiene cada programa?</label>
-          <textarea id="q-banks" name="banks" rows="3" maxlength="1500" placeholder="Ej.: Banco A, unos 80,000 clientes activos"></textarea>
-        </div>
-        <div class="step" data-step>
-          <label class="qtitle" for="q-volume">¿Cuántos canjes al mes procesan hoy y qué parte cree que iría a productos?</label>
-          <textarea id="q-volume" name="volume" rows="3" maxlength="1500" placeholder="Ej.: 900 canjes al mes; un 40 % podría ser productos"></textarea>
-        </div>
-        <fieldset class="step" data-step>
-          <legend class="qtitle">¿Cómo se conecta hoy bmtours con cada banco para consultar saldos y debitar millas?</legend>
-          <div class="opts">
-            <label class="opt"><input type="radio" name="bankConnection" value="api"><span>API en tiempo real</span></label>
-            <label class="opt"><input type="radio" name="bankConnection" value="archivos"><span>Archivos periódicos</span></label>
-            <label class="opt"><input type="radio" name="bankConnection" value="manual"><span>Proceso manual</span></label>
-            <label class="opt"><input type="radio" name="bankConnection" value="no-se"><span>No estoy seguro</span></label>
-          </div>
-          <input type="text" name="bankConnectionDetail" maxlength="2000" aria-label="Detalle de la conexión con el banco" placeholder="Detalle opcional">
-        </fieldset>
-        <fieldset class="step" data-step>
-          <legend class="qtitle">¿Su plataforma de viajes tiene API?</legend>
-          <div class="opts">
-            <label class="opt"><input type="radio" name="travelApi" value="propia"><span>Sí, propia</span></label>
-            <label class="opt"><input type="radio" name="travelApi" value="proveedor"><span>Sí, de un proveedor</span></label>
-            <label class="opt"><input type="radio" name="travelApi" value="no"><span>No</span></label>
-            <label class="opt"><input type="radio" name="travelApi" value="no-se"><span>No estoy seguro</span></label>
-          </div>
-          <input type="text" name="travelSystem" maxlength="600" aria-label="Sistema de viajes que usan" placeholder="¿Qué sistema usan? (opcional)">
-        </fieldset>
-        <fieldset class="step" data-step>
-          <legend class="qtitle">¿Qué exigen los bancos en seguridad y datos?</legend>
-          <p class="help">Puede elegir varias.</p>
-          <div class="opts">
-            <label class="opt"><input type="checkbox" name="security" value="certificaciones"><span>Certificaciones (ISO 27001, SOC 2)</span></label>
-            <label class="opt"><input type="checkbox" name="security" value="datos-ecuador"><span>Datos alojados en Ecuador</span></label>
-            <label class="opt"><input type="checkbox" name="security" value="auditorias"><span>Auditorías o pruebas de seguridad</span></label>
-            <label class="opt"><input type="checkbox" name="security" value="nda"><span>Acuerdos de confidencialidad</span></label>
-            <label class="opt"><input type="checkbox" name="security" value="no-se"><span>Aún no lo sé</span></label>
-          </div>
-          <input type="text" name="securityDetail" maxlength="2000" aria-label="Detalle de requisitos de seguridad" placeholder="Detalle opcional">
-        </fieldset>
-        <fieldset class="step" data-step>
-          <legend class="qtitle">¿Para cuándo quisieran lanzar con el primer banco?</legend>
-          <div class="opts">
-            <label class="opt"><input type="radio" name="launch" value="menos-3"><span>Menos de 3 meses</span></label>
-            <label class="opt"><input type="radio" name="launch" value="3-6"><span>3 a 6 meses</span></label>
-            <label class="opt"><input type="radio" name="launch" value="mas-6"><span>Más de 6 meses</span></label>
-            <label class="opt"><input type="radio" name="launch" value="por-definir"><span>Por definir</span></label>
-          </div>
-        </fieldset>
-        <fieldset class="step" data-step>
-          <legend class="qtitle">¿Les interesa una alianza de largo plazo con exclusividad en premios físicos, a cambio del orquestador sin costo de licencia?</legend>
-          <div class="opts">
-            <label class="opt"><input type="radio" name="model" value="si"><span>Sí, me interesa</span></label>
-            <label class="opt"><input type="radio" name="model" value="detalles"><span>Quiero ver los detalles en la propuesta</span></label>
-            <label class="opt"><input type="radio" name="model" value="no-ahora"><span>No por ahora</span></label>
-          </div>
-        </fieldset>
-        <div class="step" data-step>
-          <label class="qtitle" for="q-comments">¿Algo más que debamos considerar para su propuesta? <span class="opt-tag">Opcional</span></label>
-          <textarea id="q-comments" name="comments" rows="3" maxlength="3000" placeholder="Escriba aquí"></textarea>
-        </div>
-        <div class="qnav">
-          <button class="btn btn-ghost" type="button" id="q-prev">Anterior</button>
-          <p class="qmsg" id="qmsg" role="status">Responda lo que sepa hoy; puede dejar preguntas en blanco.</p>
-          <button class="btn btn-primary" type="button" id="q-next">Siguiente</button>
-          <button class="btn btn-primary" type="submit" id="qsend" hidden>Enviar información</button>
-        </div>
-      </form>
-      <div class="thanks card" id="thanks" role="status">
-        <div class="done-ring"><svg viewBox="0 0 24 24" fill="none" stroke="#84d14a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-        <h2 class="title mid">Gracias. Ya estamos armando su propuesta.</h2>
-        <p class="lead" id="thanks-text" style="text-align:center">Recibimos su información. Con ella preparamos su propuesta económica y se la enviamos a su correo.</p>
+      <div class="offer">
+        <div class="of card" data-a style="--i:2;--c:var(--green)"><span class="k">Desarrollo y licencia</span><b class="num">$0</b><strong>El orquestador completo</strong><span>Lo construimos, lo alojamos y lo mantenemos, con la marca que usted defina.</span></div>
+        <div class="of card" data-a style="--i:3;--c:var(--coral)"><span class="k">Anticipo</span><b class="num">$<span data-count="1900">0</span></b><strong>Vuelve a usted como crédito</strong><span>Se paga al firmar el contrato y se descuenta completo de sus primeras facturas.</span></div>
+        <div class="of card" data-a style="--i:4;--c:var(--teal)"><span class="k">Alianza</span><b class="num"><span data-count="36">0</span><small>meses</small></b><strong>Exclusividad en premios físicos</strong><span>Premios físicos, merch y su logística, para todos sus programas y bancos.</span></div>
       </div>
-      <footer class="contact" data-a style="--i:2">
+      <div class="deal card" data-a style="--i:5"><span class="seal" aria-hidden="true"></span><p>Sobre cada premio, bmtours suma <em>su propio margen</em>. Y el fee de plataforma baja con el volumen <em>hasta llegar a cero.</em></p></div>
+    </div>
+  </section>
+
+  <!-- 17 -->
+  <section class="slide" data-title="Fee de plataforma" aria-label="Fee de plataforma según el volumen" data-scene="fee">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:980px">
+        <p class="eyebrow green" data-a style="--i:0">Fee de plataforma</p>
+        <h2 class="title mid" data-a style="--i:1">Un fee que baja con el volumen <span class="grad">y llega a cero.</span></h2>
+      </div>
+      <div class="fee">
+        <div class="card stairs-card" data-a="left" style="--i:2">
+          <div class="stairs" id="stairs" role="group" aria-label="Fee mensual por tramo de canjes de productos">
+            <button type="button" class="st" style="--h:100%;--i:0" data-fee="15"><span class="val">$390</span><span class="sbar"></span><span class="rng">Menos de 30</span></button>
+            <button type="button" class="st" style="--h:64%;--i:1" data-fee="45"><span class="val">$250</span><span class="sbar"></span><span class="rng">30 a 59</span></button>
+            <button type="button" class="st" style="--h:31%;--i:2" data-fee="80"><span class="val">$120</span><span class="sbar"></span><span class="rng">60 a 99</span></button>
+            <button type="button" class="st zero" style="--h:3%;--i:3" data-fee="120"><span class="val">$0</span><span class="sbar"></span><span class="rng">100 o más</span></button>
+          </div>
+          <p class="small">Fee mensual en USD, más impuestos, según los canjes de productos entregados en el mes, sumando todos los bancos.</p>
+        </div>
+        <div class="card feecalc" id="feecalc" data-a="right" style="--i:3">
+          <div class="sl"><label for="fee-r">Canjes de productos en el mes <output id="fee-n">15</output></label><input type="range" id="fee-r" min="0" max="200" step="1" value="15"></div>
+          <div aria-live="polite"><span class="lab">Fee de plataforma</span><div class="big" id="fee-v">$390</div><span class="soft">al mes</span></div>
+          <p class="soft" style="font-size:15px">Con cerca de 450 canjes al mes en Banco Internacional, basta con que el 22&nbsp;% sean productos para que la plataforma cueste <b style="color:var(--green)">$0</b>.</p>
+        </div>
+      </div>
+      <p class="small" data-a style="--i:4">El fee empieza en el mes de lanzamiento del piloto. Mientras desarrollamos, no hay fee.</p>
+    </div>
+  </section>
+
+  <!-- 18 -->
+  <section class="slide" data-title="Facturación mensual" aria-label="Facturación mensual">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:980px">
+        <p class="eyebrow teal" data-a style="--i:0">Facturación</p>
+        <h2 class="title mid" data-a style="--i:1">Cada mes, <span class="grad">el mismo ritmo.</span></h2>
+      </div>
+      <div class="cycle card" data-a="zoom" style="--i:2">
+        <div class="cline" aria-hidden="true"><i></i></div>
+        <ol class="csteps">
+          <li style="--c:var(--violet);--d:0s"><span class="cdot"></span><span class="k">Todo el mes</span><b>Canjes y entregas</b><span>Cada pedido sale con su guía.</span></li>
+          <li style="--c:var(--teal);--d:2s"><span class="cdot"></span><span class="k">Día 30</span><b>Cierre del mes</b><span>Conciliamos lo entregado en todos los bancos.</span></li>
+          <li style="--c:var(--green);--d:4s"><span class="cdot"></span><span class="k">Factura</span><b>Premios y fee</b><span>Una sola factura, respaldada con cada guía.</span></li>
+          <li style="--c:var(--coral);--d:6s"><span class="cdot"></span><span class="k">Máximo 5 días</span><b>Pago</b><span>Y así, todos los meses.</span></li>
+        </ol>
+      </div>
+      <div class="promises three">
+        <div class="promise card" data-a style="--i:3;--c:var(--coral)"><span class="k">Crédito</span><b>El anticipo vuelve</b><span>Lo descontamos de sus primeras facturas hasta agotarlo.</span></div>
+        <div class="promise card" data-a style="--i:4;--c:var(--teal)"><span class="k">Respaldo</span><b>Solo lo entregado</b><span>Se factura lo que llegó a cada cliente, con su guía.</span></div>
+        <div class="promise card" data-a style="--i:5;--c:var(--green)"><span class="k">Rotación</span><b>Pago puntual, stock y precio</b><span>El pago a tiempo sostiene el inventario y los precios garantizados. Si una factura vence, pausamos los pedidos nuevos hasta regularizarla.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 19 -->
+  <section class="slide" data-title="Plan de implementación" aria-label="Plan de implementación">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:980px">
+        <p class="eyebrow violet" data-a style="--i:0">Plan de implementación</p>
+        <h2 class="title mid" data-a style="--i:1">16 semanas al piloto. <span class="grad">Todo conectado por API.</span></h2>
+      </div>
+      <div class="gantt card" data-a style="--i:2" role="table" aria-label="Plan de implementación por semanas">
+        <div class="g-row g-head" aria-hidden="true"><span class="g-lab">Semana</span><div class="g-track" id="g-weeks"></div></div>
+        <div class="g-row" role="row" style="--s:1;--e:5;--c:var(--violet);--i:0"><span class="g-lab" role="cell"><b>Arquitectura y seguridad</b><small>Semanas 1 a 4 · documentación y diagrama de integración para cada banco</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:3;--e:13;--c:var(--teal);--i:1"><span class="g-lab" role="cell"><b>API con los bancos</b><small>Semanas 3 a 12 · saldos, débito y reverso de millas en tiempo real</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:5;--e:11;--c:var(--coral);--i:2"><span class="g-lab" role="cell"><b>API con Travel Compositor</b><small>Semanas 5 a 10 · vuelos y paquetes junto a los productos</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:3;--e:13;--c:var(--green);--i:3"><span class="g-lab" role="cell"><b>Orquestador con su marca</b><small>Semanas 3 a 12 · portal del participante, administración de bmtours y del banco</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:13;--e:17;--c:var(--violet);--i:4"><span class="g-lab" role="cell"><b>Pruebas y certificación</b><small>Semanas 13 a 16 · auditoría del banco y piloto controlado</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+      </div>
+      <div class="miles">
+        <div class="mile card" data-a style="--i:3;--c:var(--soft)"><span class="k">Semana 0</span><b>Contrato y anticipo</b><span>Arrancamos el desarrollo.</span></div>
+        <div class="mile card" data-a style="--i:4;--c:var(--coral)"><span class="k">Semana 16</span><b>Piloto con Banco Atlántida</b><span>Dentro de sus 3 a 6 meses.</span></div>
+        <div class="mile card" data-a style="--i:5;--c:var(--green)"><span class="k">30 sep 2027</span><b>Banco Internacional</b><span>A más tardar en esa fecha.</span></div>
+      </div>
+      <p class="small" data-a style="--i:6">Los plazos corren mientras cada banco y Travel Compositor entreguen a tiempo sus accesos y API.</p>
+    </div>
+  </section>
+
+  <!-- 20 -->
+  <section class="slide" data-title="Compromisos" aria-label="Compromisos de cada parte">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:980px">
+        <p class="eyebrow" data-a style="--i:0">Compromisos</p>
+        <h2 class="title mid" data-a style="--i:1">Lo que cada uno pone <span class="grad">sobre la mesa.</span></h2>
+      </div>
+      <div class="commit">
+        <div class="win card" data-a="left" style="--i:2;--c:var(--coral)"><h3>Zegendia</h3><ul>
+          <li>Construir, alojar y mantener el orquestador con su marca, sin costo de desarrollo ni licencia</li>
+          <li>Conectar todo por API y mantener las integraciones funcionando durante toda la alianza</li>
+          <li>Entregar la documentación de seguridad y atender las auditorías de cada banco</li>
+          <li>Premios con precio garantizado 6 meses, inventario propio y entrega asegurada en todo Ecuador</li>
+          <li>Lanzar el piloto en la semana 16</li>
+        </ul></div>
+        <div class="win card" data-a="right" style="--i:3;--c:var(--teal)"><h3>bmtours</h3><ul>
+          <li>Pagar el anticipo de $1,900 al firmar el contrato</li>
+          <li>Facilitar accesos, API y contactos técnicos de cada banco y de Travel Compositor</li>
+          <li>Exclusividad con Zegendia en premios físicos y merch por 36 meses</li>
+          <li>Llevar el programa a Banco Internacional a más tardar el 30 de septiembre de 2027</li>
+          <li>Pagar cada factura en un máximo de 5 días</li>
+        </ul></div>
+      </div>
+      <div class="apiband card" data-a style="--i:4">
+        <b>Todo por API. <span class="grad">Nada manual.</span></b>
+        <div class="chips"><span class="chip"><b>Core de cada banco</b> · saldos y débitos</span><span class="chip"><b>Travel Compositor</b> · vuelos y paquetes</span><span class="chip"><b>Zegendia</b> · catálogo, pedidos y entregas</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 -->
+  <section class="slide s-loi" id="carta" data-title="Carta de intención" aria-label="Carta de intención precontractual">
+    <div class="inner">
+      <div style="display:grid;gap:12px;max-width:1000px">
+        <p class="eyebrow green" data-a style="--i:0">Carta de intención precontractual</p>
+        <h2 class="title mid" data-a style="--i:1">Si le hace sentido, <span class="grad">arranquemos.</span></h2>
+        <p class="lead" data-a style="--i:2">Revise la carta, complete los datos de su empresa y acéptela. En los 15 días siguientes firmamos el contrato.</p>
+      </div>
+      <div class="loi">
+        <article class="loi-text card" data-a="left" style="--i:3">
+          <div class="loi-scroll loi-doc" id="loi-doc" tabindex="0" aria-label="Texto de la carta de intención">
+<!-- LOI:BEGIN -->
+          <h3>Carta de intención precontractual</h3>
+          <p class="ver">Versión LOI-bmtours-2026-11</p>
+          <dl class="parties"><dt>Zegendia</dt><dd>GADAMAX LLC, que opera la marca Zegendia</dd><dt>bmtours</dt><dd id="loi-party">La empresa cuyos datos se registran al aceptar</dd></dl>
+          <p class="loi-intro">GADAMAX LLC, que opera la marca Zegendia (en adelante, Zegendia), y la empresa cuyos datos constan en esta carta (en adelante, bmtours) dejan constancia de las condiciones iniciales de su alianza para el Orquestador bmtours:</p>
+          <ol class="loi-clauses">
+            <li><strong>Objeto.</strong> Zegendia desarrollará e implementará el Orquestador bmtours: una sola plataforma, con una sola marca, para administrar y canjear todos los premios de los programas de puntos y millas que opera bmtours, incluidos sus viajes, los productos y el merch de Zegendia y otros premios.</li>
+            <li><strong>Desarrollo y licencia.</strong> Zegendia desarrollará, alojará y mantendrá el orquestador, con la marca que defina bmtours, sin costo de desarrollo ni de licencia para bmtours.</li>
+            <li><strong>Anticipo.</strong> bmtours pagará a Zegendia un anticipo de USD 1,900 al firmar el contrato definitivo, y Zegendia iniciará el desarrollo al recibirlo. El anticipo vuelve a bmtours como crédito: se descontará completo de las primeras facturas mensuales, hasta agotarse.</li>
+            <li><strong>Fee de plataforma.</strong> Desde el mes de lanzamiento del piloto, el fee mensual dependerá de los canjes de productos entregados en el mes, sumando todos los bancos: menos de 30 canjes, USD 390; de 30 a 59, USD 250; de 60 a 99, USD 120; 100 o más, USD 0. Los valores son en dólares de los Estados Unidos, más los impuestos que correspondan.</li>
+            <li><strong>Premios.</strong> Zegendia proveerá el catálogo de premios físicos y merch con precio garantizado por 6 meses, comprará el inventario, entregará en todo Ecuador con seguro, guía y seguimiento, y gestionará las incidencias de cada entrega. bmtours podrá sumar su propio margen sobre el valor de cada premio.</li>
+            <li><strong>Exclusividad.</strong> Durante 36 meses desde el lanzamiento del piloto, bmtours contratará exclusivamente con Zegendia los premios físicos, el merch y su logística para todos los programas de puntos, millas o premios que opere, administre o comercialice, con cualquier banco o empresa, en Ecuador y en cualquier otro país donde use el Orquestador bmtours.</li>
+            <li><strong>Plazos.</strong> El piloto con Banco Atlántida se lanzará en la semana 16 contada desde la firma del contrato definitivo y el pago del anticipo. Las partes lanzarán el programa con Banco Internacional a más tardar el 30 de septiembre de 2027. Si un banco o Travel Compositor se retrasa en entregar los accesos o las API, las fechas se moverán en el mismo tiempo.</li>
+            <li><strong>Facturación y pago.</strong> Cada mes cierra el día 30. Zegendia emitirá la factura por los premios entregados y el fee de plataforma del mes, y bmtours la pagará en un máximo de 5 días calendario desde su emisión, todos los meses. Si una factura vence sin pago, Zegendia podrá pausar los nuevos pedidos hasta que se regularice.</li>
+            <li><strong>Todo por API.</strong> Todas las conexiones serán por API, sin procesos manuales: saldos, débito y reverso de puntos o millas con cada banco; vuelos y paquetes con Travel Compositor; catálogo, pedidos y estados de entrega con Zegendia. Zegendia mantendrá las integraciones funcionando durante toda la alianza, con monitoreo, corrección de fallas y actualizaciones cuando cambien los sistemas de los bancos o de Travel Compositor.</li>
+            <li><strong>Seguridad.</strong> Zegendia entregará la documentación de arquitectura, infraestructura, base de datos, API y canales, y el diagrama de integración, y atenderá las auditorías de seguridad que pida cada banco.</li>
+            <li><strong>Compromisos de bmtours.</strong> bmtours facilitará los accesos, las API de prueba y producción, la documentación técnica y los contactos de cada banco y de Travel Compositor, y coordinará las aprobaciones de cada banco para cumplir los plazos.</li>
+            <li><strong>Naturaleza de esta carta.</strong> Con esta carta, las partes aceptan las condiciones iniciales de la alianza y se comprometen a firmar el contrato definitivo con estas condiciones dentro de los 15 días siguientes a su aceptación. El contrato definirá el detalle operativo, la ley aplicable y la jurisdicción. La confidencialidad se rige por el acuerdo ya aceptado.</li>
+          </ol>
+<!-- LOI:END -->
+          </div>
+          <button class="loi-expand" type="button" id="loi-expand">Leer la carta en pantalla completa</button>
+        </article>
+        <div data-a="right" style="--i:4">
+          <form class="loi-form card" id="loi-form" novalidate>
+            <h3>Datos de su empresa</h3>
+            <div class="fgrid">
+              <div class="f w4"><label for="l-razonSocial">Razón social</label><input id="l-razonSocial" name="razonSocial" type="text" autocomplete="organization" maxlength="160" required></div>
+              <div class="f"><label for="l-ruc">RUC</label><input id="l-ruc" name="ruc" type="text" inputmode="numeric" maxlength="30" required></div>
+              <div class="f w4"><label for="l-direccion">Dirección</label><input id="l-direccion" name="direccion" type="text" autocomplete="street-address" maxlength="200" required></div>
+              <div class="f"><label for="l-ciudad">Ciudad</label><input id="l-ciudad" name="ciudad" type="text" autocomplete="address-level2" maxlength="80" required></div>
+              <div class="f"><label for="l-pais">País</label><input id="l-pais" name="pais" type="text" autocomplete="country-name" maxlength="60" value="Ecuador" required></div>
+              <div class="f w4"><label for="l-correo">Correo para la copia</label><input id="l-correo" name="correo" type="email" autocomplete="email" maxlength="160" required></div>
+              <div class="f"><label for="l-firmante">Nombre de quien acepta</label><input id="l-firmante" name="firmante" type="text" autocomplete="name" maxlength="120" required></div>
+              <div class="f"><label for="l-cargo">Cargo</label><input id="l-cargo" name="cargo" type="text" autocomplete="organization-title" maxlength="100" required></div>
+              <div class="f"><label for="l-telefono">Teléfono</label><input id="l-telefono" name="telefono" type="tel" autocomplete="tel" maxlength="40" required></div>
+            </div>
+            <label class="check" for="l-accept"><input type="checkbox" id="l-accept"><span>He leído la carta de intención y acepto sus condiciones.</span></label>
+            <label class="check" for="l-auth"><input type="checkbox" id="l-auth"><span>Declaro que puedo aceptarla en nombre de la empresa.</span></label>
+            <div class="row"><button class="btn btn-primary" type="submit" id="loi-send">Aceptar la carta de intención</button><p class="qmsg" id="loi-msg" role="status">Le enviamos una copia con la fecha y la hora a su correo.</p></div>
+          </form>
+          <div class="loi-done card" id="loi-done" role="status" hidden>
+            <div class="done-ring"><svg viewBox="0 0 24 24" fill="none" stroke="#84d14a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+            <h3>Carta de intención aceptada</h3>
+            <p class="soft" id="loi-done-text"></p>
+            <p class="soft">El siguiente paso es el contrato definitivo con estas condiciones. Se lo enviamos para firma.</p>
+            <button class="btn btn-ghost" type="button" id="loi-again">Enviar de nuevo con otros datos</button>
+          </div>
+        </div>
+      </div>
+      <footer class="contact" data-a style="--i:5">
         <span>Marco Garzón · Zegendia · <a href="https://www.zegendia.com" target="_blank" rel="noopener">www.zegendia.com</a> · info@zegendia.com</span>
         <span id="nda-stamp">Documento confidencial. El código de acceso es personal.</span>
       </footer>
@@ -1017,6 +1195,12 @@ footer.contact a { color: var(--soft); }
 </nav>
 <div class="progress" id="progress"></div>
 <p class="hint"><kbd>←</kbd><kbd>→</kbd> para avanzar · <kbd>M</kbd> índice</p>
+
+<div class="loi-dialog" id="loi-dialog" role="dialog" aria-modal="true" aria-label="Carta de intención precontractual">
+  <button class="close" type="button" id="loi-close" aria-label="Cerrar la carta">×</button>
+  <div class="loi-doc" id="loi-full"></div>
+  <div class="row"><button class="btn btn-primary" type="button" id="loi-to-form">Completar los datos y aceptar</button></div>
+</div>
 
 <div class="index" id="index" role="dialog" aria-modal="true" aria-label="Índice de la presentación">
   <button class="close" type="button" id="close-index" aria-label="Cerrar índice">×</button>
@@ -1128,16 +1312,9 @@ footer.contact a { color: var(--soft); }
   });
   function typing(e) { var t = e.target; return t && (t.tagName === "INPUT" || t.tagName === "TEXTAREA" || t.isContentEditable); }
   document.addEventListener("keydown", function (e) {
-    if (e.key === "Escape") { closeIndex(); return; }
+    if (e.key === "Escape") { closeIndex(); closeLoi(); return; }
+    if ($("#loi-dialog").classList.contains("open")) return;
     if (typing(e) || e.metaKey || e.ctrlKey || e.altKey) return;
-    var quiz = slides[cur] && slides[cur].classList.contains("s-quiz") ? $("#qform") : null;
-    if (quiz && quiz.style.display !== "none" && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
-      e.preventDefault();
-      var st = quiz._step();
-      if (e.key === "ArrowRight") { if (st < quiz._count - 1) quiz._show(st + 1); }
-      else if (st > 0) quiz._show(st - 1); else go(cur - 1);
-      return;
-    }
     if (e.key === "ArrowRight" || e.key === "PageDown" || (e.key === " " && !e.target.closest("button, a, label"))) { e.preventDefault(); go(cur + 1); }
     else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
     else if (e.key === "Home") go(0);
@@ -1393,62 +1570,104 @@ footer.contact a { color: var(--soft); }
     calc();
   })();
 
-  /* ---------- Interest and questionnaire ---------- */
+  /* ---------- Fee ---------- */
   (function () {
-    var form = $("#qform"), steps = $$("[data-step]", form), k = 0;
-    var bar = $("#qbar"), count = $("#qcount"), prevB = $("#q-prev"), nextB = $("#q-next"), sendB = $("#qsend"), msg = $("#qmsg");
-    steps.forEach(function () { bar.appendChild(document.createElement("i")); });
-    var marks = $$("i", bar);
-    function show(i) {
-      k = Math.max(0, Math.min(steps.length - 1, i));
-      steps.forEach(function (s, j) { s.classList.toggle("on", j === k); });
-      marks.forEach(function (m, j) { m.className = j < k ? "done" : (j === k ? "on" : ""); });
-      count.textContent = "Pregunta " + (k + 1) + " de " + steps.length;
-      prevB.style.visibility = k === 0 ? "hidden" : "visible";
-      var last = k === steps.length - 1;
-      nextB.hidden = last; sendB.hidden = !last;
-      msg.className = "qmsg";
-      msg.textContent = last ? "Al enviar, le llega una copia de sus respuestas a su correo." : "Responda lo que sepa hoy; puede dejar preguntas en blanco.";
-      var first = steps[k].querySelector("textarea, input[type=text]");
-      if (first && first.tagName === "TEXTAREA") setTimeout(function () { try { first.focus({ preventScroll: true }); } catch (e) {} }, 350);
+    var r = $("#fee-r"), cols = $$("#stairs .st"), box = $("#feecalc");
+    var tiers = [[30, 390], [60, 250], [100, 120], [Infinity, 0]];
+    function calc() {
+      var n = +r.value, i = 0;
+      while (n >= tiers[i][0]) i += 1;
+      $("#fee-n").textContent = fmt(n);
+      $("#fee-v").textContent = "$" + fmt(tiers[i][1]);
+      cols.forEach(function (c, j) { c.classList.toggle("on", j === i); c.setAttribute("aria-pressed", String(j === i)); });
+      box.classList.toggle("is-zero", tiers[i][1] === 0);
     }
-    form._show = show;
-    form._step = function () { return k; };
-    form._count = steps.length;
-    prevB.addEventListener("click", function () { show(k - 1); });
-    nextB.addEventListener("click", function () { show(k + 1); });
-    $$("input[type=radio]", form).forEach(function (r) {
-      r.addEventListener("change", function () {
-        var hasText = r.closest("[data-step]").querySelector("input[type=text]");
-        if (!hasText) setTimeout(function () { if (k < steps.length - 1) show(k + 1); }, 380);
-      });
+    r.addEventListener("input", calc);
+    cols.forEach(function (c) { c.addEventListener("click", function () { r.value = c.getAttribute("data-fee"); calc(); }); });
+    calc();
+  })();
+
+  /* ---------- Plan weeks ---------- */
+  (function () {
+    var w = $("#g-weeks"), html = "";
+    for (var i = 1; i <= 16; i++) html += '<span' + (i === 16 ? ' class="mark"' : "") + ">" + i + "</span>";
+    w.innerHTML = html;
+  })();
+
+  /* ---------- Letter of intent ---------- */
+  function closeLoi() { var d = $("#loi-dialog"); if (d && d.classList.contains("open")) { d.classList.remove("open"); try { $("#loi-expand").focus({ preventScroll: true }); } catch (e) {} } }
+  (function () {
+    var form = $("#loi-form"), done = $("#loi-done"), msg = $("#loi-msg"), send = $("#loi-send"), party = $("#loi-party");
+    var fields = ["razonSocial", "ruc", "direccion", "ciudad", "pais", "firmante", "cargo", "correo", "telefono"];
+    var labels = { razonSocial: "la razón social", ruc: "el RUC", direccion: "la dirección", ciudad: "la ciudad", pais: "el país", firmante: "el nombre de quien acepta", cargo: "el cargo", correo: "un correo válido", telefono: "un teléfono válido" };
+    var rules = {
+      razonSocial: function (v) { return v.length >= 2; },
+      ruc: function (v) { return /^[0-9A-Za-z.\- ]{5,30}$/.test(v); },
+      direccion: function (v) { return v.length >= 5; },
+      ciudad: function (v) { return v.length >= 2; },
+      pais: function (v) { return v.length >= 2; },
+      firmante: function (v) { return v.length >= 3; },
+      cargo: function (v) { return v.length >= 2; },
+      correo: function (v) { return /^[^\s@<>"',;]+@[^\s@<>"',;]+\.[a-z]{2,}$/i.test(v); },
+      telefono: function (v) { return /^[0-9+().\- ]{6,40}$/.test(v); }
+    };
+    var el = function (k) { return $("#l-" + k); };
+    if (info && info.role === "client") {
+      if (info.name && !el("firmante").value) el("firmante").value = info.name;
+      if (info.copyTo && !el("correo").value) el("correo").value = info.copyTo;
+    }
+    function updateParty() {
+      var name = el("razonSocial").value.trim(), ruc = el("ruc").value.trim();
+      party.textContent = name ? name + (ruc ? " · RUC " + ruc : "") : "La empresa cuyos datos se registran al aceptar";
+    }
+    el("razonSocial").addEventListener("input", updateParty);
+    el("ruc").addEventListener("input", updateParty);
+    function when(iso) {
+      try { return new Date(iso).toLocaleString("es-EC", { dateStyle: "long", timeStyle: "short" }).replace(/\.$/, ""); } catch (e) { return ""; }
+    }
+    function showDone(company, signer, at, copyTo) {
+      $("#loi-done-text").textContent = "Aceptada por " + signer + " en nombre de " + company + (at ? ", el " + when(at) : "") + "." + (copyTo ? " Le enviamos una copia a " + copyTo + "." : "");
+      form.hidden = true; done.hidden = false;
+    }
+    if (info && info.loiAt && info.loiCompany) showDone(info.loiCompany, info.loiSigner || "", info.loiAt, "");
+    ["#l-accept", "#l-auth"].forEach(function (id) { $(id).addEventListener("change", function () { if (msg.className.indexOf("err") > -1) { msg.className = "qmsg"; msg.textContent = "Le enviamos una copia con la fecha y la hora a su correo."; } }); });
+    fields.forEach(function (k) { el(k).addEventListener("input", function () { el(k).removeAttribute("aria-invalid"); }); });
+    var dlg = $("#loi-dialog");
+    $("#loi-expand").addEventListener("click", function () {
+      var full = $("#loi-full");
+      full.innerHTML = $("#loi-doc").innerHTML;
+      $$("[id]", full).forEach(function (x) { x.removeAttribute("id"); });
+      dlg.classList.add("open"); dlg.scrollTop = 0; $("#loi-close").focus();
     });
-    hooks.quiz = { enter: function () {}, leave: function () {} };
-    show(0);
+    $("#loi-close").addEventListener("click", closeLoi);
+    $("#loi-to-form").addEventListener("click", function () { closeLoi(); var f = form.hidden ? $("#loi-again") : el("razonSocial"); try { f.focus({ preventScroll: true }); } catch (e) {} });
+    $("#loi-again").addEventListener("click", function () { done.hidden = true; form.hidden = false; el("razonSocial").focus(); });
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
-      var val = function (n) { var el = form.querySelector('[name="' + n + '"]:checked') || form.querySelector('[name="' + n + '"]:not([type=radio]):not([type=checkbox])'); return el ? el.value.trim() : ""; };
-      var answers = {
-        scope: val("scope"), banks: val("banks"), volume: val("volume"),
-        bankConnection: val("bankConnection"), bankConnectionDetail: val("bankConnectionDetail"),
-        travelApi: val("travelApi"), travelSystem: val("travelSystem"),
-        security: $$('[name="security"]:checked', form).map(function (x) { return x.value; }), securityDetail: val("securityDetail"),
-        launch: val("launch"), model: val("model"), comments: val("comments")
-      };
-      var any = Object.keys(answers).some(function (n) { var v = answers[n]; return Array.isArray(v) ? v.length : v; });
-      if (!any) { msg.className = "qmsg err"; msg.textContent = "Responda al menos una pregunta antes de enviar."; return; }
-      sendB.disabled = true; msg.className = "qmsg"; msg.textContent = "Enviando…";
-      fetch(location.pathname, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ action: "answers", interest: "yes", answers: answers }) })
+      var company = {}, bad = "";
+      fields.forEach(function (k) {
+        var v = el(k).value.replace(/\s+/g, " ").trim();
+        company[k] = v;
+        var ok = rules[k](v);
+        el(k).setAttribute("aria-invalid", ok ? "false" : "true");
+        if (!ok && !bad) bad = k;
+      });
+      if (bad) { msg.className = "qmsg err"; msg.textContent = "Escriba " + labels[bad] + "."; el(bad).focus(); return; }
+      if (!$("#l-accept").checked || !$("#l-auth").checked) { msg.className = "qmsg err"; msg.textContent = "Para aceptar, marque las dos casillas."; return; }
+      send.disabled = true; msg.className = "qmsg"; msg.textContent = "Registrando su aceptación…";
+      fetch(location.pathname, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ action: "loi", company: company, accept: true, authority: true }) })
         .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
         .then(function (d) {
-          sendB.disabled = false;
-          if (!d.ok) { msg.className = "qmsg err"; msg.textContent = d.error || "No pudimos enviar su información. Intente de nuevo."; return; }
-          form.style.display = "none"; bar.style.display = "none"; count.textContent = "Enviado";
-          $("#thanks").classList.add("show");
-          $("#thanks-text").textContent = "Recibimos su información. Con ella preparamos su propuesta económica y se la enviamos a su correo." + (d.copyTo ? " Ya le llegó una copia de sus respuestas a " + d.copyTo + "." : "");
+          send.disabled = false;
+          if (!d.ok) {
+            msg.className = "qmsg err"; msg.textContent = d.error || "No pudimos registrar su aceptación. Intente de nuevo.";
+            if (d.field && el(d.field)) { el(d.field).setAttribute("aria-invalid", "true"); el(d.field).focus(); }
+            return;
+          }
+          showDone(company.razonSocial, company.firmante, d.acceptedAt, d.copyTo);
         })
-        .catch(function () { sendB.disabled = false; msg.className = "qmsg err"; msg.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
+        .catch(function () { send.disabled = false; msg.className = "qmsg err"; msg.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
     });
   })();
 
