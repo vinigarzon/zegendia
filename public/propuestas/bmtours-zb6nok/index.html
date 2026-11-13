@@ -434,14 +434,15 @@ p { margin: 0; }
 .g-lab { display: grid; gap: 2px; }
 .g-lab b { font-family: var(--display); font-size: 16px; }
 .g-lab small { font-size: 13px; color: var(--soft); line-height: 1.35; }
-.g-track { display: grid; grid-template-columns: repeat(16, minmax(0, 1fr)); height: 28px; align-items: center; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px calc(100% / 16)); border-radius: 8px; }
+.g-track { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); height: 28px; align-items: center; background: repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px calc(100% / 8)); border-radius: 8px; }
 .g-track i { grid-column: var(--s) / var(--e); height: 22px; border-radius: 999px; background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 55%, transparent)); box-shadow: 0 0 22px color-mix(in srgb, var(--c) 40%, transparent); transform-origin: left; transform: scaleX(0); transition: transform 1.1s var(--ease); transition-delay: calc(var(--i, 0) * 160ms + 450ms); }
 .slide.active .g-track i { transform: scaleX(1); }
+.g-track i.open { background: linear-gradient(90deg, var(--c), color-mix(in srgb, var(--c) 25%, transparent) 85%, transparent); border-radius: 999px 0 0 999px; }
 .g-head .g-lab { font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--dim); }
 .g-head .g-track { background: none; height: auto; }
 .g-head .g-track span { text-align: center; font-size: 12px; font-weight: 700; color: var(--dim); font-variant-numeric: tabular-nums; }
 .g-head .g-track span.mark { color: var(--coral); }
-.miles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.miles { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
 .mile { padding: 18px 20px; display: grid; gap: 4px; border-left: 4px solid var(--c); }
 .mile b { font-family: var(--display); font-size: 20px; }
 .mile > span:last-child { font-size: 14px; color: var(--soft); }
@@ -506,6 +507,7 @@ footer.contact a { color: var(--soft); }
   .role-tabs button { font-size: 15px; padding: 14px; }
   .recap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .g-row { grid-template-columns: minmax(170px, 230px) minmax(0, 1fr); }
+  .miles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 860px) {
   body { font-size: 16px; }
@@ -1000,14 +1002,14 @@ footer.contact a { color: var(--soft); }
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:980px">
         <p class="eyebrow" data-a style="--i:0">Propuesta económica</p>
-        <h2 class="title mid" data-a style="--i:1">Usted no invierte en tecnología. <span class="grad">Nosotros la construimos.</span></h2>
+        <h2 class="title mid" data-a style="--i:1">Una plataforma completa. <span class="grad">Lista en 30 días.</span></h2>
       </div>
       <div class="offer">
-        <div class="of card" data-a style="--i:2;--c:var(--green)"><span class="k">Desarrollo y licencia</span><b class="num">$0</b><strong>El orquestador completo</strong><span>Lo construimos, lo alojamos y lo mantenemos, con la marca que usted defina.</span></div>
-        <div class="of card" data-a style="--i:3;--c:var(--coral)"><span class="k">Anticipo</span><b class="num">$<span data-count="1900">0</span></b><strong>Vuelve a usted como crédito</strong><span>Se paga al firmar el contrato y se descuenta completo de sus primeras facturas.</span></div>
-        <div class="of card" data-a style="--i:4;--c:var(--teal)"><span class="k">Alianza</span><b class="num"><span data-count="36">0</span><small>meses</small></b><strong>Exclusividad en premios físicos</strong><span>Premios físicos, merch y su logística, para todos sus programas y bancos.</span></div>
+        <div class="of card" data-a style="--i:2;--c:var(--green)"><span class="k">Licencia</span><b class="num">$0</b><strong>El orquestador completo</strong><span>Lo construimos, lo alojamos y lo mantenemos, con la marca que usted defina.</span></div>
+        <div class="of card" data-a style="--i:3;--c:var(--coral)"><span class="k">Implementación</span><b class="num">$<span data-count="1900">0</span></b><strong>Un solo pago para arrancar</strong><span>Su marca, el catálogo, la administración y la documentación para los bancos. Se paga al firmar el contrato.</span></div>
+        <div class="of card" data-a style="--i:4;--c:var(--teal)"><span class="k">Entrega</span><b class="num"><span data-count="30">0</span><small>días</small></b><strong>Lista para operar</strong><span>Desde la entrega corre el fee mensual, que baja con el volumen hasta llegar a cero.</span></div>
       </div>
-      <div class="deal card" data-a style="--i:5"><span class="seal" aria-hidden="true"></span><p>Sobre cada premio, bmtours suma <em>su propio margen</em>. Y el fee de plataforma baja con el volumen <em>hasta llegar a cero.</em></p></div>
+      <div class="deal card" data-a style="--i:5"><span class="seal" aria-hidden="true"></span><p>Una plataforma así normalmente cuesta mucho más. A cambio, le pedimos <em>una alianza de 36 meses con exclusividad en premios físicos</em>, y bmtours suma su propio margen sobre cada premio.</p></div>
     </div>
   </section>
 
@@ -1034,7 +1036,7 @@ footer.contact a { color: var(--soft); }
           <p class="soft" style="font-size:15px">Con cerca de 450 canjes al mes en Banco Internacional, basta con que el 22&nbsp;% sean productos para que la plataforma cueste <b style="color:var(--green)">$0</b>.</p>
         </div>
       </div>
-      <p class="small" data-a style="--i:4">El fee empieza en el mes de lanzamiento del piloto. Mientras desarrollamos, no hay fee.</p>
+      <p class="small" data-a style="--i:4">El fee corre desde la entrega de la plataforma, a los 30 días de la firma. Mientras se conectan los bancos aplica el primer tramo; con el volumen, baja hasta cero.</p>
     </div>
   </section>
 
@@ -1055,7 +1057,7 @@ footer.contact a { color: var(--soft); }
         </ol>
       </div>
       <div class="promises three">
-        <div class="promise card" data-a style="--i:3;--c:var(--coral)"><span class="k">Crédito</span><b>El anticipo vuelve</b><span>Lo descontamos de sus primeras facturas hasta agotarlo.</span></div>
+        <div class="promise card" data-a style="--i:3;--c:var(--coral)"><span class="k">Desde la entrega</span><b>Fee desde el primer día</b><span>El fee se factura desde la entrega de la plataforma; los premios, desde el primer canje.</span></div>
         <div class="promise card" data-a style="--i:4;--c:var(--teal)"><span class="k">Respaldo</span><b>Solo lo entregado</b><span>Se factura lo que llegó a cada cliente, con su guía.</span></div>
         <div class="promise card" data-a style="--i:5;--c:var(--green)"><span class="k">Rotación</span><b>Pago puntual, stock y precio</b><span>El pago a tiempo sostiene el inventario y los precios garantizados. Si una factura vence, pausamos los pedidos nuevos hasta regularizarla.</span></div>
       </div>
@@ -1067,22 +1069,22 @@ footer.contact a { color: var(--soft); }
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:980px">
         <p class="eyebrow violet" data-a style="--i:0">Plan de implementación</p>
-        <h2 class="title mid" data-a style="--i:1">16 semanas al piloto. <span class="grad">Todo conectado por API.</span></h2>
+        <h2 class="title mid" data-a style="--i:1">Su plataforma, <span class="grad">lista en 30 días.</span></h2>
       </div>
       <div class="gantt card" data-a style="--i:2" role="table" aria-label="Plan de implementación por semanas">
         <div class="g-row g-head" aria-hidden="true"><span class="g-lab">Semana</span><div class="g-track" id="g-weeks"></div></div>
-        <div class="g-row" role="row" style="--s:1;--e:5;--c:var(--violet);--i:0"><span class="g-lab" role="cell"><b>Arquitectura y seguridad</b><small>Semanas 1 a 4 · documentación y diagrama de integración para cada banco</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:3;--e:13;--c:var(--teal);--i:1"><span class="g-lab" role="cell"><b>API con los bancos</b><small>Semanas 3 a 12 · saldos, débito y reverso de millas en tiempo real</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:5;--e:11;--c:var(--coral);--i:2"><span class="g-lab" role="cell"><b>API con Travel Compositor</b><small>Semanas 5 a 10 · vuelos y paquetes junto a los productos</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:3;--e:13;--c:var(--green);--i:3"><span class="g-lab" role="cell"><b>Orquestador con su marca</b><small>Semanas 3 a 12 · portal del participante, administración de bmtours y del banco</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:13;--e:17;--c:var(--violet);--i:4"><span class="g-lab" role="cell"><b>Pruebas y certificación</b><small>Semanas 13 a 16 · auditoría del banco y piloto controlado</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:1;--e:5;--c:var(--green);--i:0"><span class="g-lab" role="cell"><b>Orquestador con su marca</b><small>Semanas 1 a 4 · portal del participante, administración de bmtours y del banco</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:1;--e:5;--c:var(--coral);--i:1"><span class="g-lab" role="cell"><b>Catálogo, pedidos y logística</b><small>Semanas 1 a 4 · premios con precio garantizado y entregas en todo Ecuador</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:1;--e:5;--c:var(--violet);--i:2"><span class="g-lab" role="cell"><b>Seguridad y documentación</b><small>Semanas 1 a 4 · arquitectura, infraestructura, API, canales y diagrama de integración</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:5;--e:9;--c:var(--teal);--i:3"><span class="g-lab" role="cell"><b>API con cada banco y Travel Compositor</b><small>Desde la entrega · a medida que cada uno nos da sus accesos</small></span><div class="g-track" aria-hidden="true"><i class="open"></i></div></div>
       </div>
       <div class="miles">
-        <div class="mile card" data-a style="--i:3;--c:var(--soft)"><span class="k">Semana 0</span><b>Contrato y anticipo</b><span>Arrancamos el desarrollo.</span></div>
-        <div class="mile card" data-a style="--i:4;--c:var(--coral)"><span class="k">Semana 16</span><b>Piloto con Banco Atlántida</b><span>Dentro de sus 3 a 6 meses.</span></div>
-        <div class="mile card" data-a style="--i:5;--c:var(--green)"><span class="k">30 sep 2027</span><b>Banco Internacional</b><span>A más tardar en esa fecha.</span></div>
+        <div class="mile card" data-a style="--i:3;--c:var(--soft)"><span class="k">Semana 0</span><b>Contrato e implementación</b><span>Pago único de $1,900 y arrancamos.</span></div>
+        <div class="mile card" data-a style="--i:4;--c:var(--coral)"><span class="k">Día 30</span><b>Entrega de la plataforma</b><span>Desde aquí corre el fee mensual.</span></div>
+        <div class="mile card" data-a style="--i:5;--c:var(--teal)"><span class="k">Piloto</span><b>Banco Atlántida</b><span>Apenas su API esté conectada y certificada.</span></div>
+        <div class="mile card" data-a style="--i:6;--c:var(--green)"><span class="k">30 sep 2027</span><b>Banco Internacional</b><span>A más tardar en esa fecha.</span></div>
       </div>
-      <p class="small" data-a style="--i:6">Los plazos corren mientras cada banco y Travel Compositor entreguen a tiempo sus accesos y API.</p>
+      <p class="small" data-a style="--i:7">La entrega y el fee no dependen de los bancos. El tiempo de cada conexión depende de que nos entreguen sus accesos y API.</p>
     </div>
   </section>
 
@@ -1095,18 +1097,18 @@ footer.contact a { color: var(--soft); }
       </div>
       <div class="commit">
         <div class="win card" data-a="left" style="--i:2;--c:var(--coral)"><h3>Zegendia</h3><ul>
-          <li>Construir, alojar y mantener el orquestador con su marca, sin costo de desarrollo ni licencia</li>
+          <li>Construir, alojar y mantener el orquestador con su marca, sin costo de licencia</li>
           <li>Conectar todo por API y mantener las integraciones funcionando durante toda la alianza</li>
           <li>Entregar la documentación de seguridad y atender las auditorías de cada banco</li>
           <li>Premios con precio garantizado 6 meses, inventario propio y entrega asegurada en todo Ecuador</li>
-          <li>Lanzar el piloto en la semana 16</li>
+          <li>Entregar la plataforma lista en 30 días</li>
         </ul></div>
         <div class="win card" data-a="right" style="--i:3;--c:var(--teal)"><h3>bmtours</h3><ul>
-          <li>Pagar el anticipo de $1,900 al firmar el contrato</li>
+          <li>Pagar la implementación de $1,900 al firmar el contrato</li>
           <li>Facilitar accesos, API y contactos técnicos de cada banco y de Travel Compositor</li>
           <li>Exclusividad con Zegendia en premios físicos y merch por 36 meses</li>
           <li>Llevar el programa a Banco Internacional a más tardar el 30 de septiembre de 2027</li>
-          <li>Pagar cada factura en un máximo de 5 días</li>
+          <li>Pagar el fee desde la entrega y cada factura en un máximo de 5 días</li>
         </ul></div>
       </div>
       <div class="apiband card" data-a style="--i:4">
@@ -1121,25 +1123,25 @@ footer.contact a { color: var(--soft); }
     <div class="inner">
       <div style="display:grid;gap:12px;max-width:1000px">
         <p class="eyebrow green" data-a style="--i:0">Carta de intención precontractual</p>
-        <h2 class="title mid" data-a style="--i:1">Si le hace sentido, <span class="grad">arranquemos.</span></h2>
-        <p class="lead" data-a style="--i:2">Revise la carta, complete los datos de su empresa y acéptela. En los 15 días siguientes firmamos el contrato.</p>
+        <h2 class="title mid" data-a style="--i:1"><span class="grad">¡Arranquemos!</span></h2>
+        <p class="lead" data-a style="--i:2">Empecemos con una carta de intención para trabajar juntos, previa al contrato. Revísela, complete los datos de su empresa y acéptela.</p>
       </div>
       <div class="loi">
         <article class="loi-text card" data-a="left" style="--i:3">
           <div class="loi-scroll loi-doc" id="loi-doc" tabindex="0" aria-label="Texto de la carta de intención">
 <!-- LOI:BEGIN -->
           <h3>Carta de intención precontractual</h3>
-          <p class="ver">Versión LOI-bmtours-2026-11</p>
+          <p class="ver">Versión LOI-bmtours-2026-11-v2</p>
           <dl class="parties"><dt>Zegendia</dt><dd>GADAMAX LLC, que opera la marca Zegendia</dd><dt>bmtours</dt><dd id="loi-party">La empresa cuyos datos se registran al aceptar</dd></dl>
           <p class="loi-intro">GADAMAX LLC, que opera la marca Zegendia (en adelante, Zegendia), y la empresa cuyos datos constan en esta carta (en adelante, bmtours) dejan constancia de las condiciones iniciales de su alianza para el Orquestador bmtours:</p>
           <ol class="loi-clauses">
             <li><strong>Objeto.</strong> Zegendia desarrollará e implementará el Orquestador bmtours: una sola plataforma, con una sola marca, para administrar y canjear todos los premios de los programas de puntos y millas que opera bmtours, incluidos sus viajes, los productos y el merch de Zegendia y otros premios.</li>
-            <li><strong>Desarrollo y licencia.</strong> Zegendia desarrollará, alojará y mantendrá el orquestador, con la marca que defina bmtours, sin costo de desarrollo ni de licencia para bmtours.</li>
-            <li><strong>Anticipo.</strong> bmtours pagará a Zegendia un anticipo de USD 1,900 al firmar el contrato definitivo, y Zegendia iniciará el desarrollo al recibirlo. El anticipo vuelve a bmtours como crédito: se descontará completo de las primeras facturas mensuales, hasta agotarse.</li>
-            <li><strong>Fee de plataforma.</strong> Desde el mes de lanzamiento del piloto, el fee mensual dependerá de los canjes de productos entregados en el mes, sumando todos los bancos: menos de 30 canjes, USD 390; de 30 a 59, USD 250; de 60 a 99, USD 120; 100 o más, USD 0. Los valores son en dólares de los Estados Unidos, más los impuestos que correspondan.</li>
+            <li><strong>Licencia.</strong> Zegendia desarrollará, alojará y mantendrá el orquestador, con la marca que defina bmtours, sin costo de licencia para bmtours.</li>
+            <li><strong>Implementación y entrega.</strong> bmtours pagará a Zegendia USD 1,900 por la implementación del orquestador, en un solo pago al firmar el contrato definitivo. Es un pago único y no se descuenta de las facturas mensuales. Zegendia entregará la plataforma lista para operar dentro de los 30 días siguientes al pago: con la marca de bmtours, el catálogo de premios, la administración para bmtours y los bancos, la documentación de seguridad y sus API documentadas, lista para conectar cada banco y Travel Compositor.</li>
+            <li><strong>Fee de plataforma.</strong> Desde la entrega de la plataforma, bmtours pagará un fee mensual según los canjes de productos entregados en el mes, sumando todos los bancos: menos de 30 canjes, USD 390; de 30 a 59, USD 250; de 60 a 99, USD 120; 100 o más, USD 0. Los valores son en dólares de los Estados Unidos, más los impuestos que correspondan.</li>
             <li><strong>Premios.</strong> Zegendia proveerá el catálogo de premios físicos y merch con precio garantizado por 6 meses, comprará el inventario, entregará en todo Ecuador con seguro, guía y seguimiento, y gestionará las incidencias de cada entrega. bmtours podrá sumar su propio margen sobre el valor de cada premio.</li>
-            <li><strong>Exclusividad.</strong> Durante 36 meses desde el lanzamiento del piloto, bmtours contratará exclusivamente con Zegendia los premios físicos, el merch y su logística para todos los programas de puntos, millas o premios que opere, administre o comercialice, con cualquier banco o empresa, en Ecuador y en cualquier otro país donde use el Orquestador bmtours.</li>
-            <li><strong>Plazos.</strong> El piloto con Banco Atlántida se lanzará en la semana 16 contada desde la firma del contrato definitivo y el pago del anticipo. Las partes lanzarán el programa con Banco Internacional a más tardar el 30 de septiembre de 2027. Si un banco o Travel Compositor se retrasa en entregar los accesos o las API, las fechas se moverán en el mismo tiempo.</li>
+            <li><strong>Exclusividad.</strong> Desde la firma del contrato definitivo y hasta 36 meses después del lanzamiento del primer programa con el orquestador, bmtours contratará exclusivamente con Zegendia los premios físicos, el merch y su logística para todos los programas de puntos, millas o premios que opere, administre o comercialice, con cualquier banco o empresa, en Ecuador y en cualquier otro país donde use el Orquestador bmtours.</li>
+            <li><strong>Plazos.</strong> Zegendia conectará por API cada banco y Travel Compositor en cuanto entreguen sus accesos y API, y el piloto con Banco Atlántida se lanzará apenas su conexión esté certificada. Las partes lanzarán el programa con Banco Internacional a más tardar el 30 de septiembre de 2027. Las demoras de los bancos o de Travel Compositor no cambian la fecha de entrega de la plataforma ni el inicio del fee.</li>
             <li><strong>Facturación y pago.</strong> Cada mes cierra el día 30. Zegendia emitirá la factura por los premios entregados y el fee de plataforma del mes, y bmtours la pagará en un máximo de 5 días calendario desde su emisión, todos los meses. Si una factura vence sin pago, Zegendia podrá pausar los nuevos pedidos hasta que se regularice.</li>
             <li><strong>Todo por API.</strong> Todas las conexiones serán por API, sin procesos manuales: saldos, débito y reverso de puntos o millas con cada banco; vuelos y paquetes con Travel Compositor; catálogo, pedidos y estados de entrega con Zegendia. Zegendia mantendrá las integraciones funcionando durante toda la alianza, con monitoreo, corrección de fallas y actualizaciones cuando cambien los sistemas de los bancos o de Travel Compositor.</li>
             <li><strong>Seguridad.</strong> Zegendia entregará la documentación de arquitectura, infraestructura, base de datos, API y canales, y el diagrama de integración, y atenderá las auditorías de seguridad que pida cada banco.</li>
@@ -1590,7 +1592,7 @@ footer.contact a { color: var(--soft); }
   /* ---------- Plan weeks ---------- */
   (function () {
     var w = $("#g-weeks"), html = "";
-    for (var i = 1; i <= 16; i++) html += '<span' + (i === 16 ? ' class="mark"' : "") + ">" + i + "</span>";
+    for (var i = 1; i <= 8; i++) html += '<span' + (i === 4 ? ' class="mark"' : "") + ">" + (i === 4 ? "4 · Entrega" : i) + "</span>";
     w.innerHTML = html;
   })();
 
