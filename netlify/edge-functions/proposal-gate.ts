@@ -26,9 +26,14 @@ type Access = {
 
 type Proposal = {
   accesses: Access[];
+  // "bmtours" keeps the original fixed questionnaire; "generic" takes question and answer pairs.
+  answers?: "bmtours" | "generic";
   client: string;
-  loiVersion: string;
+  locale?: string;
+  loiVersion?: string;
   ndaVersion: string;
+  timeZone?: string;
+  timeZoneLabel?: string;
   title: string;
 };
 
@@ -53,6 +58,32 @@ const PROPOSALS: Record<string, Proposal> = {
         label: "Equipo Zegendia",
         salt: "089b9594ee932a0eaa52b2f0ce2eaf59",
         hash: "59572f31fb1762e47d00c29b03c6ed3bb835f5db74d5ccb0dd30e290893c5191"
+      }
+    ]
+  },
+  "netafim-nb2svb": {
+    title: "Propuesta de Zegendia para Netafim Perú",
+    client: "Netafim Perú",
+    ndaVersion: "NDA-netafim-2026-11",
+    answers: "generic",
+    locale: "es-PE",
+    timeZone: "America/Lima",
+    timeZoneLabel: "hora de Perú",
+    accesses: [
+      {
+        role: "client",
+        label: "Harry Centeno (Netafim Perú)",
+        name: "Harry Centeno",
+        company: "Netafim Perú",
+        email: "harrycenteno@netafim.orbia.com",
+        salt: "97a749f6a3a679146844ffb4af0da6db",
+        hash: "5fa17bbbc2b55c8f08cc80c6f8c294f0c701173605dc761594e4ad9f9b8de18f"
+      },
+      {
+        role: "internal",
+        label: "Equipo Zegendia",
+        salt: "8a44dc9a86cb9e6a3a23409a373dd852",
+        hash: "4f9ab80c028d0cddf995bc0aebd7ff264262f115733075b61dbfc9b193bed13a"
       }
     ]
   }
@@ -264,9 +295,12 @@ function jsonResponse(status: number, body: unknown, cookies: string[] = []) {
   return new Response(JSON.stringify(body), { headers, status });
 }
 
-function formatEcuadorTime(date: Date) {
+function formatTime(date: Date, proposal?: Proposal) {
+  const locale = proposal?.locale || "es-EC";
+  const timeZone = proposal?.timeZone || "America/Guayaquil";
+  const label = proposal?.timeZoneLabel || "hora de Ecuador";
   try {
-    return `${date.toLocaleString("es-EC", { dateStyle: "long", timeStyle: "short", timeZone: "America/Guayaquil" })} (hora de Ecuador)`;
+    return `${date.toLocaleString(locale, { dateStyle: "long", timeStyle: "short", timeZone })} (${label})`;
   } catch {
     return date.toISOString();
   }
@@ -537,11 +571,26 @@ function readAnswers(raw: unknown) {
   } as Record<string, string>;
 }
 
-function answersTable(values: Record<string, string>) {
-  return `<table style="border-collapse:collapse;font-size:14px;width:100%;">${ANSWER_LABELS.filter(([key]) => values[key])
+// Question and answer pairs sent by decks with their own questions. Everything is escaped and capped.
+function readGenericAnswers(raw: unknown) {
+  const list = Array.isArray(raw) ? raw.slice(0, 15) : [];
+  const rows: Array<[string, string]> = [];
+  for (const item of list) {
+    const entry = (item && typeof item === "object" ? item : {}) as Record<string, unknown>;
+    const question = cleanLine(entry.q, 300);
+    const answer = Array.isArray(entry.a)
+      ? entry.a.slice(0, 10).map((v) => cleanLine(v, 200)).filter(Boolean).join(", ")
+      : cleanBlock(entry.a, 3000);
+    if (question && answer) rows.push([question, answer]);
+  }
+  return rows;
+}
+
+function answersTable(rows: Array<[string, string]>) {
+  return `<table style="border-collapse:collapse;font-size:14px;width:100%;">${rows
     .map(
-      ([key, label]) =>
-        `<tr><td style="padding:8px 14px 8px 0;color:#432851;font-weight:700;vertical-align:top;width:38%;border-bottom:1px solid #eee;">${escapeHtml(label)}</td><td style="padding:8px 0;border-bottom:1px solid #eee;white-space:pre-wrap;">${escapeHtml(values[key])}</td></tr>`
+      ([label, value]) =>
+        `<tr><td style="padding:8px 14px 8px 0;color:#432851;font-weight:700;vertical-align:top;width:38%;border-bottom:1px solid #eee;">${escapeHtml(label)}</td><td style="padding:8px 0;border-bottom:1px solid #eee;white-space:pre-wrap;">${escapeHtml(value)}</td></tr>`
     )
     .join("")}</table>`;
 }
@@ -555,10 +604,17 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
   }
 
   const interest = body.interest === "talk" ? "talk" : "yes";
-  const values = readAnswers(body.answers);
-  values.interest = interest === "talk" ? "Le interesa y prefiere conversarlo antes" : "Le interesa y solicita la propuesta económica";
-
-  const answeredCount = ANSWER_LABELS.filter(([key]) => key !== "interest" && values[key]).length;
+  let rows: Array<[string, string]>;
+  let answeredCount: number;
+  if (proposal.answers === "generic") {
+    rows = readGenericAnswers(body.answers);
+    answeredCount = rows.length;
+  } else {
+    const values = readAnswers(body.answers);
+    values.interest = interest === "talk" ? "Le interesa y prefiere conversarlo antes" : "Le interesa y solicita la propuesta económica";
+    rows = ANSWER_LABELS.filter(([key]) => values[key]).map(([key, label]) => [label, values[key]] as [string, string]);
+    answeredCount = ANSWER_LABELS.filter(([key]) => key !== "interest" && values[key]).length;
+  }
   if (interest === "yes" && answeredCount === 0) {
     return jsonResponse(400, { error: "Responda al menos una pregunta antes de enviar.", ok: false });
   }
@@ -567,7 +623,7 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
 
   const isInternal = access.role === "internal";
   const who = isInternal ? "Equipo Zegendia (prueba interna)" : cleanLine(info.name || access.name || access.label, 120);
-  const sentAt = formatEcuadorTime(new Date());
+  const sentAt = formatTime(new Date(), proposal);
   const proposalUrl = `${siteBase()}/propuestas/${slug}/`;
   const prefix = isInternal ? "[Prueba interna] " : "";
   const subject =
@@ -580,7 +636,7 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
     <table style="border-collapse:collapse;font-size:14px;margin:0 0 16px;">
       ${row("Propuesta", proposalUrl)}${row("Enviado por", who)}${row("Código de", access.label)}${row("Fecha", sentAt)}${row("IP", ip)}
     </table>
-    ${answersTable(values)}
+    ${answersTable(rows)}
   `);
 
   const sends: Array<Promise<boolean>> = [
@@ -597,7 +653,7 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
           ? "Gracias por su interés. Le escribiremos para coordinar una conversación y resolver sus dudas antes de preparar la propuesta económica."
           : "Gracias por sus respuestas. Con ellas preparamos su propuesta económica y se la enviaremos muy pronto."
       }</p>
-      ${answeredCount ? `<p style="margin:0 0 10px;font-weight:700;color:#432851;">Esto es lo que nos contó:</p>${answersTable(values)}` : ""}
+      ${answeredCount ? `<p style="margin:0 0 10px;font-weight:700;color:#432851;">Esto es lo que nos contó:</p>${answersTable(rows)}` : ""}
       <p style="margin:18px 0 14px;line-height:1.6;">Puede volver a la presentación cuando quiera:<br /><a href="${escapeHtml(proposalUrl)}" style="color:#e44c47;font-weight:700;">${escapeHtml(proposalUrl)}</a></p>
       <p style="margin:20px 0 0;line-height:1.6;">Saludos cordiales,<br /><strong>Zegendia</strong></p>
     `);
@@ -661,6 +717,9 @@ function partiesHtml(v: Record<string, string>) {
 }
 
 async function handleLoi(request: Request, body: Record<string, unknown>, ip: string, slug: string, proposal: Proposal) {
+  if (!proposal.loiVersion) {
+    return jsonResponse(404, { error: "Esta propuesta no tiene carta de intención.", ok: false });
+  }
   const cookieCode = getCookie(request, cookieNames(slug).access);
   const access = cookieCode ? await findAccess(slug, proposal, cookieCode) : null;
 
@@ -685,7 +744,7 @@ async function handleLoi(request: Request, body: Record<string, unknown>, ip: st
 
   const isInternal = access.role === "internal";
   const now = new Date();
-  const acceptedAt = formatEcuadorTime(now);
+  const acceptedAt = formatTime(now, proposal);
   const proposalUrl = `${siteBase()}/propuestas/${slug}/`;
   const userAgent = cleanLine(request.headers.get("user-agent"), 300);
   const fingerprint = await sha256Hex(loiText());
@@ -698,7 +757,7 @@ async function handleLoi(request: Request, body: Record<string, unknown>, ip: st
 
   const record = `
     <table style="border-collapse:collapse;font-size:14px;">
-      ${row("Versión", proposal.loiVersion)}${row("Fecha de aceptación", acceptedAt)}${row("Huella del texto (SHA-256)", fingerprint)}
+      ${row("Versión", proposal.loiVersion || "")}${row("Fecha de aceptación", acceptedAt)}${row("Huella del texto (SHA-256)", fingerprint)}
     </table>`;
 
   const copyHtml = emailShell(`
@@ -804,7 +863,7 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
   }
 
   const now = new Date();
-  const acceptedAt = formatEcuadorTime(now);
+  const acceptedAt = formatTime(now, proposal);
   const proposalUrl = `${siteBase()}/propuestas/${slug}/`;
   const userAgent = cleanLine(request.headers.get("user-agent"), 300);
   const copyTo = access.email || "";
