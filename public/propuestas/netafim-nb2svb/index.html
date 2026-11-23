@@ -496,6 +496,13 @@ p { margin: 0; }
 .loi-done .done-ring { width: 96px; height: 96px; }
 .loi-done .done-ring svg { width: 46px; height: 46px; stroke-dashoffset: 0; }
 
+
+/* Calmer palette: one accent colour for highlighted words, white big numbers, no rainbow ring */
+.grad { background: none; -webkit-background-clip: border-box; background-clip: border-box; color: var(--green); }
+.metric b, .of .num, .stat:nth-child(n) b { color: var(--text); }
+.deal { background: linear-gradient(100deg, rgba(132, 209, 74, .1), rgba(255, 255, 255, .03)); }
+.deal .seal { background: var(--green); animation: none; }
+.deal p em { color: var(--green); }
 footer.contact { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 14px; font-size: 14px; color: var(--dim); border-top: 1px solid var(--line); padding-top: 16px; }
 footer.contact a { color: var(--soft); }
 
@@ -1187,40 +1194,6 @@ footer.contact a { color: var(--soft); }
   </section>
 
   <!-- 14 -->
-  <section class="slide" id="libres" data-title="Libres en la tecnología" aria-label="Libres en la tecnología, aliados en los premios">
-    <div class="inner">
-      <div style="display:grid;gap:14px;max-width:1000px">
-        <p class="eyebrow green" data-a style="--i:0">Sin amarres</p>
-        <h2 class="title mid" data-a style="--i:1">Libres en la tecnología. <span class="grad">Aliados en los premios.</span></h2>
-      </div>
-      <div class="free">
-        <div class="win card" data-a="left" style="--i:2;--c:var(--green)"><h3>La plataforma es de Netafim</h3><ul>
-          <li>Su marca: el agricultor ve Cultiva Más, no a Zegendia</li>
-          <li>Sus datos: agricultores, compras y canjes, exportables cuando quieran</li>
-          <li>Catálogo abierto: pueden sumar sus productos y otros proveedores</li>
-          <li>Sin permanencia en la plataforma</li>
-        </ul>
-          <div class="buyout"><span class="k">Si mañana quieren operarlo ustedes</span><b>US$ <span data-count="15000">0</span></b><span>y se quedan con todo: la plataforma instalada en su nube, sus datos, los procesos y la capacitación de su equipo.</span></div>
-        </div>
-        <div class="win card" data-a="right" style="--i:3;--c:var(--coral)"><h3>Los premios, con Zegendia</h3><ul>
-          <li>Por 36 meses, somos el proveedor del merch del programa: lo compramos, lo guardamos y lo entregamos</li>
-          <li>Entrega en máximo 7 días, con seguro y código de entrega</li>
-          <li>Precio garantizado por 6 meses, con todo incluido</li>
-          <li>Solo se factura lo entregado, con su guía</li>
-          <li>Si no cumplimos lo prometido, pueden salirse</li>
-        </ul></div>
-      </div>
-      <div class="countries card" data-a style="--i:4">
-        <div class="ct on"><b>PE</b><span>Perú</span><small>Hoy</small></div>
-        <div class="ct"><b>BO</b><span>Bolivia</span><small>Siguiente</small></div>
-        <div class="ct"><b>CL</b><span>Chile</span><small>Siguiente</small></div>
-        <div class="ct"><b>AR</b><span>Argentina</span><small>Después</small></div>
-        <p>La misma plataforma, con otra moneda y otro catálogo. Cada país nuevo: implementación de <b>US$ 2,400</b> y su propia tabla de fee.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- 15 -->
   <section class="slide" id="demo1" data-title="Demo 1 · Oh My Rewards" aria-label="Demo 1: Oh My Rewards" data-scene="carousel">
     <div class="inner demo">
       <div>
@@ -1250,7 +1223,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 16 -->
+  <!-- 15 -->
   <section class="slide" id="demo2" data-title="Demo 2 · Club Santa Lucía" aria-label="Demo 2: Club Santa Lucía" data-scene="carousel">
     <div class="inner demo">
       <div>
@@ -1283,7 +1256,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 17 -->
+  <!-- 16 -->
   <section class="slide" data-title="Experiencia" aria-label="Experiencia de Zegendia">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:900px">
@@ -1301,6 +1274,30 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
+  <!-- 17 -->
+  <section class="slide" data-title="Simulador para Netafim" aria-label="Simulador de ventas adicionales para Netafim">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:960px">
+        <p class="eyebrow green" data-a style="--i:0">Simulador</p>
+        <h2 class="title mid" data-a style="--i:1">¿Cuánto puede vender Netafim con un programa que funciona?</h2>
+      </div>
+      <div class="sim">
+        <div class="sliders card" data-a="left" style="--i:2">
+          <div class="sl"><label for="r-farm">Agricultores activos <output id="o-farm">1,400</output></label><input type="range" id="r-farm" min="500" max="6000" step="50" value="1400"><small>Hoy 1,300; la meta del año es 1,400.</small></div>
+          <div class="sl"><label for="r-spend">Compra al año por agricultor <output id="o-spend">S/ 10,710</output></label><input type="range" id="r-spend" min="2000" max="40000" step="10" value="10710"><small>S/ 5,100 por compra y 2.1 compras al año.</small></div>
+          <div class="sl"><label for="r-lift">Aumento de compras con el programa <output id="o-lift">10%</output></label><input type="range" id="r-lift" min="0" max="30" step="1" value="10"><small>Más frecuencia y más productos por compra.</small></div>
+        </div>
+        <div class="result card" data-a="right" style="--i:3" aria-live="polite">
+          <span class="lab">Ventas adicionales al año</span>
+          <div class="big" id="o-add">S/ 1,499,400</div>
+          <div class="rows"><span>En 3 años</span><b id="o-add3">S/ 4,498,200</b><span>Compras que pasan por el programa</span><b id="o-total">S/ 16,493,400</b><span>Premios al año con la regla actual</span><b id="o-prize">S/ 568,738</b></div>
+          <div class="yrs" aria-hidden="true"><div style="height:33%"><span>Año 1</span></div><div style="height:66%"><span>Año 2</span></div><div style="height:100%"><span>Año 3</span></div></div>
+        </div>
+      </div>
+      <p class="small" data-a style="--i:4;margin-top:6px">Simulación ilustrativa con sus propios supuestos. Premios calculados con la regla actual: 1 punto por cada S/ 100 y unos S/ 3.45 por punto.</p>
+    </div>
+  </section>
+
   <!-- 18 -->
   <section class="slide" id="oferta" data-title="Propuesta económica" aria-label="Propuesta económica">
     <div class="inner">
@@ -1314,7 +1311,7 @@ footer.contact a { color: var(--soft); }
         <div class="of card" data-a style="--i:4;--c:var(--coral)"><span class="k">Premios</span><b class="num"><span data-count="7">0</span><small>días</small></b><strong>Precio garantizado 6 meses</strong><span>Todo incluido: producto, flete, seguro e impuestos. Solo se factura lo entregado.</span></div>
       </div>
       <div class="chips" data-a style="--i:5">
-        <span class="chip"><b>Piloto de 90 días</b> en una ciudad</span>
+        <span class="chip"><b>Todo Perú</b> en 30 días</span>
         <span class="chip"><b>Migración</b> incluida</span>
         <span class="chip"><b>Compensación</b> si nos atrasamos</span>
         <span class="chip"><b>Opción de traspaso</b> de toda la plataforma</span>
@@ -1376,26 +1373,36 @@ footer.contact a { color: var(--soft); }
   </section>
 
   <!-- 21 -->
-  <section class="slide" data-title="Simulador para Netafim" aria-label="Simulador de ventas adicionales para Netafim">
+  <section class="slide" id="libres" data-title="Libres en la tecnología" aria-label="Libres en la tecnología, aliados en los premios">
     <div class="inner">
-      <div style="display:grid;gap:14px;max-width:960px">
-        <p class="eyebrow green" data-a style="--i:0">Simulador</p>
-        <h2 class="title mid" data-a style="--i:1">¿Cuánto puede vender Netafim con un programa que funciona?</h2>
+      <div style="display:grid;gap:14px;max-width:1000px">
+        <p class="eyebrow green" data-a style="--i:0">Sin amarres</p>
+        <h2 class="title mid" data-a style="--i:1">Libres en la tecnología. <span class="grad">Aliados en los premios.</span></h2>
       </div>
-      <div class="sim">
-        <div class="sliders card" data-a="left" style="--i:2">
-          <div class="sl"><label for="r-farm">Agricultores activos <output id="o-farm">1,400</output></label><input type="range" id="r-farm" min="500" max="6000" step="50" value="1400"><small>Hoy 1,300; la meta del año es 1,400.</small></div>
-          <div class="sl"><label for="r-spend">Compra al año por agricultor <output id="o-spend">S/ 10,710</output></label><input type="range" id="r-spend" min="2000" max="40000" step="10" value="10710"><small>S/ 5,100 por compra y 2.1 compras al año.</small></div>
-          <div class="sl"><label for="r-lift">Aumento de compras con el programa <output id="o-lift">10%</output></label><input type="range" id="r-lift" min="0" max="30" step="1" value="10"><small>Más frecuencia y más productos por compra.</small></div>
+      <div class="free">
+        <div class="win card" data-a="left" style="--i:2;--c:var(--green)"><h3>La plataforma es de Netafim</h3><ul>
+          <li>Su marca: el agricultor ve Cultiva Más, no a Zegendia</li>
+          <li>Sus datos: agricultores, compras y canjes, exportables cuando quieran</li>
+          <li>Catálogo abierto: pueden sumar sus productos y otros proveedores</li>
+          <li>Sin permanencia en la plataforma</li>
+        </ul>
+          <div class="buyout"><span class="k">Si mañana quieren operarlo ustedes</span><b>US$ <span data-count="15000">0</span></b><span>y se quedan con todo: la plataforma instalada en su nube, sus datos, los procesos y la capacitación de su equipo.</span></div>
         </div>
-        <div class="result card" data-a="right" style="--i:3" aria-live="polite">
-          <span class="lab">Ventas adicionales al año</span>
-          <div class="big" id="o-add">S/ 1,499,400</div>
-          <div class="rows"><span>En 3 años</span><b id="o-add3">S/ 4,498,200</b><span>Compras que pasan por el programa</span><b id="o-total">S/ 16,493,400</b><span>Premios al año con la regla actual</span><b id="o-prize">S/ 568,738</b></div>
-          <div class="yrs" aria-hidden="true"><div style="height:33%"><span>Año 1</span></div><div style="height:66%"><span>Año 2</span></div><div style="height:100%"><span>Año 3</span></div></div>
-        </div>
+        <div class="win card" data-a="right" style="--i:3;--c:var(--coral)"><h3>Los premios, con Zegendia</h3><ul>
+          <li>Por 36 meses, somos el proveedor del merch del programa: lo compramos, lo guardamos y lo entregamos</li>
+          <li>Entrega en máximo 7 días, con seguro y código de entrega</li>
+          <li>Precio garantizado por 6 meses, con todo incluido</li>
+          <li>Solo se factura lo entregado, con su guía</li>
+          <li>Si no cumplimos lo prometido, pueden salirse</li>
+        </ul></div>
       </div>
-      <p class="small" data-a style="--i:4;margin-top:6px">Simulación ilustrativa con sus propios supuestos. Premios calculados con la regla actual: 1 punto por cada S/ 100 y unos S/ 3.45 por punto.</p>
+      <div class="countries card" data-a style="--i:4">
+        <div class="ct on"><b>PE</b><span>Perú</span><small>Hoy</small></div>
+        <div class="ct"><b>BO</b><span>Bolivia</span><small>Siguiente</small></div>
+        <div class="ct"><b>CL</b><span>Chile</span><small>Siguiente</small></div>
+        <div class="ct"><b>AR</b><span>Argentina</span><small>Después</small></div>
+        <p>La misma plataforma, con otra moneda y otro catálogo. Cada país nuevo: implementación de <b>US$ 2,400</b> y su propia tabla de fee.</p>
+      </div>
     </div>
   </section>
 
@@ -1404,121 +1411,36 @@ footer.contact a { color: var(--soft); }
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:980px">
         <p class="eyebrow violet" data-a style="--i:0">Plan</p>
-        <h2 class="title mid" data-a style="--i:1">En 30 días, el piloto. <span class="grad">En 6 meses, todo Perú.</span></h2>
+        <h2 class="title mid" data-a style="--i:1">En 30 días, todo Perú. <span class="grad">Después, la región.</span></h2>
       </div>
       <div class="gantt card" data-a style="--i:2" role="table" aria-label="Plan de lanzamiento por meses">
         <div class="g-row g-head" aria-hidden="true"><span class="g-lab">Mes</span><div class="g-track" id="g-weeks"></div></div>
         <div class="g-row" role="row" style="--s:1;--e:2;--c:var(--green);--i:0"><span class="g-lab" role="cell"><b>Cultiva Más 2.0 con su marca</b><small>Mes 1 · web, WhatsApp y panel de Netafim</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:1;--e:2;--c:var(--teal);--i:1"><span class="g-lab" role="cell"><b>Migración y distribuidores</b><small>Mes 1 · agricultores, saldos y capacitación en tienda</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:1;--e:3;--c:var(--coral);--i:2"><span class="g-lab" role="cell"><b>Catálogo para el campo</b><small>Meses 1 y 2 · productos Netafim, servicios y vales</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:2;--e:5;--c:var(--violet);--i:3"><span class="g-lab" role="cell"><b>Piloto en una ciudad</b><small>Meses 2 a 4 · 90 días, con metas medidas</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:5;--e:7;--c:var(--green);--i:4"><span class="g-lab" role="cell"><b>Las cuatro ciudades</b><small>Meses 5 y 6 · todo el programa en Perú</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
-        <div class="g-row" role="row" style="--s:7;--e:9;--c:var(--teal);--i:5"><span class="g-lab" role="cell"><b>Bolivia, Chile y Argentina</b><small>Desde el mes 7 · cuando Netafim lo decida</small></span><div class="g-track" aria-hidden="true"><i class="open"></i></div></div>
+        <div class="g-row" role="row" style="--s:1;--e:2;--c:var(--teal);--i:1"><span class="g-lab" role="cell"><b>Migración de agricultores y saldos</b><small>Mes 1 · sin que nadie pierda un punto</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:1;--e:2;--c:var(--coral);--i:2"><span class="g-lab" role="cell"><b>Catálogo para el campo y logística</b><small>Mes 1 · merch con stock, vales y productos Netafim</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:1;--e:2;--c:var(--violet);--i:3"><span class="g-lab" role="cell"><b>Distribuidores listos</b><small>Mes 1 · capacitación en las 4 ciudades</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
+        <div class="g-row" role="row" style="--s:2;--e:9;--c:var(--green);--i:4"><span class="g-lab" role="cell"><b>Todo Perú en operación</b><small>Desde el mes 2 · entregas en máximo 7 días</small></span><div class="g-track" aria-hidden="true"><i class="open"></i></div></div>
+        <div class="g-row" role="row" style="--s:3;--e:9;--c:var(--teal);--i:5"><span class="g-lab" role="cell"><b>Bolivia, Chile y Argentina</b><small>Desde el mes 3 · un país a la vez, cuando Netafim lo decida</small></span><div class="g-track" aria-hidden="true"><i class="open"></i></div></div>
       </div>
-      <p class="small" data-a style="--i:3">Plazos desde la firma. Entregas en máximo 7 días desde el primer canje del piloto. La operación actual sigue en paralelo hasta que Netafim apruebe el cambio.</p>
+      <p class="small" data-a style="--i:3">Plazos desde la firma y el pago de la implementación. La operación actual sigue hasta el día del lanzamiento, sin cortes para el agricultor.</p>
     </div>
   </section>
 
   <!-- 23 -->
-  <section class="slide" data-title="Siguiente paso" aria-label="Siguiente paso">
+  <section class="slide" id="arranque" data-title="Siguiente paso" aria-label="Siguiente paso">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:980px">
         <p class="eyebrow" data-a style="--i:0">Siguiente paso</p>
-        <h2 class="title" data-a style="--i:1;font-size:clamp(36px,5vw,72px)">Denos esta información y <span class="grad">arrancamos.</span></h2>
-        <p class="lead" data-a style="--i:2">Ocho preguntas, unos cinco minutos. Con sus respuestas ajustamos catálogo, tramos y plan a la medida de Netafim, y le enviamos el contrato.</p>
+        <h2 class="title" data-a style="--i:1;font-size:clamp(36px,5vw,72px)">Firmamos, y en 30 días <span class="grad">Cultiva Más 2.0 está en todo Perú.</span></h2>
+        <p class="lead" data-a style="--i:2">La propuesta ya tiene precio, plazos y garantías. Solo falta su visto bueno.</p>
       </div>
       <div class="path">
-        <div class="card" data-a style="--i:3;--c:var(--violet)"><b>Usted nos envía la información</b><span>Responde las preguntas en la siguiente pantalla.</span></div>
-        <div class="card" data-a style="--i:4;--c:var(--teal)"><b>Ajustamos la propuesta</b><span>Sobre sus distribuidores, su catálogo y sus sistemas.</span></div>
-        <div class="card" data-a style="--i:5;--c:var(--green)"><b>Firmamos</b><span>Contrato y pago de la implementación.</span></div>
-        <div class="card" data-a style="--i:6;--c:var(--coral)"><b>Arrancamos el piloto</b><span>En 30 días, en la ciudad que Netafim elija.</span></div>
+        <div class="card" data-a style="--i:3;--c:var(--violet)"><b>Aprueban la propuesta</b><span>Con los valores y las condiciones de esta presentación.</span></div>
+        <div class="card" data-a style="--i:4;--c:var(--teal)"><b>Firmamos el contrato</b><span>Y Netafim paga la implementación.</span></div>
+        <div class="card" data-a style="--i:5;--c:var(--green)"><b>30 días de implementación</b><span>Plataforma, migración, catálogo y distribuidores.</span></div>
+        <div class="card" data-a style="--i:6;--c:var(--coral)"><b>Lanzamiento en todo Perú</b><span>Y después, la región.</span></div>
       </div>
-      <div class="row" data-a style="--i:7">
-        <button class="btn btn-primary" type="button" data-go="next">Responder las preguntas
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <!-- 24 -->
-  <section class="slide s-quiz" data-title="Información para su propuesta" aria-label="Información para su propuesta económica" data-scene="quiz">
-    <div class="inner">
-      <div class="quiz-head" data-a style="--i:0">
-        <p class="eyebrow green">Información para su propuesta</p>
-        <p class="qcount" id="qcount" aria-live="polite">Pregunta 1 de 9</p>
-      </div>
-      <div class="qbar" id="qbar" aria-hidden="true"></div>
-      <form class="wizard" id="qform" novalidate data-a style="--i:1">
-        <fieldset class="step on" data-step data-q="¿Cómo se registran hoy las compras para dar puntos?">
-          <legend class="qtitle">¿Cómo se registran hoy las compras para dar puntos?</legend>
-          <div class="opts">
-            <label class="opt"><input type="radio" name="q1" value="El distribuidor envía un reporte"><span>El distribuidor envía un reporte</span></label>
-            <label class="opt"><input type="radio" name="q1" value="Con la factura o boleta del agricultor"><span>Con la factura o boleta del agricultor</span></label>
-            <label class="opt"><input type="radio" name="q1" value="Desde el sistema de Netafim (ERP)"><span>Desde nuestro sistema (ERP)</span></label>
-            <label class="opt"><input type="radio" name="q1" value="No está seguro"><span>No estoy seguro</span></label>
-          </div>
-          <input type="text" name="q1d" maxlength="1500" aria-label="Detalle de cómo se registran las compras" placeholder="Detalle opcional: cada cuánto, en qué formato" data-q="Detalle del registro de compras">
-        </fieldset>
-        <div class="step" data-step>
-          <label class="qtitle" for="q2">¿Cuántos distribuidores y tiendas participan, y en qué ciudades?</label>
-          <textarea id="q2" name="q2" rows="3" maxlength="1500" placeholder="Ej.: 12 distribuidores, 30 tiendas en Arequipa, Ica, La Libertad y Lambayeque" data-q="Distribuidores, tiendas y ciudades"></textarea>
-        </div>
-        <div class="step" data-step>
-          <label class="qtitle" for="q3">¿Cuántos canjes hacen al mes y qué premios piden más?</label>
-          <textarea id="q3" name="q3" rows="3" maxlength="1500" placeholder="Ej.: unos 80 canjes al mes; sobre todo vales de combustible y herramientas" data-q="Canjes al mes y premios más pedidos"></textarea>
-        </div>
-        <div class="step" data-step>
-          <label class="qtitle" for="q4">¿Cuál es el presupuesto anual de premios, o qué parte de la compra quieren devolver en puntos?</label>
-          <textarea id="q4" name="q4" rows="3" maxlength="1500" placeholder="Un monto aproximado o un porcentaje" data-q="Presupuesto de premios"></textarea>
-        </div>
-        <fieldset class="step" data-step data-q="Fin del contrato con el operador actual">
-          <legend class="qtitle">¿Hasta cuándo va el contrato con el operador actual?</legend>
-          <div class="opts">
-            <label class="opt"><input type="radio" name="q5" value="Menos de 3 meses"><span>Menos de 3 meses</span></label>
-            <label class="opt"><input type="radio" name="q5" value="Entre 3 y 6 meses"><span>3 a 6 meses</span></label>
-            <label class="opt"><input type="radio" name="q5" value="Más de 6 meses"><span>Más de 6 meses</span></label>
-            <label class="opt"><input type="radio" name="q5" value="No está seguro"><span>No estoy seguro</span></label>
-          </div>
-        </fieldset>
-        <div class="step" data-step>
-          <label class="qtitle" for="q6">¿En qué orden y cuándo quisieran llegar a Bolivia, Chile y Argentina?</label>
-          <textarea id="q6" name="q6" rows="3" maxlength="1500" placeholder="Ej.: Bolivia en 2027, Chile y Argentina después" data-q="Plan por país"></textarea>
-        </div>
-        <fieldset class="step" data-step data-q="Exigencias de tecnología y datos">
-          <legend class="qtitle">¿Qué exige Netafim en tecnología y datos?</legend>
-          <p class="help">Puede elegir varias.</p>
-          <div class="opts">
-            <label class="opt"><input type="checkbox" name="q7" value="Datos alojados en Perú"><span>Datos alojados en Perú</span></label>
-            <label class="opt"><input type="checkbox" name="q7" value="Certificaciones (ISO 27001, SOC 2)"><span>Certificaciones (ISO 27001, SOC 2)</span></label>
-            <label class="opt"><input type="checkbox" name="q7" value="Inicio de sesión corporativo (SSO)"><span>Inicio de sesión corporativo (SSO)</span></label>
-            <label class="opt"><input type="checkbox" name="q7" value="Integración con SAP u otro ERP"><span>Integración con SAP u otro ERP</span></label>
-            <label class="opt"><input type="checkbox" name="q7" value="Auditorías de seguridad"><span>Auditorías de seguridad</span></label>
-            <label class="opt"><input type="checkbox" name="q7" value="Aún no lo sabe"><span>Aún no lo sé</span></label>
-          </div>
-          <input type="text" name="q7d" maxlength="1500" aria-label="Detalle de las exigencias de tecnología" placeholder="Detalle opcional" data-q="Detalle de tecnología y datos">
-        </fieldset>
-        <div class="step" data-step>
-          <label class="qtitle" for="q8">¿Cómo y cuándo deciden?</label>
-          <textarea id="q8" name="q8" rows="3" maxlength="1500" placeholder="Pasos de la evaluación, quiénes participan y fecha estimada de decisión" data-q="Proceso y fecha de decisión"></textarea>
-        </div>
-        <div class="step" data-step>
-          <label class="qtitle" for="q9">¿Algo más que debamos considerar para su propuesta? <span class="opt-tag">Opcional</span></label>
-          <textarea id="q9" name="q9" rows="3" maxlength="3000" placeholder="Escriba aquí" data-q="Comentarios"></textarea>
-        </div>
-        <div class="qnav">
-          <button class="btn btn-ghost" type="button" id="q-prev">Anterior</button>
-          <p class="qmsg" id="qmsg" role="status">Responda lo que sepa hoy; puede dejar preguntas en blanco.</p>
-          <button class="btn btn-primary" type="button" id="q-next">Siguiente</button>
-          <button class="btn btn-primary" type="submit" id="qsend" hidden>Enviar información</button>
-        </div>
-      </form>
-      <div class="thanks card" id="thanks" role="status">
-        <div class="done-ring"><svg viewBox="0 0 24 24" fill="none" stroke="#84d14a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-        <h2 class="title mid">Gracias. Ya estamos ajustando su propuesta.</h2>
-        <p class="lead" id="thanks-text" style="text-align:center">Recibimos su información. Con ella ajustamos su propuesta y le enviamos el contrato a su correo.</p>
-      </div>
-      <footer class="contact" data-a style="--i:2">
+      <footer class="contact" data-a style="--i:7">
         <span>Marco Garzón · Zegendia · <a href="https://www.zegendia.com" target="_blank" rel="noopener">www.zegendia.com</a> · info@zegendia.com</span>
         <span id="nda-stamp">Documento confidencial. El código de acceso es personal.</span>
       </footer>
@@ -1653,12 +1575,6 @@ footer.contact a { color: var(--soft); }
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape") { closeIndex(); return; }
     if (typing(e) || e.metaKey || e.ctrlKey || e.altKey) return;
-    var quiz = slides[cur] && slides[cur].classList.contains("s-quiz") && $("#qform").style.display !== "none";
-    if (quiz && (e.key === "ArrowRight" || e.key === "ArrowLeft")) {
-      var f = $("#qform"), k = f._step();
-      if (e.key === "ArrowRight" && k < f._count - 1) { e.preventDefault(); f._show(k + 1); return; }
-      if (e.key === "ArrowLeft" && k > 0) { e.preventDefault(); f._show(k - 1); return; }
-    }
     if (e.key === "ArrowRight" || e.key === "PageDown" || (e.key === " " && !e.target.closest("button, a, label"))) { e.preventDefault(); go(cur + 1); }
     else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); go(cur - 1); }
     else if (e.key === "Home") go(0);
@@ -1927,75 +1843,8 @@ footer.contact a { color: var(--soft); }
   /* ---------- Plan months ---------- */
   (function () {
     var w = $("#g-weeks"), html = "";
-    for (var i = 1; i <= 8; i++) html += '<span' + (i === 2 ? ' class="mark"' : "") + ">" + (i === 2 ? "2 · Piloto" : i) + "</span>";
+    for (var i = 1; i <= 8; i++) html += '<span' + (i === 1 ? ' class="mark"' : "") + ">" + (i === 1 ? "1 · Todo" : i) + "</span>";
     w.innerHTML = html;
-  })();
-
-  /* ---------- Questionnaire ---------- */
-  (function () {
-    var form = $("#qform"), steps = $$("[data-step]", form), k = 0;
-    var bar = $("#qbar"), count = $("#qcount"), prevB = $("#q-prev"), nextB = $("#q-next"), sendB = $("#qsend"), msg = $("#qmsg");
-    steps.forEach(function () { bar.appendChild(document.createElement("i")); });
-    var marks = $$("i", bar);
-    function show(i) {
-      k = Math.max(0, Math.min(steps.length - 1, i));
-      steps.forEach(function (s, j) { s.classList.toggle("on", j === k); });
-      marks.forEach(function (m, j) { m.className = j < k ? "done" : (j === k ? "on" : ""); });
-      count.textContent = "Pregunta " + (k + 1) + " de " + steps.length;
-      prevB.style.visibility = k === 0 ? "hidden" : "visible";
-      var last = k === steps.length - 1;
-      nextB.hidden = last; sendB.hidden = !last;
-      msg.className = "qmsg";
-      msg.textContent = last ? "Al enviar, le llega una copia de sus respuestas a su correo." : "Responda lo que sepa hoy; puede dejar preguntas en blanco.";
-      var first = steps[k].querySelector("textarea, input[type=text]");
-      if (first && first.tagName === "TEXTAREA") setTimeout(function () { try { first.focus({ preventScroll: true }); } catch (e) {} }, 350);
-    }
-    form._show = show;
-    form._step = function () { return k; };
-    form._count = steps.length;
-    prevB.addEventListener("click", function () { show(k - 1); });
-    nextB.addEventListener("click", function () { show(k + 1); });
-    $$("input[type=radio]", form).forEach(function (r) {
-      r.addEventListener("change", function () {
-        var hasText = r.closest("[data-step]").querySelector("input[type=text]");
-        if (!hasText) setTimeout(function () { if (k < steps.length - 1) show(k + 1); }, 380);
-      });
-    });
-    hooks.quiz = { enter: function () {}, leave: function () {} };
-    show(0);
-
-    function collect() {
-      var out = [];
-      steps.forEach(function (s) {
-        var q = s.getAttribute("data-q");
-        var radio = s.querySelector("input[type=radio]:checked");
-        var checks = $$("input[type=checkbox]:checked", s).map(function (x) { return x.value; });
-        if (q && radio) out.push({ q: q, a: radio.value });
-        if (q && checks.length) out.push({ q: q, a: checks });
-        $$("textarea, input[type=text]", s).forEach(function (t) {
-          var v = t.value.trim();
-          if (v) out.push({ q: t.getAttribute("data-q") || q || "Respuesta", a: v });
-        });
-      });
-      return out;
-    }
-
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
-      var answers = collect();
-      if (!answers.length) { msg.className = "qmsg err"; msg.textContent = "Responda al menos una pregunta antes de enviar."; return; }
-      sendB.disabled = true; msg.className = "qmsg"; msg.textContent = "Enviando…";
-      fetch(location.pathname, { method: "POST", headers: { "Content-Type": "application/json" }, credentials: "same-origin", body: JSON.stringify({ action: "answers", interest: "yes", answers: answers }) })
-        .then(function (r) { return r.json().catch(function () { return { ok: false }; }); })
-        .then(function (d) {
-          sendB.disabled = false;
-          if (!d.ok) { msg.className = "qmsg err"; msg.textContent = d.error || "No pudimos enviar su información. Intente de nuevo."; return; }
-          form.style.display = "none"; bar.style.display = "none"; count.textContent = "Enviado";
-          $("#thanks").classList.add("show");
-          $("#thanks-text").textContent = "Recibimos su información. Con ella ajustamos su propuesta y le enviamos el contrato a su correo." + (d.copyTo ? " Ya le llegó una copia de sus respuestas a " + d.copyTo + "." : "");
-        })
-        .catch(function () { sendB.disabled = false; msg.className = "qmsg err"; msg.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
-    });
   })();
 
   /* ---------- Start ---------- */
