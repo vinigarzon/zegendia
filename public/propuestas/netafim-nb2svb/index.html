@@ -747,6 +747,45 @@ footer.contact a { color: var(--soft); }
   .cal i { background: rgba(255, 93, 85, .55) !important; }
   .lv-bar i { width: 100% !important; }
 }
+
+/* Hoy vs Cultiva Más 2.0 */
+.vs { padding: 10px 22px 14px; display: grid; }
+.vs-h, .vs-r { display: grid; grid-template-columns: 130px minmax(0, 1fr) minmax(0, 1.15fr); gap: 18px; align-items: center; }
+.vs-h { padding: 10px 0 8px; border-bottom: 1px solid var(--line); }
+.vs-h b { font-family: var(--display); font-size: 13px; letter-spacing: .14em; text-transform: uppercase; }
+.t-hoy { color: var(--coral); } .t-new { color: var(--green); }
+.vs-r { padding: 9px 0; border-bottom: 1px solid rgba(255, 255, 255, .06); opacity: 0; transform: translateX(-12px); }
+.vs-r:last-child { border-bottom: 0; }
+.slide.active .vs-r { animation: in .5s var(--ease) both; animation-delay: calc(var(--r) * 110ms + 450ms); }
+.vs-r .k { font-family: var(--display); font-weight: 700; font-size: 15px; }
+.vs-r p { font-size: 14.5px; line-height: 1.4; position: relative; padding-left: 24px; }
+.vs-r .hoy { color: var(--dim); }
+.vs-r .new { color: var(--text); }
+.vs-r .hoy::before { content: "×"; position: absolute; left: 0; top: -2px; color: var(--coral); font-weight: 700; font-size: 18px; }
+.vs-r .new::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--green); font-weight: 700; }
+/* Free + buyout */
+.free { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.buyout { margin-top: 6px; padding: 16px 18px; border-radius: 16px; display: grid; gap: 4px; border: 1px dashed rgba(132, 209, 74, .55); background: rgba(132, 209, 74, .08); }
+.buyout .k { font-family: var(--display); font-size: 12px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--green); }
+.buyout b { font-family: var(--display); font-size: clamp(30px, 3vw, 42px); line-height: 1.05; font-variant-numeric: tabular-nums; }
+.buyout > span:last-child { font-size: 14px; color: var(--soft); line-height: 1.45; }
+/* 7-day calendar */
+.wait-t.good { color: var(--green); }
+.cal.good i { border-color: rgba(132, 209, 74, .3); }
+.slide.active .cal.good i { animation-name: dayok; animation-delay: calc(var(--d) * 120ms + 3600ms); }
+@keyframes dayok { to { background: rgba(132, 209, 74, .55); border-color: rgba(132, 209, 74, .9); } }
+@media (max-width: 860px) {
+  .free { grid-template-columns: minmax(0, 1fr); }
+  .vs-h, .vs-r { grid-template-columns: 96px minmax(0, 1fr) minmax(0, 1fr); gap: 10px; }
+}
+@media (max-width: 560px) {
+  .vs-h { display: none; }
+  .vs-r { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vs-r { opacity: 1 !important; transform: none !important; }
+  .cal.good i { background: rgba(132, 209, 74, .55) !important; }
+}
 </style>
 </head>
 <body>
@@ -771,13 +810,13 @@ footer.contact a { color: var(--soft); }
     <div class="inner">
       <p class="eyebrow green" data-a style="--i:0">Propuesta confidencial · Noviembre 2026</p>
       <h1 class="title" data-a style="--i:1">Cultiva Más<br><span class="grad">que da gusto usar</span></h1>
-      <p class="lead" data-a style="--i:2">Un programa de Netafim pensado para el agricultor: premios que sirven en el campo, que se alcanzan en una campaña y que llegan rápido y seguros.</p>
+      <p class="lead" data-a style="--i:2">Un programa de Netafim pensado para el agricultor: premios que sirven en el campo, que se alcanzan en una campaña y que llegan en máximo una semana.</p>
       <p class="for" data-a style="--i:3" id="for-line">Preparado por Zegendia para <b>Netafim Perú</b></p>
       <div class="row" data-a style="--i:4">
         <button class="btn btn-primary" type="button" data-go="next">Comenzar
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </button>
-        <button class="btn btn-ghost" type="button" data-goto="oferta">Ver la oferta</button>
+        <button class="btn btn-ghost" type="button" data-goto="oferta">Ver la propuesta económica</button>
         <span class="scroll-cue"><i></i>Use las flechas del teclado o deslice</span>
       </div>
     </div>
@@ -870,6 +909,27 @@ footer.contact a { color: var(--soft); }
   </section>
 
   <!-- 6 -->
+  <section class="slide" data-title="Lo que resolvemos" aria-label="Cómo resolvemos cada problema del sistema actual">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:1000px">
+        <p class="eyebrow green" data-a style="--i:0">Lo que resolvemos</p>
+        <h2 class="title mid" data-a style="--i:1">Cada cosa que hoy duele, <span class="grad">resuelta.</span></h2>
+      </div>
+      <div class="vs card" data-a style="--i:2" role="table" aria-label="Hoy frente a Cultiva Más 2.0">
+        <div class="vs-h" role="row"><span role="columnheader"></span><b class="t-hoy" role="columnheader">Hoy</b><b class="t-new" role="columnheader">Cultiva Más 2.0</b></div>
+        <div class="vs-r" role="row" style="--r:0"><span class="k" role="rowheader">Entrega</span><p class="hoy" role="cell">15 días hábiles prometidos; hasta 40 en la práctica</p><p class="new" role="cell">Máximo 7 días, con la fecha a la vista al canjear y compensación si nos atrasamos</p></div>
+        <div class="vs-r" role="row" style="--r:1"><span class="k" role="rowheader">Stock</span><p class="hoy" role="cell">Faltantes y productos que se dejan de fabricar</p><p class="new" role="cell">Inventario propio; si algo se descontinúa, entregamos uno igual o mejor</p></div>
+        <div class="vs-r" role="row" style="--r:2"><span class="k" role="rowheader">Robos</span><p class="hoy" role="cell">Desconfianza en la entrega</p><p class="new" role="cell">Seguro en cada envío y entrega solo con el código del agricultor</p></div>
+        <div class="vs-r" role="row" style="--r:3"><span class="k" role="rowheader">Catálogo</span><p class="hoy" role="cell">1 de 59 premios es agrícola; el típico toma 2 años</p><p class="new" role="cell">Premios para el campo y para cada saldo, desde la primera compra</p></div>
+        <div class="vs-r" role="row" style="--r:4"><span class="k" role="rowheader">Experiencia</span><p class="hoy" role="cell">Pantallas en inglés y reclamos por correo</p><p class="new" role="cell">Todo en español, DNI y PIN, WhatsApp y canje en el mostrador</p></div>
+        <div class="vs-r" role="row" style="--r:5"><span class="k" role="rowheader">Puntos</span><p class="hoy" role="cell">Llegan tras el reporte del distribuidor y la regla no se ve</p><p class="new" role="cell">Puntos al día siguiente de la compra y la regla clara en pantalla</p></div>
+        <div class="vs-r" role="row" style="--r:6"><span class="k" role="rowheader">Control</span><p class="hoy" role="cell">La plataforma la opera la agencia</p><p class="new" role="cell">Plataforma de Netafim, datos exportables y opción de quedarse con todo</p></div>
+        <div class="vs-r" role="row" style="--r:7"><span class="k" role="rowheader">Crecimiento</span><p class="hoy" role="cell">Un programa para Perú</p><p class="new" role="cell">Bolivia, Chile y Argentina en la misma plataforma</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 -->
   <section class="slide" data-title="La propuesta" aria-label="La propuesta: Cultiva Más 2.0" data-scene="hub">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:960px">
@@ -915,13 +975,13 @@ footer.contact a { color: var(--soft); }
         <span class="chip"><b>Varios países</b> y monedas en la misma plataforma</span>
         <span class="chip"><b>Catálogo</b> para el campo y para la casa</span>
         <span class="chip"><b>Puntos</b> al día siguiente de la compra</span>
-        <span class="chip"><b>Entrega</b> con fecha comprometida</span>
+        <span class="chip"><b>Entrega</b> en máximo 7 días</span>
         <span class="chip"><b>Datos</b> siempre de Netafim</span>
       </div>
     </div>
   </section>
 
-  <!-- 7 -->
+  <!-- 8 -->
   <section class="slide" data-title="Pensado para el agricultor" aria-label="Pensado para el agricultor" data-scene="phone">
     <div class="inner split">
       <div style="display:grid;gap:20px">
@@ -957,7 +1017,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 8 -->
+  <!-- 9 -->
   <section class="slide" data-title="Así llega un premio" aria-label="Así llega un premio, de la compra a la chacra" data-scene="scene">
     <div class="inner">
       <div class="row" style="justify-content:space-between;align-items:flex-end;gap:18px">
@@ -987,7 +1047,7 @@ footer.contact a { color: var(--soft); }
           </div></div>
         </div>
         <div class="sc" data-c="var(--coral)">
-          <div class="cap"><b>4 · Lo preparamos</b><span>Stock propio, empaque y seguro.</span></div>
+          <div class="cap"><b>4 · Lo preparamos</b><span>Stock propio, empaque, seguro y fecha de entrega.</span></div>
           <div class="row row-flex" style="justify-content:center"><div class="box3d"><div class="b"></div><div class="t"></div><div class="tape"></div></div><div class="checks"><span>Producto verificado</span><span>Asegurado contra pérdida y robo</span><span>Fecha de entrega confirmada</span></div></div>
         </div>
         <div class="sc" data-c="var(--coral)">
@@ -998,7 +1058,7 @@ footer.contact a { color: var(--soft); }
           <div class="cap"><b>6 · Entregado</b><span>Confirmado con su código, y una pregunta: ¿cómo le fue?</span></div>
           <div style="display:grid;justify-items:center">
             <div class="done-ring"><svg viewBox="0 0 24 24" fill="none" stroke="#84d14a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-            <div class="invoice"><span>Entregado</span><b>en la fecha prometida</b><span>Confirmación</span><b>con código</b><span>Satisfacción</span><b>★★★★★</b></div>
+            <div class="invoice"><span>Entregado</span><b>en 5 días</b><span>Confirmación</span><b>con código</b><span>Satisfacción</span><b>★★★★★</b></div>
           </div>
         </div>
       </div>
@@ -1013,20 +1073,23 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 9 -->
+  <!-- 10 -->
   <section class="slide" data-title="Premios que sí llegan" aria-label="Premios que sí llegan">
     <div class="inner cov">
       <div class="card wait" data-a="left" style="--i:1">
         <p class="eyebrow">Hoy</p>
         <b class="wait-t">Hasta <span data-count="40">0</span> días esperando</b>
         <div class="cal" aria-hidden="true"><i style="--d:0"></i><i style="--d:1"></i><i style="--d:2"></i><i style="--d:3"></i><i style="--d:4"></i><i style="--d:5"></i><i style="--d:6"></i><i style="--d:7"></i><i style="--d:8"></i><i style="--d:9"></i><i style="--d:10"></i><i style="--d:11"></i><i style="--d:12"></i><i style="--d:13"></i><i style="--d:14"></i><i style="--d:15"></i><i style="--d:16"></i><i style="--d:17"></i><i style="--d:18"></i><i style="--d:19"></i><i style="--d:20"></i><i style="--d:21"></i><i style="--d:22"></i><i style="--d:23"></i><i style="--d:24"></i><i style="--d:25"></i><i style="--d:26"></i><i style="--d:27"></i><i style="--d:28"></i><i style="--d:29"></i><i style="--d:30"></i><i style="--d:31"></i><i style="--d:32"></i><i style="--d:33"></i><i style="--d:34"></i><i style="--d:35"></i><i style="--d:36"></i><i style="--d:37"></i><i style="--d:38"></i><i style="--d:39"></i></div>
-        <p class="small">Cada cuadro es un día. Así se vive un premio que no llega.</p>
+        <p class="eyebrow green" style="margin-top:6px">Con Zegendia</p>
+        <b class="wait-t good">Máximo <span data-count="7">0</span> días</b>
+        <div class="cal good" aria-hidden="true"><i style="--d:0"></i><i style="--d:1"></i><i style="--d:2"></i><i style="--d:3"></i><i style="--d:4"></i><i style="--d:5"></i><i style="--d:6"></i></div>
+        <p class="small">Cada cuadro es un día.</p>
       </div>
       <div style="display:grid;gap:20px">
         <p class="eyebrow green" data-a style="--i:0">Lo que asume Zegendia</p>
-        <h2 class="title mid" data-a style="--i:1">Si nos atrasamos, <span class="grad">pagamos nosotros.</span></h2>
+        <h2 class="title mid" data-a style="--i:1">Máximo 7 días. <span class="grad">Si nos atrasamos, pagamos nosotros.</span></h2>
         <div class="promises">
-          <div class="promise card" data-a style="--i:2;--c:var(--green)"><span class="k">Entrega</span><b>Fecha comprometida</b><span>El agricultor la ve al canjear. Si no cumplimos, recibe puntos de regalo a nuestro costo.</span></div>
+          <div class="promise card" data-a style="--i:2;--c:var(--green)"><span class="k">Entrega</span><b>Máximo 7 días</b><span>El agricultor ve la fecha al canjear. Si no cumplimos, recibe puntos de regalo a nuestro costo.</span></div>
           <div class="promise card" data-a style="--i:3;--c:var(--teal)"><span class="k">Stock</span><b>Sin faltantes</b><span>Inventario propio. Si un producto se deja de fabricar, entregamos uno igual o mejor.</span></div>
           <div class="promise card" data-a style="--i:4;--c:var(--coral)"><span class="k">Seguridad</span><b>Seguro contra robo</b><span>Cada envío va asegurado y se entrega solo con el código del agricultor.</span></div>
           <div class="promise card" data-a style="--i:5;--c:var(--violet)"><span class="k">Recojo</span><b>En su distribuidor</b><span>Elige la tienda de una lista, no escribe direcciones. Y ahí también puede canjear.</span></div>
@@ -1037,7 +1100,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 10 -->
+  <!-- 11 -->
   <section class="slide" data-title="Un catálogo que le habla al agricultor" aria-label="Un catálogo que le habla al agricultor">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:1000px">
@@ -1048,13 +1111,13 @@ footer.contact a { color: var(--soft); }
         <div class="shelf card" data-a style="--i:2;--c:var(--green)"><span class="k">Para el campo</span><b>Productos Netafim</b><ul><li>Repuestos, goteros y filtros</li><li>Cintas y kits de riego</li><li>Herramientas y fumigadoras</li><li>Ropa y equipo de protección</li></ul></div>
         <div class="shelf card" data-a style="--i:3;--c:var(--teal)"><span class="k">Servicios</span><b>Saber que rinde</b><ul><li>Visita de un agrónomo de Netafim</li><li>Análisis de agua y de suelo</li><li>Diseño o revisión de su riego</li><li>Capacitaciones con certificado</li></ul></div>
         <div class="shelf card" data-a style="--i:4;--c:var(--coral)"><span class="k">Para la casa</span><b>Lo que la familia pide</b><ul><li>Cocina y electrohogar</li><li>Celulares y televisores</li><li>Útiles para el colegio</li><li>Premios desde pocos puntos</li></ul></div>
-        <div class="shelf card" data-a style="--i:5;--c:var(--violet)"><span class="k">Vales</span><b>Al instante</b><ul><li>Combustible en varios grifos</li><li>Recargas de celular</li><li>Vales de compra</li><li>Llegan al celular, no por correo</li></ul></div>
+        <div class="shelf card" data-a style="--i:5;--c:var(--violet)"><span class="k">Vales</span><b>Con sus proveedores</b><ul><li>Combustible, como hoy</li><li>Recargas de celular</li><li>Vales de compra</li><li>En la misma plataforma y el mismo saldo</li></ul></div>
       </div>
       <div class="deal card" data-a style="--i:6"><span class="seal" aria-hidden="true"></span><p>Cuando el agricultor canjea <em>productos y servicios Netafim</em>, los puntos vuelven como ventas y el programa se paga solo.</p></div>
     </div>
   </section>
 
-  <!-- 11 -->
+  <!-- 12 -->
   <section class="slide" data-title="Más compras, más seguido" aria-label="Más compras, más seguido">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:1000px">
@@ -1076,7 +1139,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 12 -->
+  <!-- 13 -->
   <section class="slide" data-title="Cada uno en la misma herramienta" aria-label="Cada uno en la misma herramienta" data-scene="roles">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:900px">
@@ -1116,30 +1179,41 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 13 -->
-  <section class="slide" data-title="Sin amarres" aria-label="Sin amarres: su programa, sus datos, su marca">
+  <!-- 14 -->
+  <section class="slide" id="libres" data-title="Libres en la tecnología" aria-label="Libres en la tecnología, aliados en los premios">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:1000px">
         <p class="eyebrow green" data-a style="--i:0">Sin amarres</p>
-        <h2 class="title mid" data-a style="--i:1">Su programa. Sus datos. Su marca. <span class="grad">Y listo para la región.</span></h2>
+        <h2 class="title mid" data-a style="--i:1">Libres en la tecnología. <span class="grad">Aliados en los premios.</span></h2>
       </div>
-      <div class="own">
-        <div class="promise card" data-a style="--i:2;--c:var(--green)"><span class="k">Datos</span><b>De Netafim, siempre</b><span>Agricultores, compras y canjes se exportan cuando Netafim quiera.</span></div>
-        <div class="promise card" data-a style="--i:3;--c:var(--teal)"><span class="k">Marca</span><b>Cultiva Más, no la nuestra</b><span>El agricultor ve a Netafim. Nosotros trabajamos detrás.</span></div>
-        <div class="promise card" data-a style="--i:4;--c:var(--coral)"><span class="k">Catálogo abierto</span><b>Sumen sus proveedores</b><span>Netafim puede cargar sus productos y los de otros aliados.</span></div>
-        <div class="promise card" data-a style="--i:5;--c:var(--violet)"><span class="k">Su equipo</span><b>Camino a su propia unidad</b><span>Si deciden operar el programa por dentro, les transferimos procesos y conocimiento.</span></div>
+      <div class="free">
+        <div class="win card" data-a="left" style="--i:2;--c:var(--green)"><h3>La plataforma es de Netafim</h3><ul>
+          <li>Su marca: el agricultor ve Cultiva Más, no a Zegendia</li>
+          <li>Sus datos: agricultores, compras y canjes, exportables cuando quieran</li>
+          <li>Catálogo abierto: pueden sumar sus productos y otros proveedores</li>
+          <li>Sin permanencia en la plataforma</li>
+        </ul>
+          <div class="buyout"><span class="k">Si mañana quieren operarlo ustedes</span><b>US$ <span data-count="15000">0</span></b><span>y se quedan con todo: la plataforma instalada en su nube, sus datos, los procesos y la capacitación de su equipo.</span></div>
+        </div>
+        <div class="win card" data-a="right" style="--i:3;--c:var(--coral)"><h3>Los premios, con Zegendia</h3><ul>
+          <li>Por 36 meses, somos el proveedor del merch del programa: lo compramos, lo guardamos y lo entregamos</li>
+          <li>Entrega en máximo 7 días, con seguro y código de entrega</li>
+          <li>Precio garantizado por 6 meses, con todo incluido</li>
+          <li>Solo se factura lo entregado, con su guía</li>
+          <li>Si no cumplimos lo prometido, pueden salirse</li>
+        </ul></div>
       </div>
-      <div class="countries card" data-a style="--i:6">
+      <div class="countries card" data-a style="--i:4">
         <div class="ct on"><b>PE</b><span>Perú</span><small>Hoy</small></div>
         <div class="ct"><b>BO</b><span>Bolivia</span><small>Siguiente</small></div>
         <div class="ct"><b>CL</b><span>Chile</span><small>Siguiente</small></div>
         <div class="ct"><b>AR</b><span>Argentina</span><small>Después</small></div>
-        <p>La misma plataforma con otra moneda, otro catálogo y otras reglas. <b>Sin costo de licencia adicional.</b></p>
+        <p>La misma plataforma, con otra moneda y otro catálogo. Cada país nuevo: implementación de <b>US$ 2,400</b> y su propia tabla de fee.</p>
       </div>
     </div>
   </section>
 
-  <!-- 14 -->
+  <!-- 15 -->
   <section class="slide" id="demo1" data-title="Demo 1 · Oh My Rewards" aria-label="Demo 1: Oh My Rewards" data-scene="carousel">
     <div class="inner demo">
       <div>
@@ -1169,7 +1243,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 15 -->
+  <!-- 16 -->
   <section class="slide" id="demo2" data-title="Demo 2 · Club Santa Lucía" aria-label="Demo 2: Club Santa Lucía" data-scene="carousel">
     <div class="inner demo">
       <div>
@@ -1202,7 +1276,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 16 -->
+  <!-- 17 -->
   <section class="slide" data-title="Experiencia" aria-label="Experiencia de Zegendia">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:900px">
@@ -1220,26 +1294,81 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 17 -->
-  <section class="slide" id="oferta" data-title="La oferta" aria-label="La oferta de Zegendia para Netafim">
+  <!-- 18 -->
+  <section class="slide" id="oferta" data-title="Propuesta económica" aria-label="Propuesta económica">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:1000px">
-        <p class="eyebrow" data-a style="--i:0">La oferta</p>
-        <h2 class="title mid" data-a style="--i:1">Todo el riesgo de cambiar, <span class="grad">lo asumimos nosotros.</span></h2>
+        <p class="eyebrow" data-a style="--i:0">Propuesta económica</p>
+        <h2 class="title mid" data-a style="--i:1">Tres piezas. <span class="grad">Un solo responsable.</span></h2>
       </div>
-      <div class="offer6">
-        <div class="of card" data-a style="--i:2;--c:var(--green)"><span class="k">Plataforma</span><b class="num">S/ 0</b><strong>De licencia</strong><span>Netafim paga por cada premio entregado, a precio garantizado. No por software.</span></div>
-        <div class="of card" data-a style="--i:3;--c:var(--teal)"><span class="k">Migración</span><b class="num">S/ 0</b><strong>Ni un punto perdido</strong><span>Pasamos agricultores, saldos e historial. El agricultor solo entra con su DNI.</span></div>
-        <div class="of card" data-a style="--i:4;--c:var(--coral)"><span class="k">Piloto</span><b class="num"><span data-count="90">0</span><small>días</small></b><strong>En una ciudad</strong><span>Al lado de la operación actual. Si no mejora entregas y satisfacción, no siguen.</span></div>
-        <div class="of card" data-a style="--i:5;--c:var(--violet)"><span class="k">Garantía</span><b class="num">100%</b><strong>De cada entrega</strong><span>Fecha comprometida, seguro contra robo y puntos de regalo si nos atrasamos.</span></div>
-        <div class="of card" data-a style="--i:6;--c:var(--green)"><span class="k">Lanzamiento</span><b class="num"><span data-count="30">0</span><small>días</small></b><strong>Con su marca</strong><span>La plataforma lista para el piloto, con el catálogo para el campo.</span></div>
-        <div class="of card" data-a style="--i:7;--c:var(--teal)"><span class="k">Región</span><b class="num">S/ 0</b><strong>Por país adicional</strong><span>Bolivia, Chile y Argentina sin costo de licencia adicional.</span></div>
+      <div class="offer">
+        <div class="of card" data-a style="--i:2;--c:var(--green)"><span class="k">Implementación</span><b class="num"><small>US$</small> <span data-count="2900">0</span></b><strong>Un solo pago al firmar</strong><span>Su marca, la migración de agricultores y saldos, WhatsApp y la capacitación a distribuidores. Lista en 30 días.</span></div>
+        <div class="of card" data-a style="--i:3;--c:var(--teal)"><span class="k">Plataforma</span><b class="num"><small>US$</small> <span data-count="590">0</span><small>/mes</small></b><strong>Y baja hasta US$ 0</strong><span>Alojamiento, soporte y mejoras. Mientras más merch entregamos, menos paga Netafim.</span></div>
+        <div class="of card" data-a style="--i:4;--c:var(--coral)"><span class="k">Premios</span><b class="num"><span data-count="7">0</span><small>días</small></b><strong>Precio garantizado 6 meses</strong><span>Todo incluido: producto, flete, seguro e impuestos. Solo se factura lo entregado.</span></div>
       </div>
-      <p class="small" data-a style="--i:8">Los valores de cada premio y del servicio van en la propuesta económica, que armamos con la información de las siguientes pantallas.</p>
+      <div class="chips" data-a style="--i:5">
+        <span class="chip"><b>Piloto de 90 días</b> en una ciudad</span>
+        <span class="chip"><b>Migración</b> incluida</span>
+        <span class="chip"><b>Compensación</b> si nos atrasamos</span>
+        <span class="chip"><b>Opción de traspaso</b> de toda la plataforma</span>
+        <span class="chip">Valores en USD, <b>más impuestos</b></span>
+      </div>
+      <div class="deal card" data-a style="--i:6"><span class="seal" aria-hidden="true"></span><p>Una plataforma así normalmente cuesta mucho más. Aquí Netafim paga <em>una implementación pequeña y un fee que baja hasta cero</em>; nuestro negocio son los premios bien entregados.</p></div>
     </div>
   </section>
 
-  <!-- 18 -->
+  <!-- 19 -->
+  <section class="slide" data-title="Fee de plataforma" aria-label="Fee de plataforma según el merch entregado" data-scene="fee">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:980px">
+        <p class="eyebrow green" data-a style="--i:0">Fee de plataforma</p>
+        <h2 class="title mid" data-a style="--i:1">Un fee que baja con los premios <span class="grad">y llega a cero.</span></h2>
+      </div>
+      <div class="fee">
+        <div class="card stairs-card" data-a="left" style="--i:2">
+          <div class="stairs" id="stairs" role="group" aria-label="Fee mensual por tramo de merch entregado">
+            <button type="button" class="st" style="--h:100%;--i:0" data-fee="1500"><span class="val">$590</span><span class="sbar"></span><span class="rng">Menos de US$ 3 mil</span></button>
+            <button type="button" class="st" style="--h:66%;--i:1" data-fee="4500"><span class="val">$390</span><span class="sbar"></span><span class="rng">US$ 3 a 6 mil</span></button>
+            <button type="button" class="st" style="--h:32%;--i:2" data-fee="8000"><span class="val">$190</span><span class="sbar"></span><span class="rng">US$ 6 a 10 mil</span></button>
+            <button type="button" class="st zero" style="--h:3%;--i:3" data-fee="12000"><span class="val">$0</span><span class="sbar"></span><span class="rng">US$ 10 mil o más</span></button>
+          </div>
+          <p class="small">Fee mensual en USD, más impuestos, según el valor del merch entregado en el mes en todo el programa.</p>
+        </div>
+        <div class="card feecalc" id="feecalc" data-a="right" style="--i:3">
+          <div class="sl"><label for="fee-r">Merch entregado en el mes <output id="fee-n">US$ 3,500</output></label><input type="range" id="fee-r" min="0" max="15000" step="100" value="3500"></div>
+          <div aria-live="polite"><span class="lab">Fee de plataforma</span><div class="big" id="fee-v">$390</div><span class="soft">al mes</span></div>
+          <p class="soft" style="font-size:15px">Cuenta el merch que entrega Zegendia. Los vales de combustible y los productos Netafim se integran a la plataforma con sus proveedores actuales.</p>
+        </div>
+      </div>
+      <p class="small" data-a style="--i:4">El fee corre desde la entrega de la plataforma, a los 30 días de la firma.</p>
+    </div>
+  </section>
+
+  <!-- 20 -->
+  <section class="slide" data-title="Facturación mensual" aria-label="Facturación mensual">
+    <div class="inner">
+      <div style="display:grid;gap:14px;max-width:980px">
+        <p class="eyebrow teal" data-a style="--i:0">Facturación</p>
+        <h2 class="title mid" data-a style="--i:1">Cada mes, <span class="grad">el mismo ritmo.</span></h2>
+      </div>
+      <div class="cycle card" data-a="zoom" style="--i:2">
+        <div class="cline" aria-hidden="true"><i></i></div>
+        <ol class="csteps">
+          <li style="--c:var(--violet);--d:0s"><span class="cdot"></span><span class="k">Todo el mes</span><b>Canjes y entregas</b><span>Cada premio en máximo 7 días.</span></li>
+          <li style="--c:var(--teal);--d:2s"><span class="cdot"></span><span class="k">Día 30</span><b>Cierre del mes</b><span>Conciliamos lo entregado en todas las ciudades.</span></li>
+          <li style="--c:var(--green);--d:4s"><span class="cdot"></span><span class="k">Factura</span><b>Merch y fee</b><span>Una sola factura, respaldada con cada guía.</span></li>
+          <li style="--c:var(--coral);--d:6s"><span class="cdot"></span><span class="k">Máximo 5 días</span><b>Pago</b><span>Y así, todos los meses.</span></li>
+        </ol>
+      </div>
+      <div class="promises three">
+        <div class="promise card" data-a style="--i:3;--c:var(--coral)"><span class="k">Implementación</span><b>Pago único</b><span>Se paga al firmar el contrato y arrancamos.</span></div>
+        <div class="promise card" data-a style="--i:4;--c:var(--teal)"><span class="k">Respaldo</span><b>Solo lo entregado</b><span>Se factura el merch que llegó a cada agricultor, con su guía.</span></div>
+        <div class="promise card" data-a style="--i:5;--c:var(--green)"><span class="k">Rotación</span><b>Pago puntual, stock y precio</b><span>El pago a tiempo sostiene el inventario y los precios garantizados. Si una factura vence, pausamos los pedidos nuevos hasta regularizarla.</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 21 -->
   <section class="slide" data-title="Simulador para Netafim" aria-label="Simulador de ventas adicionales para Netafim">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:960px">
@@ -1263,7 +1392,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 19 -->
+  <!-- 22 -->
   <section class="slide" data-title="Plan" aria-label="Plan de lanzamiento">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:980px">
@@ -1279,22 +1408,22 @@ footer.contact a { color: var(--soft); }
         <div class="g-row" role="row" style="--s:5;--e:7;--c:var(--green);--i:4"><span class="g-lab" role="cell"><b>Las cuatro ciudades</b><small>Meses 5 y 6 · todo el programa en Perú</small></span><div class="g-track" aria-hidden="true"><i></i></div></div>
         <div class="g-row" role="row" style="--s:7;--e:9;--c:var(--teal);--i:5"><span class="g-lab" role="cell"><b>Bolivia, Chile y Argentina</b><small>Desde el mes 7 · cuando Netafim lo decida</small></span><div class="g-track" aria-hidden="true"><i class="open"></i></div></div>
       </div>
-      <p class="small" data-a style="--i:3">Plazos desde la firma. La operación actual sigue en paralelo hasta que Netafim apruebe el cambio.</p>
+      <p class="small" data-a style="--i:3">Plazos desde la firma. Entregas en máximo 7 días desde el primer canje del piloto. La operación actual sigue en paralelo hasta que Netafim apruebe el cambio.</p>
     </div>
   </section>
 
-  <!-- 20 -->
+  <!-- 23 -->
   <section class="slide" data-title="Siguiente paso" aria-label="Siguiente paso">
     <div class="inner">
       <div style="display:grid;gap:14px;max-width:980px">
         <p class="eyebrow" data-a style="--i:0">Siguiente paso</p>
-        <h2 class="title" data-a style="--i:1;font-size:clamp(36px,5vw,72px)">Denos esta información y <span class="grad">le tenemos lista su propuesta.</span></h2>
-        <p class="lead" data-a style="--i:2">Ocho preguntas, unos cinco minutos. Con sus respuestas armamos la propuesta económica a la medida de Netafim, lista para su evaluación.</p>
+        <h2 class="title" data-a style="--i:1;font-size:clamp(36px,5vw,72px)">Denos esta información y <span class="grad">arrancamos.</span></h2>
+        <p class="lead" data-a style="--i:2">Ocho preguntas, unos cinco minutos. Con sus respuestas ajustamos catálogo, tramos y plan a la medida de Netafim, y le enviamos el contrato.</p>
       </div>
       <div class="path">
         <div class="card" data-a style="--i:3;--c:var(--violet)"><b>Usted nos envía la información</b><span>Responde las preguntas en la siguiente pantalla.</span></div>
-        <div class="card" data-a style="--i:4;--c:var(--teal)"><b>Diseñamos su Cultiva Más 2.0</b><span>Sobre sus distribuidores, su catálogo y sus sistemas.</span></div>
-        <div class="card" data-a style="--i:5;--c:var(--green)"><b>Le enviamos la propuesta</b><span>Valores, garantías, plan y piloto.</span></div>
+        <div class="card" data-a style="--i:4;--c:var(--teal)"><b>Ajustamos la propuesta</b><span>Sobre sus distribuidores, su catálogo y sus sistemas.</span></div>
+        <div class="card" data-a style="--i:5;--c:var(--green)"><b>Firmamos</b><span>Contrato y pago de la implementación.</span></div>
         <div class="card" data-a style="--i:6;--c:var(--coral)"><b>Arrancamos el piloto</b><span>En 30 días, en la ciudad que Netafim elija.</span></div>
       </div>
       <div class="row" data-a style="--i:7">
@@ -1305,7 +1434,7 @@ footer.contact a { color: var(--soft); }
     </div>
   </section>
 
-  <!-- 21 -->
+  <!-- 24 -->
   <section class="slide s-quiz" data-title="Información para su propuesta" aria-label="Información para su propuesta económica" data-scene="quiz">
     <div class="inner">
       <div class="quiz-head" data-a style="--i:0">
@@ -1379,8 +1508,8 @@ footer.contact a { color: var(--soft); }
       </form>
       <div class="thanks card" id="thanks" role="status">
         <div class="done-ring"><svg viewBox="0 0 24 24" fill="none" stroke="#84d14a" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
-        <h2 class="title mid">Gracias. Ya estamos armando su propuesta.</h2>
-        <p class="lead" id="thanks-text" style="text-align:center">Recibimos su información. Con ella preparamos su propuesta económica y se la enviamos a su correo.</p>
+        <h2 class="title mid">Gracias. Ya estamos ajustando su propuesta.</h2>
+        <p class="lead" id="thanks-text" style="text-align:center">Recibimos su información. Con ella ajustamos su propuesta y le enviamos el contrato a su correo.</p>
       </div>
       <footer class="contact" data-a style="--i:2">
         <span>Marco Garzón · Zegendia · <a href="https://www.zegendia.com" target="_blank" rel="noopener">www.zegendia.com</a> · info@zegendia.com</span>
@@ -1388,6 +1517,7 @@ footer.contact a { color: var(--soft); }
       </footer>
     </div>
   </section>
+
 
 </main>
 
@@ -1745,6 +1875,23 @@ footer.contact a { color: var(--soft); }
     };
   })();
 
+  /* ---------- Fee ---------- */
+  (function () {
+    var r = $("#fee-r"), cols = $$("#stairs .st"), box = $("#feecalc");
+    var tiers = [[3000, 590], [6000, 390], [10000, 190], [Infinity, 0]];
+    function calc() {
+      var n = +r.value, i = 0;
+      while (n >= tiers[i][0]) i += 1;
+      $("#fee-n").textContent = "US$ " + fmt(n);
+      $("#fee-v").textContent = "$" + fmt(tiers[i][1]);
+      cols.forEach(function (c, j) { c.classList.toggle("on", j === i); c.setAttribute("aria-pressed", String(j === i)); });
+      box.classList.toggle("is-zero", tiers[i][1] === 0);
+    }
+    r.addEventListener("input", calc);
+    cols.forEach(function (c) { c.addEventListener("click", function () { r.value = c.getAttribute("data-fee"); calc(); }); });
+    calc();
+  })();
+
   /* ---------- Simulator ---------- */
   (function () {
     var rf = $("#r-farm"), rs = $("#r-spend"), rl = $("#r-lift");
@@ -1838,7 +1985,7 @@ footer.contact a { color: var(--soft); }
           if (!d.ok) { msg.className = "qmsg err"; msg.textContent = d.error || "No pudimos enviar su información. Intente de nuevo."; return; }
           form.style.display = "none"; bar.style.display = "none"; count.textContent = "Enviado";
           $("#thanks").classList.add("show");
-          $("#thanks-text").textContent = "Recibimos su información. Con ella preparamos su propuesta económica y se la enviamos a su correo." + (d.copyTo ? " Ya le llegó una copia de sus respuestas a " + d.copyTo + "." : "");
+          $("#thanks-text").textContent = "Recibimos su información. Con ella ajustamos su propuesta y le enviamos el contrato a su correo." + (d.copyTo ? " Ya le llegó una copia de sus respuestas a " + d.copyTo + "." : "");
         })
         .catch(function () { sendB.disabled = false; msg.className = "qmsg err"; msg.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
     });
