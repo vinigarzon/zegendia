@@ -97,6 +97,7 @@ const PROPOSALS: Record<string, Proposal> = {
     locale: "en-US",
     timeZone: "America/Chicago",
     timeZoneLabel: "US Central Time",
+    loiVersion: "LOI-rarelatch-2026-11-v1",
     accesses: [
       {
         role: "client",
@@ -307,6 +308,57 @@ const LOI_CLAUSES: Array<[string, string]> = [
   ["Naturaleza de esta carta.", "Con esta carta, las partes aceptan las condiciones iniciales de la alianza y se comprometen a firmar el contrato definitivo con estas condiciones dentro de los 15 días siguientes a su aceptación. El contrato definirá el detalle operativo, la ley aplicable y la jurisdicción. La confidencialidad se rige por el acuerdo ya aceptado."]
 ];
 // LOI:END
+
+// One letter of intent per proposal that has one (proposals with loiVersion).
+type Loi = {
+  clauses: Array<[string, string]>;
+  // Next step shown in the client's copy.
+  done: string;
+  // Label of the company tax ID in the parties table.
+  idLabel: string;
+  intro: string;
+  // Short name of the client company inside the letter.
+  party: string;
+  title: string;
+  zegendia: string;
+};
+
+const LOI_BMTOURS: Loi = {
+  title: LOI_TITLE,
+  zegendia: LOI_ZEGENDIA,
+  party: "bmtours",
+  idLabel: "RUC",
+  intro: LOI_INTRO,
+  clauses: LOI_CLAUSES,
+  done: "El siguiente paso es el contrato definitivo con estas condiciones. Se lo enviaremos para firma."
+};
+
+// RareLatch letter of intent, in English. Keep identical to public/propuestas/rarelatch-7han9c/index.html.
+// LOI-RARELATCH:BEGIN
+const LOI_RARELATCH: Loi = {
+  title: "Letter of intent",
+  zegendia: "GADAMAX LLC, operating the Zegendia brand",
+  party: "RareLatch",
+  idLabel: "Tax ID",
+  intro: "GADAMAX LLC, operating the Zegendia brand (Zegendia), and the company whose details appear in this letter (RareLatch) record their intention to work together on rewards fulfillment for RareLatch on the following terms:",
+  clauses: [
+    ["Purpose.", "Zegendia will be RareLatch's provider of physical rewards in Mexico and Brazil through Oh My Rewards: catalog by API, purchase in each country, delivery to each winner, status updates by webhook and a monthly statement."],
+    ["Scope.", "Consumer products from Zegendia's catalog, such as electronics accessories, audio, wearables, gaming, smart home and small appliances, with values from USD 10 to 200 per item. Trading cards and collectibles are not included."],
+    ["What Zegendia delivers.", "Within 10 business days after this letter is accepted, Zegendia will meet with RareLatch and deliver the catalog for Mexico and Brazil, the commercial proposal with fees, minimum top-up and delivery times per country, the API documentation with sandbox access, and the draft service agreement."],
+    ["Commercial model.", "RareLatch will pay through a prepaid balance. Each order has one all-in price that covers the product, local taxes and delivery to the winner, and is deducted from the balance when the order is placed. RareLatch does not buy or hold inventory."],
+    ["Launch.", "RareLatch intends to launch the delivery of physical rewards in Mexico and Brazil with Zegendia, and to add Colombia, Chile, Peru and Argentina on the same terms as it expands."],
+    ["RareLatch's commitments.", "RareLatch will provide complete shipping data for each winner, including the tax ID couriers require (CPF in Brazil), keep its balance funded, and operate its platform in each market in compliance with local law, including any licenses that apply."],
+    ["Definitive agreement.", "The parties will negotiate in good faith and aim to sign the definitive agreement within 30 days after this letter is accepted, in time for RareLatch's launch in the first quarter of 2027. The agreement will set the operational detail, governing law and jurisdiction."],
+    ["Nature of this letter.", "This letter records the shared intention of the parties. It does not oblige either party to make a payment or a purchase before the definitive agreement is signed. Confidentiality is governed by the agreement already accepted."]
+  ],
+  done: "Next, we will schedule our meeting to share the catalog, the commercial proposal and the draft agreement."
+};
+// LOI-RARELATCH:END
+
+const LOIS: Record<string, Loi> = {
+  "bmtours-zb6nok": LOI_BMTOURS,
+  "rarelatch-7han9c": LOI_RARELATCH
+};
 
 const verifiedCache = new Map<string, Access>();
 const attempts = new Map<string, { count: number; resetAt: number }>();
@@ -843,51 +895,90 @@ async function handleAnswers(request: Request, body: Record<string, unknown>, ip
 
 const EMAIL_PATTERN = /^[^\s@<>"',;]+@[^\s@<>"',;]+\.[a-z]{2,}$/i;
 
-const LOI_FIELDS: Array<{ key: string; label: string; max: number; min: number; pattern?: RegExp }> = [
-  { key: "razonSocial", label: "Razón social", max: 160, min: 2 },
-  { key: "ruc", label: "RUC", max: 30, min: 5, pattern: /^[0-9A-Za-z.\- ]{5,30}$/ },
-  { key: "direccion", label: "Dirección", max: 200, min: 5 },
-  { key: "ciudad", label: "Ciudad", max: 80, min: 2 },
-  { key: "pais", label: "País", max: 60, min: 2 },
-  { key: "firmante", label: "Firmante", max: 120, min: 3 },
-  { key: "cargo", label: "Cargo", max: 100, min: 2 },
-  { key: "correo", label: "Correo", max: 160, min: 6, pattern: EMAIL_PATTERN },
-  { key: "telefono", label: "Teléfono", max: 40, min: 6, pattern: /^[0-9+().\- ]{6,40}$/ }
+const LOI_FIELDS: Array<{ key: string; label: string; labelEn: string; max: number; min: number; pattern?: RegExp }> = [
+  { key: "razonSocial", label: "Razón social", labelEn: "Legal company name", max: 160, min: 2 },
+  { key: "ruc", label: "RUC", labelEn: "Tax ID", max: 30, min: 5, pattern: /^[0-9A-Za-z.\- ]{5,30}$/ },
+  { key: "direccion", label: "Dirección", labelEn: "Address", max: 200, min: 5 },
+  { key: "ciudad", label: "Ciudad", labelEn: "City", max: 80, min: 2 },
+  { key: "pais", label: "País", labelEn: "Country", max: 60, min: 2 },
+  { key: "firmante", label: "Firmante", labelEn: "Name of the person accepting", max: 120, min: 3 },
+  { key: "cargo", label: "Cargo", labelEn: "Title", max: 100, min: 2 },
+  { key: "correo", label: "Correo", labelEn: "Email", max: 160, min: 6, pattern: EMAIL_PATTERN },
+  { key: "telefono", label: "Teléfono", labelEn: "Phone", max: 40, min: 6, pattern: /^[0-9+().\- ]{6,40}$/ }
 ];
 
-function loiText() {
-  return [LOI_INTRO, ...LOI_CLAUSES.map(([t, d]) => `${t} ${d}`)].join("\n");
+// What the client reads about the letter: errors and the copy we email. Notices to Zegendia stay in Spanish.
+const LOI_TEXT = {
+  es: {
+    accepts: "Acepta por",
+    available: "La propuesta sigue disponible en este enlace, con el mismo código de acceso:",
+    bothBoxes: "Para aceptar, marque las dos casillas.",
+    checkField: "Revise el campo «{field}».",
+    closing: "Saludos cordiales,",
+    expired: "Su sesión venció. Recargue la página e ingrese su código.",
+    fail: "No pudimos registrar su aceptación. Intente de nuevo en un momento.",
+    fingerprint: "Huella del texto (SHA-256)",
+    hello: "Hola",
+    intro: "Gracias por aceptar la carta de intención. Como respaldo, le enviamos una copia con los datos de su empresa, la fecha y la hora.",
+    noLoi: "Esta propuesta no tiene carta de intención.",
+    acceptedOn: "Fecha de aceptación",
+    subject: "Copia de su carta de intención con Zegendia",
+    version: "Versión"
+  },
+  en: {
+    accepts: "Accepted for",
+    available: "The proposal remains available at this link, with the same access code:",
+    bothBoxes: "To accept, tick both boxes.",
+    checkField: "Check the field \"{field}\".",
+    closing: "Best regards,",
+    expired: "Your session expired. Reload the page and enter your code.",
+    fail: "We could not record your acceptance. Please try again in a moment.",
+    fingerprint: "Text fingerprint (SHA-256)",
+    hello: "Hello",
+    intro: "Thank you for accepting the letter of intent. For your records, here is a copy with your company details, the date and the time.",
+    noLoi: "This proposal has no letter of intent.",
+    acceptedOn: "Accepted on",
+    subject: "Copy of your letter of intent with Zegendia",
+    version: "Version"
+  }
+};
+
+function loiText(loi: Loi) {
+  return [loi.intro, ...loi.clauses.map(([t, d]) => `${t} ${d}`)].join("\n");
 }
 
 async function sha256Hex(text: string) {
   return bytesToHex(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(text)));
 }
 
-function loiHtml() {
-  const items = LOI_CLAUSES.map(
+function loiHtml(loi: Loi) {
+  const items = loi.clauses.map(
     ([title, text]) => `<li style="margin:0 0 10px;"><strong style="color:#432851;">${escapeHtml(title)}</strong> ${escapeHtml(text)}</li>`
   ).join("");
-  return `<div style="margin:20px 0;padding:18px 20px;border:1px solid #e3dde9;border-radius:12px;background:#f6f4f8;"><div style="font-size:16px;font-weight:700;color:#432851;margin:0 0 8px;">${escapeHtml(LOI_TITLE)}</div><p style="margin:0 0 10px;line-height:1.6;">${escapeHtml(LOI_INTRO)}</p><ol style="margin:0;padding-left:20px;line-height:1.6;">${items}</ol></div>`;
+  return `<div style="margin:20px 0;padding:18px 20px;border:1px solid #e3dde9;border-radius:12px;background:#f6f4f8;"><div style="font-size:16px;font-weight:700;color:#432851;margin:0 0 8px;">${escapeHtml(loi.title)}</div><p style="margin:0 0 10px;line-height:1.6;">${escapeHtml(loi.intro)}</p><ol style="margin:0;padding-left:20px;line-height:1.6;">${items}</ol></div>`;
 }
 
-function partiesHtml(v: Record<string, string>) {
+function partiesHtml(v: Record<string, string>, loi: Loi, lang: Lang) {
   const cell = "padding:8px 14px 8px 0;vertical-align:top;border-bottom:1px solid #eee;";
   return `<table style="border-collapse:collapse;font-size:14px;width:100%;margin:0 0 6px;">
-    <tr><td style="${cell}color:#432851;font-weight:700;width:34%;">Zegendia</td><td style="${cell}">${escapeHtml(LOI_ZEGENDIA)}</td></tr>
-    <tr><td style="${cell}color:#432851;font-weight:700;">bmtours</td><td style="${cell}">${escapeHtml(v.razonSocial)}<br />RUC ${escapeHtml(v.ruc)}<br />${escapeHtml(v.direccion)}, ${escapeHtml(v.ciudad)}, ${escapeHtml(v.pais)}</td></tr>
-    <tr><td style="${cell}color:#432851;font-weight:700;">Acepta por bmtours</td><td style="${cell}">${escapeHtml(v.firmante)}, ${escapeHtml(v.cargo)}<br />${escapeHtml(v.correo)} · ${escapeHtml(v.telefono)}</td></tr>
+    <tr><td style="${cell}color:#432851;font-weight:700;width:34%;">Zegendia</td><td style="${cell}">${escapeHtml(loi.zegendia)}</td></tr>
+    <tr><td style="${cell}color:#432851;font-weight:700;">${escapeHtml(loi.party)}</td><td style="${cell}">${escapeHtml(v.razonSocial)}<br />${escapeHtml(loi.idLabel)} ${escapeHtml(v.ruc)}<br />${escapeHtml(v.direccion)}, ${escapeHtml(v.ciudad)}, ${escapeHtml(v.pais)}</td></tr>
+    <tr><td style="${cell}color:#432851;font-weight:700;">${escapeHtml(LOI_TEXT[lang].accepts)} ${escapeHtml(loi.party)}</td><td style="${cell}">${escapeHtml(v.firmante)}, ${escapeHtml(v.cargo)}<br />${escapeHtml(v.correo)} · ${escapeHtml(v.telefono)}</td></tr>
   </table>`;
 }
 
 async function handleLoi(request: Request, body: Record<string, unknown>, ip: string, slug: string, proposal: Proposal) {
-  if (!proposal.loiVersion) {
-    return jsonResponse(404, { error: "Esta propuesta no tiene carta de intención.", ok: false });
+  const lang = langOf(proposal);
+  const lt = LOI_TEXT[lang];
+  const loi = LOIS[slug];
+  if (!proposal.loiVersion || !loi) {
+    return jsonResponse(404, { error: lt.noLoi, ok: false });
   }
   const cookieCode = getCookie(request, cookieNames(slug).access);
   const access = cookieCode ? await findAccess(slug, proposal, cookieCode) : null;
 
   if (!access) {
-    return jsonResponse(401, { error: "Su sesión venció. Recargue la página e ingrese su código.", ok: false });
+    return jsonResponse(401, { error: lt.expired, ok: false });
   }
 
   const raw = (body.company && typeof body.company === "object" ? body.company : {}) as Record<string, unknown>;
@@ -896,13 +987,14 @@ async function handleLoi(request: Request, body: Record<string, unknown>, ip: st
     const value = cleanLine(raw[field.key], field.max);
     const unsafe = HTML_TAG_PATTERN.test(value) || (field.key !== "correo" && LINK_PATTERN.test(value));
     if (value.length < field.min || unsafe || (field.pattern && !field.pattern.test(value))) {
-      return jsonResponse(400, { error: `Revise el campo «${field.label}».`, field: field.key, ok: false });
+      const label = lang === "en" ? field.labelEn : field.label;
+      return jsonResponse(400, { error: lt.checkField.replace("{field}", label), field: field.key, ok: false });
     }
     values[field.key] = value;
   }
 
   if (body.accept !== true || body.authority !== true) {
-    return jsonResponse(400, { error: "Para aceptar, marque las dos casillas.", ok: false });
+    return jsonResponse(400, { error: lt.bothBoxes, ok: false });
   }
 
   const isInternal = access.role === "internal";
@@ -910,7 +1002,7 @@ async function handleLoi(request: Request, body: Record<string, unknown>, ip: st
   const acceptedAt = formatTime(now, proposal);
   const proposalUrl = `${siteBase()}/propuestas/${slug}/`;
   const userAgent = cleanLine(request.headers.get("user-agent"), 300);
-  const fingerprint = await sha256Hex(loiText());
+  const fingerprint = await sha256Hex(loiText(loi));
   const prefix = isInternal ? "[Prueba interna] " : "";
 
   const recipients: string[] = [];
@@ -918,31 +1010,31 @@ async function handleLoi(request: Request, body: Record<string, unknown>, ip: st
     if (address && !recipients.some((r) => r.toLowerCase() === address.toLowerCase())) recipients.push(address);
   }
 
-  const record = `
+  const recordFor = (l: Lang) => `
     <table style="border-collapse:collapse;font-size:14px;">
-      ${row("Versión", proposal.loiVersion || "")}${row("Fecha de aceptación", acceptedAt)}${row("Huella del texto (SHA-256)", fingerprint)}
+      ${row(LOI_TEXT[l].version, proposal.loiVersion || "")}${row(LOI_TEXT[l].acceptedOn, acceptedAt)}${row(LOI_TEXT[l].fingerprint, fingerprint)}
     </table>`;
 
   const copyHtml = emailShell(`
-    <p style="margin:0 0 14px;line-height:1.6;">Hola ${escapeHtml(values.firmante.split(" ")[0] || values.firmante)},</p>
-    <p style="margin:0 0 14px;line-height:1.6;">Gracias por aceptar la carta de intención. Como respaldo, le enviamos una copia con los datos de su empresa, la fecha y la hora.</p>
-    ${partiesHtml(values)}
-    ${loiHtml()}
-    ${record}
-    <p style="margin:18px 0 14px;line-height:1.6;">El siguiente paso es el contrato definitivo con estas condiciones. Se lo enviaremos para firma.</p>
-    <p style="margin:0 0 14px;line-height:1.6;">La propuesta sigue disponible en este enlace, con el mismo código de acceso:<br /><a href="${escapeHtml(proposalUrl)}" style="color:#e44c47;font-weight:700;">${escapeHtml(proposalUrl)}</a></p>
-    <p style="margin:20px 0 0;line-height:1.6;">Saludos cordiales,<br /><strong>Zegendia</strong></p>
+    <p style="margin:0 0 14px;line-height:1.6;">${escapeHtml(lt.hello)} ${escapeHtml(values.firmante.split(" ")[0] || values.firmante)},</p>
+    <p style="margin:0 0 14px;line-height:1.6;">${escapeHtml(lt.intro)}</p>
+    ${partiesHtml(values, loi, lang)}
+    ${loiHtml(loi)}
+    ${recordFor(lang)}
+    <p style="margin:18px 0 14px;line-height:1.6;">${escapeHtml(loi.done)}</p>
+    <p style="margin:0 0 14px;line-height:1.6;">${escapeHtml(lt.available)}<br /><a href="${escapeHtml(proposalUrl)}" style="color:#e44c47;font-weight:700;">${escapeHtml(proposalUrl)}</a></p>
+    <p style="margin:20px 0 0;line-height:1.6;">${escapeHtml(lt.closing)}<br /><strong>Zegendia</strong></p>
   `);
 
   const noticeHtml = emailShell(`
     <h2 style="color:#432851;margin:0 0 8px;">Carta de intención aceptada</h2>
     <p style="margin:0 0 16px;line-height:1.6;">${isInternal ? "Prueba con el código interno." : "Se aceptó la carta de intención con un código de cliente."}</p>
-    ${partiesHtml(values)}
+    ${partiesHtml(values, loi, "es")}
     <table style="border-collapse:collapse;font-size:14px;margin:12px 0 0;">
       ${row("Código de", access.label)}${row("Copia enviada a", recipients.join(", ") || "Sin correo")}${row("Propuesta", proposalUrl)}${row("IP", ip)}${row("Navegador", userAgent || "No especificado")}
     </table>
-    ${record}
-    ${loiHtml()}
+    ${recordFor("es")}
+    ${loiHtml(loi)}
   `);
 
   // The notice to the sales inbox is the record of the acceptance: send it first, and only send the
@@ -959,13 +1051,13 @@ async function handleLoi(request: Request, body: Record<string, unknown>, ip: st
   }
 
   if (!noticeSent && env("RESEND_API_KEY")) {
-    return jsonResponse(502, { error: "No pudimos registrar su aceptación. Intente de nuevo en un momento.", ok: false });
+    return jsonResponse(502, { error: lt.fail, ok: false });
   }
 
   let copySent = false;
   if (recipients.length) {
     try {
-      copySent = await sendEmail(recipients, `${prefix}Copia de su carta de intención con Zegendia`, copyHtml);
+      copySent = await sendEmail(recipients, `${prefix}${lt.subject}`, copyHtml);
     } catch (error) {
       console.error("Proposal LOI copy failed", String(error));
     }
