@@ -29,6 +29,8 @@ type Proposal = {
   // "bmtours" keeps the original fixed questionnaire; "generic" takes question and answer pairs.
   answers?: "bmtours" | "generic";
   client: string;
+  // Language of the sign-in page, the agreement and the client's copy. Spanish unless set.
+  lang?: "es" | "en";
   locale?: string;
   loiVersion?: string;
   ndaVersion: string;
@@ -86,6 +88,32 @@ const PROPOSALS: Record<string, Proposal> = {
         hash: "4f9ab80c028d0cddf995bc0aebd7ff264262f115733075b61dbfc9b193bed13a"
       }
     ]
+  },
+  "rarelatch-7han9c": {
+    title: "Zegendia proposal for RareLatch",
+    client: "RareLatch (Aifusia LLC)",
+    ndaVersion: "NDA-rarelatch-2026-11-en",
+    lang: "en",
+    locale: "en-US",
+    timeZone: "America/Chicago",
+    timeZoneLabel: "US Central Time",
+    accesses: [
+      {
+        role: "client",
+        label: "Jony (Aifusia LLC · RareLatch)",
+        name: "Jony",
+        company: "Aifusia LLC",
+        email: "service@aifusia.com",
+        salt: "1fc8bb3d45a7d57d3a254a3cc8d76103",
+        hash: "d42b5f51b0828f159ebcc48155104ae08c3f7eb40b4d259ce66165d1e76ed940"
+      },
+      {
+        role: "internal",
+        label: "Equipo Zegendia",
+        salt: "45c4ff064392c2e57ae514290b5fdc21",
+        hash: "b01980a6c303454bc33efea82faf17c60741c9ac61e6356c3f0dfe0631a67e59"
+      }
+    ]
   }
 };
 
@@ -128,6 +156,134 @@ const NDA_CLAUSES: Array<[string, string]> = [
     "Estas obligaciones rigen por dos (2) años desde la aceptación. Zegendia puede revocar los accesos en cualquier momento y, al terminar la evaluación, el Receptor dejará de usarlos."
   ]
 ];
+
+// English version of the same agreement, for proposals with lang "en". Keep the two in step.
+const NDA_INTRO_EN =
+  "By accepting, you (the Recipient), on your own behalf and on behalf of the company you represent, agree with Zegendia as follows:";
+
+const NDA_CLAUSES_EN: Array<[string, string]> = [
+  [
+    "Confidential information.",
+    "All information Zegendia shares in this document and in any platform it gives access to: proposals, commercial models, prices, catalogs, processes, technology, platform design, demo data and credentials."
+  ],
+  ["Permitted use.", "The Recipient will use the information only to evaluate a possible business relationship with Zegendia."],
+  [
+    "Non-disclosure.",
+    "The Recipient will not share the information with third parties without Zegendia's written authorization, except with employees or advisors who need it for that evaluation and are bound to the same confidentiality."
+  ],
+  [
+    "Access.",
+    "Credentials and the access code are personal and for review only. The Recipient will not share them, extract data in bulk, copy or attempt to reproduce the platforms, or run security tests without authorization."
+  ],
+  [
+    "Exceptions.",
+    "Information is not confidential if it was already public, if the Recipient already knew it lawfully, or if a competent authority orders its disclosure, in which case the Recipient will notify Zegendia first."
+  ],
+  [
+    "Ownership.",
+    "All information remains Zegendia's property. This agreement grants no license and does not oblige either party to sign a contract."
+  ],
+  [
+    "Term.",
+    "These obligations last two (2) years from acceptance. Zegendia may revoke access at any time, and the Recipient will stop using it when the evaluation ends."
+  ]
+];
+
+type Lang = "es" | "en";
+
+function langOf(proposal?: Proposal): Lang {
+  return proposal?.lang === "en" ? "en" : "es";
+}
+
+function ndaFor(lang: Lang) {
+  return lang === "en" ? { clauses: NDA_CLAUSES_EN, intro: NDA_INTRO_EN } : { clauses: NDA_CLAUSES, intro: NDA_INTRO };
+}
+
+// Everything the visitor reads on the sign-in page and in the copy of the agreement.
+const TEXT = {
+  es: {
+    accept: "Aceptar e ingresar",
+    access: "Acceso",
+    agreement: "Acuerdo de confidencialidad",
+    agreementAria: "Texto del acuerdo de confidencialidad",
+    badCode: "El código no es válido. Revíselo e intente de nuevo.",
+    badRequest: "Solicitud no válida.",
+    checkbox: "He leído el acuerdo de confidencialidad y lo acepto en nombre propio y de mi empresa.",
+    code: "Código de acceso",
+    codePrompt: "Ingrese el código de acceso que recibió en nuestro correo.",
+    company: "Empresa",
+    confidential: "Documento confidencial",
+    continue: "Continuar",
+    copyBefore: "Le enviaremos una copia de este acuerdo, con su nombre, la fecha y la hora, a",
+    fixFields: "Revise su nombre y empresa, y marque la casilla de aceptación.",
+    name: "Nombre completo",
+    ndaPrompt: "Antes de ver la propuesta, revise y acepte el acuerdo de confidencialidad.",
+    tooMany: "Demasiados intentos. Espere unos minutos y vuelva a intentarlo.",
+    js: {
+      checkBox: "Para continuar, marque la casilla de aceptación.",
+      codeFail: "No pudimos validar el código.",
+      fullCode: "Escriba el código completo.",
+      needCompany: "Escriba el nombre de su empresa.",
+      needName: "Escriba su nombre completo.",
+      network: "Hubo un problema de conexión. Intente de nuevo.",
+      saveFail: "No pudimos registrar la aceptación."
+    },
+    mail: {
+      acceptedOn: "Fecha de aceptación",
+      closing: "Saludos cordiales,",
+      company: "Empresa",
+      email: "Correo",
+      hello: "Hola",
+      intro: "Gracias por revisar nuestra propuesta. Como respaldo, le enviamos una copia del acuerdo de confidencialidad que aceptó.",
+      name: "Nombre",
+      questions: "Si tiene cualquier pregunta, puede responder a este correo.",
+      returnTo: "Puede volver a la propuesta cuando quiera en este enlace, con el mismo código de acceso:",
+      subject: "Copia de su acuerdo de confidencialidad con Zegendia",
+      version: "Versión"
+    }
+  },
+  en: {
+    accept: "Accept and enter",
+    access: "Access",
+    agreement: "Confidentiality agreement",
+    agreementAria: "Text of the confidentiality agreement",
+    badCode: "This code is not valid. Check it and try again.",
+    badRequest: "Invalid request.",
+    checkbox: "I have read the confidentiality agreement and accept it on my own behalf and on behalf of my company.",
+    code: "Access code",
+    codePrompt: "Enter the access code you received in our email.",
+    company: "Company",
+    confidential: "Confidential document",
+    continue: "Continue",
+    copyBefore: "We will send a copy of this agreement, with your name, the date and the time, to",
+    fixFields: "Check your name and company, and tick the acceptance box.",
+    name: "Full name",
+    ndaPrompt: "Before viewing the proposal, please review and accept the confidentiality agreement.",
+    tooMany: "Too many attempts. Wait a few minutes and try again.",
+    js: {
+      checkBox: "To continue, tick the acceptance box.",
+      codeFail: "We could not validate the code.",
+      fullCode: "Enter the full code.",
+      needCompany: "Enter your company name.",
+      needName: "Enter your full name.",
+      network: "There was a connection problem. Please try again.",
+      saveFail: "We could not record your acceptance."
+    },
+    mail: {
+      acceptedOn: "Accepted on",
+      closing: "Best regards,",
+      company: "Company",
+      email: "Email",
+      hello: "Hello",
+      intro: "Thank you for reviewing our proposal. For your records, here is a copy of the confidentiality agreement you accepted.",
+      name: "Name",
+      questions: "If you have any questions, just reply to this email.",
+      returnTo: "You can return to the proposal at any time at this link, with the same access code:",
+      subject: "Copy of your confidentiality agreement with Zegendia",
+      version: "Version"
+    }
+  }
+};
 
 // Letter of intent (carta de intención) shown at the end of the bmtours deck.
 // Keep identical to public/propuestas/bmtours-zb6nok/index.html: both are generated from the same text.
@@ -336,11 +492,12 @@ function row(label: string, value: string) {
   return `<tr><td style="padding:6px 16px 6px 0;color:#432851;font-weight:700;vertical-align:top;white-space:nowrap;">${escapeHtml(label)}</td><td style="padding:6px 0;overflow-wrap:anywhere;word-break:break-word;">${escapeHtml(value)}</td></tr>`;
 }
 
-function agreementHtml() {
-  const items = NDA_CLAUSES.map(
+function agreementHtml(lang: Lang = "es") {
+  const nda = ndaFor(lang);
+  const items = nda.clauses.map(
     ([title, text]) => `<li style="margin:0 0 10px;"><strong style="color:#432851;">${escapeHtml(title)}</strong> ${escapeHtml(text)}</li>`
   ).join("");
-  return `<div style="margin:20px 0;padding:18px 20px;border:1px solid #e3dde9;border-radius:12px;background:#f6f4f8;"><div style="font-size:16px;font-weight:700;color:#432851;margin:0 0 8px;">Acuerdo de confidencialidad</div><p style="margin:0 0 10px;line-height:1.6;">${escapeHtml(NDA_INTRO)}</p><ol style="margin:0;padding-left:20px;line-height:1.6;">${items}</ol></div>`;
+  return `<div style="margin:20px 0;padding:18px 20px;border:1px solid #e3dde9;border-radius:12px;background:#f6f4f8;"><div style="font-size:16px;font-weight:700;color:#432851;margin:0 0 8px;">${escapeHtml(TEXT[lang].agreement)}</div><p style="margin:0 0 10px;line-height:1.6;">${escapeHtml(nda.intro)}</p><ol style="margin:0;padding-left:20px;line-height:1.6;">${items}</ol></div>`;
 }
 
 function emailShell(children: string) {
@@ -355,14 +512,19 @@ function notFound() {
 }
 
 function gatePage(proposal: Proposal) {
-  const clauses = NDA_CLAUSES.map(([t, d]) => `<li><strong>${escapeHtml(t)}</strong> ${escapeHtml(d)}</li>`).join("");
+  const lang = langOf(proposal);
+  const t = TEXT[lang];
+  const nda = ndaFor(lang);
+  const clauses = nda.clauses.map(([title, d]) => `<li><strong>${escapeHtml(title)}</strong> ${escapeHtml(d)}</li>`).join("");
+  // Messages for the page script; JSON-encoded with "<" escaped so nothing can close the script tag.
+  const jsText = JSON.stringify(t.js).replace(/</g, "\\u003c");
   return `<!DOCTYPE html>
-<html lang="es">
+<html lang="${lang}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>${escapeHtml(proposal.title)} · Acceso</title>
+<title>${escapeHtml(proposal.title)} · ${escapeHtml(t.access)}</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
@@ -402,39 +564,40 @@ form { display:grid; gap:16px; }
 <main class="card">
   <img class="logo" src="/images/brand/zegendia-logo.png" alt="Zegendia" width="160" height="48">
   <div>
-    <p class="eyebrow">Documento confidencial</p>
+    <p class="eyebrow">${escapeHtml(t.confidential)}</p>
     <h1>${escapeHtml(proposal.title)}</h1>
   </div>
 
   <form id="step-code" novalidate>
-    <p class="muted">Ingrese el código de acceso que recibió en nuestro correo.</p>
+    <p class="muted">${escapeHtml(t.codePrompt)}</p>
     <div>
-      <label for="code">Código de acceso</label>
+      <label for="code">${escapeHtml(t.code)}</label>
       <input id="code" name="code" type="text" autocomplete="one-time-code" autocapitalize="characters" spellcheck="false" required>
     </div>
     <p class="error" id="code-error" role="alert"></p>
-    <button type="submit" id="code-btn">Continuar</button>
+    <button type="submit" id="code-btn">${escapeHtml(t.continue)}</button>
   </form>
 
   <form id="step-nda" class="hidden" novalidate>
-    <p class="muted">Antes de ver la propuesta, revise y acepte el acuerdo de confidencialidad.</p>
-    <div class="nda" tabindex="0" aria-label="Texto del acuerdo de confidencialidad">
-      <h2>Acuerdo de confidencialidad</h2>
-      <p>${escapeHtml(NDA_INTRO)}</p>
+    <p class="muted">${escapeHtml(t.ndaPrompt)}</p>
+    <div class="nda" tabindex="0" aria-label="${escapeHtml(t.agreementAria)}">
+      <h2>${escapeHtml(t.agreement)}</h2>
+      <p>${escapeHtml(nda.intro)}</p>
       <ol>${clauses}</ol>
     </div>
     <div class="fields">
-      <div><label for="name">Nombre completo</label><input id="name" name="name" type="text" autocomplete="name" required></div>
-      <div><label for="company">Empresa</label><input id="company" name="company" type="text" autocomplete="organization" required></div>
+      <div><label for="name">${escapeHtml(t.name)}</label><input id="name" name="name" type="text" autocomplete="name" required></div>
+      <div><label for="company">${escapeHtml(t.company)}</label><input id="company" name="company" type="text" autocomplete="organization" required></div>
     </div>
-    <p class="copyto">Le enviaremos una copia de este acuerdo, con su nombre, la fecha y la hora, a <b id="copy-email"></b>.</p>
-    <label class="check" for="accept"><input id="accept" name="accept" type="checkbox" required><span>He leído el acuerdo de confidencialidad y lo acepto en nombre propio y de mi empresa.</span></label>
+    <p class="copyto">${escapeHtml(t.copyBefore)} <b id="copy-email"></b>.</p>
+    <label class="check" for="accept"><input id="accept" name="accept" type="checkbox" required><span>${escapeHtml(t.checkbox)}</span></label>
     <p class="error" id="nda-error" role="alert"></p>
-    <button type="submit" id="nda-btn">Aceptar e ingresar</button>
+    <button type="submit" id="nda-btn">${escapeHtml(t.accept)}</button>
   </form>
 </main>
 <script>
 (function () {
+  var T = ${jsText};
   var code = "";
   var codeForm = document.getElementById("step-code");
   var ndaForm = document.getElementById("step-nda");
@@ -447,32 +610,32 @@ form { display:grid; gap:16px; }
     e.preventDefault();
     var btn = document.getElementById("code-btn"); var err = document.getElementById("code-error");
     code = document.getElementById("code").value.trim();
-    if (code.replace(/[^a-z0-9]/gi, "").length < 8) { err.textContent = "Escriba el código completo."; return; }
+    if (code.replace(/[^a-z0-9]/gi, "").length < 8) { err.textContent = T.fullCode; return; }
     busy(btn, true); err.textContent = "";
     post({ action: "code", code: code }).then(function (d) {
       busy(btn, false);
-      if (!d.ok) { err.textContent = d.error || "No pudimos validar el código."; return; }
+      if (!d.ok) { err.textContent = d.error || T.codeFail; return; }
       if (d.done) { location.reload(); return; }
       document.getElementById("name").value = d.name || "";
       document.getElementById("company").value = d.company || "";
       document.getElementById("copy-email").textContent = d.email || "";
       codeForm.classList.add("hidden"); ndaForm.classList.remove("hidden");
       document.getElementById("name").focus();
-    }).catch(function () { busy(btn, false); err.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
+    }).catch(function () { busy(btn, false); err.textContent = T.network; });
   });
   ndaForm.addEventListener("submit", function (e) {
     e.preventDefault();
     var btn = document.getElementById("nda-btn"); var err = document.getElementById("nda-error");
     var name = document.getElementById("name").value.trim();
     var company = document.getElementById("company").value.trim();
-    if (name.length < 3) { err.textContent = "Escriba su nombre completo."; return; }
-    if (company.length < 2) { err.textContent = "Escriba el nombre de su empresa."; return; }
-    if (!document.getElementById("accept").checked) { err.textContent = "Para continuar, marque la casilla de aceptación."; return; }
+    if (name.length < 3) { err.textContent = T.needName; return; }
+    if (company.length < 2) { err.textContent = T.needCompany; return; }
+    if (!document.getElementById("accept").checked) { err.textContent = T.checkBox; return; }
     busy(btn, true); err.textContent = "";
     post({ action: "accept", code: code, name: name, company: company, accept: true }).then(function (d) {
-      if (!d.ok) { busy(btn, false); err.textContent = d.error || "No pudimos registrar la aceptación."; return; }
+      if (!d.ok) { busy(btn, false); err.textContent = d.error || T.saveFail; return; }
       location.reload();
-    }).catch(function () { busy(btn, false); err.textContent = "Hubo un problema de conexión. Intente de nuevo."; });
+    }).catch(function () { busy(btn, false); err.textContent = T.network; });
   });
   document.getElementById("code").focus();
 })();
@@ -821,15 +984,18 @@ async function handleLoi(request: Request, body: Record<string, unknown>, ip: st
 async function handlePost(request: Request, context: EdgeContext, slug: string, proposal: Proposal) {
   const ip = context.ip || request.headers.get("x-nf-client-connection-ip") || "unknown";
 
+  const lang = langOf(proposal);
+  const t = TEXT[lang];
+
   if (isRateLimited(`ip:${ip}`)) {
-    return jsonResponse(429, { error: "Demasiados intentos. Espere unos minutos y vuelva a intentarlo.", ok: false });
+    return jsonResponse(429, { error: t.tooMany, ok: false });
   }
 
   let body: Record<string, unknown>;
   try {
     body = (await request.json()) as Record<string, unknown>;
   } catch {
-    return jsonResponse(400, { error: "Solicitud no válida.", ok: false });
+    return jsonResponse(400, { error: t.badRequest, ok: false });
   }
 
   if (body.action === "answers") {
@@ -842,7 +1008,7 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
 
   const access = await findAccess(slug, proposal, body.code);
   if (!access) {
-    return jsonResponse(401, { error: "El código no es válido. Revíselo e intente de nuevo.", ok: false });
+    return jsonResponse(401, { error: t.badCode, ok: false });
   }
 
   const code = normalizeCode(body.code);
@@ -859,7 +1025,7 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
   const company = cleanLine(body.company, 120);
 
   if (body.accept !== true || name.length < 3 || company.length < 2 || [name, company].some((v) => HTML_TAG_PATTERN.test(v) || LINK_PATTERN.test(v))) {
-    return jsonResponse(400, { error: "Revise su nombre y empresa, y marque la casilla de aceptación.", ok: false });
+    return jsonResponse(400, { error: t.fixFields, ok: false });
   }
 
   const now = new Date();
@@ -868,16 +1034,17 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
   const userAgent = cleanLine(request.headers.get("user-agent"), 300);
   const copyTo = access.email || "";
 
+  const mail = t.mail;
   const copyHtml = emailShell(`
-    <p style="margin:0 0 14px;line-height:1.6;">Hola ${escapeHtml(name)},</p>
-    <p style="margin:0 0 14px;line-height:1.6;">Gracias por revisar nuestra propuesta. Como respaldo, le enviamos una copia del acuerdo de confidencialidad que aceptó.</p>
+    <p style="margin:0 0 14px;line-height:1.6;">${escapeHtml(mail.hello)} ${escapeHtml(name)},</p>
+    <p style="margin:0 0 14px;line-height:1.6;">${escapeHtml(mail.intro)}</p>
     <table style="border-collapse:collapse;font-size:14px;">
-      ${row("Nombre", name)}${row("Empresa", company)}${row("Correo", copyTo)}${row("Fecha de aceptación", acceptedAt)}${row("Versión", proposal.ndaVersion)}
+      ${row(mail.name, name)}${row(mail.company, company)}${row(mail.email, copyTo)}${row(mail.acceptedOn, acceptedAt)}${row(mail.version, proposal.ndaVersion)}
     </table>
-    ${agreementHtml()}
-    <p style="margin:0 0 14px;line-height:1.6;">Puede volver a la propuesta cuando quiera en este enlace, con el mismo código de acceso:<br /><a href="${escapeHtml(proposalUrl)}" style="color:#e44c47;font-weight:700;">${escapeHtml(proposalUrl)}</a></p>
-    <p style="margin:0 0 14px;line-height:1.6;">Si tiene cualquier pregunta, puede responder a este correo.</p>
-    <p style="margin:20px 0 0;line-height:1.6;">Saludos cordiales,<br /><strong>Zegendia</strong></p>
+    ${agreementHtml(lang)}
+    <p style="margin:0 0 14px;line-height:1.6;">${escapeHtml(mail.returnTo)}<br /><a href="${escapeHtml(proposalUrl)}" style="color:#e44c47;font-weight:700;">${escapeHtml(proposalUrl)}</a></p>
+    <p style="margin:0 0 14px;line-height:1.6;">${escapeHtml(mail.questions)}</p>
+    <p style="margin:20px 0 0;line-height:1.6;">${escapeHtml(mail.closing)}<br /><strong>Zegendia</strong></p>
   `);
 
   const noticeHtml = emailShell(`
@@ -889,7 +1056,7 @@ async function handlePost(request: Request, context: EdgeContext, slug: string, 
   `);
 
   const [copyResult, noticeResult] = await Promise.allSettled([
-    copyTo ? sendEmail(copyTo, "Copia de su acuerdo de confidencialidad con Zegendia", copyHtml) : Promise.resolve(false),
+    copyTo ? sendEmail(copyTo, mail.subject, copyHtml) : Promise.resolve(false),
     sendEmail(env("ZEGENDIA_SALES_EMAIL") || "info@zegendia.com", `Acceso a propuesta ${proposal.client}: ${name}`, noticeHtml)
   ]);
 
