@@ -91,19 +91,19 @@ const PROPOSALS: Record<string, Proposal> = {
   },
   "rarelatch-7han9c": {
     title: "Zegendia proposal for RareLatch",
-    client: "RareLatch (Aifusia LLC)",
+    client: "RareLatch (Flindas LLC)",
     ndaVersion: "NDA-rarelatch-2026-11-en",
     lang: "en",
     locale: "en-US",
     timeZone: "America/Chicago",
     timeZoneLabel: "US Central Time",
-    loiVersion: "LOI-rarelatch-2026-11-v1",
+    loiVersion: "LOI-rarelatch-2026-11-v2",
     accesses: [
       {
         role: "client",
-        label: "Jony (Aifusia LLC · RareLatch)",
+        label: "Jony (Flindas LLC · RareLatch)",
         name: "Jony",
-        company: "Aifusia LLC",
+        company: "Flindas LLC",
         email: "service@aifusia.com",
         salt: "1fc8bb3d45a7d57d3a254a3cc8d76103",
         hash: "d42b5f51b0828f159ebcc48155104ae08c3f7eb40b4d259ce66165d1e76ed940"
@@ -343,12 +343,12 @@ const LOI_RARELATCH: Loi = {
   intro: "GADAMAX LLC, operating the Zegendia brand (Zegendia), and the company whose details appear in this letter (RareLatch) record their intention to work together on rewards fulfillment for RareLatch on the following terms:",
   clauses: [
     ["Purpose.", "Zegendia will be RareLatch's provider of physical rewards in Mexico and Brazil through Oh My Rewards: catalog by API, purchase in each country, delivery to each winner, status updates by webhook and a monthly statement."],
-    ["Scope.", "Consumer products from Zegendia's catalog, such as electronics accessories, audio, wearables, gaming, smart home and small appliances, with values from USD 10 to 200 per item. Trading cards and collectibles are not included."],
+    ["Scope.", "Consumer products from Zegendia's catalog, such as watches, bags, electronics, audio, gaming, accessories and small appliances, with values from USD 20 to 500 per item. Every item is new and original. Trading cards and collectibles are not included."],
     ["What Zegendia delivers.", "Within 10 business days after this letter is accepted, Zegendia will meet with RareLatch and deliver the catalog for Mexico and Brazil, the commercial proposal with fees, minimum top-up and delivery times per country, the API documentation with sandbox access, and the draft service agreement."],
     ["Commercial model.", "RareLatch will pay through a prepaid balance. Each order has one all-in price that covers the product, local taxes and delivery to the winner, and is deducted from the balance when the order is placed. RareLatch does not buy or hold inventory."],
     ["Launch.", "RareLatch intends to launch the delivery of physical rewards in Mexico and Brazil with Zegendia, and to add Colombia, Chile, Peru and Argentina on the same terms as it expands."],
     ["RareLatch's commitments.", "RareLatch will provide complete shipping data for each winner, including the tax ID couriers require (CPF in Brazil), keep its balance funded, and operate its platform in each market in compliance with local law, including any licenses that apply."],
-    ["Definitive agreement.", "The parties will negotiate in good faith and aim to sign the definitive agreement within 30 days after this letter is accepted, in time for RareLatch's launch in the first quarter of 2027. The agreement will set the operational detail, governing law and jurisdiction."],
+    ["Definitive agreement.", "The parties will negotiate in good faith and aim to sign the definitive agreement within 30 days after this letter is accepted, in time for RareLatch's launch. The agreement will set the operational detail, governing law and jurisdiction."],
     ["Nature of this letter.", "This letter records the shared intention of the parties. It does not oblige either party to make a payment or a purchase before the definitive agreement is signed. Confidentiality is governed by the agreement already accepted."]
   ],
   done: "Next, we will schedule our meeting to share the catalog, the commercial proposal and the draft agreement."
